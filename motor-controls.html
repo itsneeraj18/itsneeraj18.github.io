@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Motor Controls</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+  <h1>Motor Controls</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="projects.html">Projects</a>
+    <a href="updates.html">Updates</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
+
+<section class="content-section">
+  <div class="page-header">
+    <h1>Motor Control Systems</h1>
+    <p>From basic concepts to advanced algorithms - powering the electric revolution</p>
+  </div>
+
+  <!-- Overview Section -->
+  <div class="overview-section">
+    <div class="overview-card">
+      <h2>🔄 What is Motor Control?</h2>
+      <p>Motor control refers to the regulation and manipulation of electric motors to achieve desired mechanical output. It encompasses everything from simple on/off switching to sophisticated algorithms that optimize efficiency, torque, and speed across various applications.</p>
+      
+      <p>In electric vehicles, motor control is the "brain" that translates driver inputs into precise motor commands, ensuring smooth acceleration, regenerative braking, and optimal energy efficiency.</p>
+    </div>
+  </div>
+
+  <!-- Industry Applications -->
+  <div class="applications-section">
+    <h2>🏭 Industry Applications</h2>
+    <div class="applications-grid">
+      <div class="application-card">
+        <div class="app-icon">🚗</div>
+        <h3>Electric Vehicles</h3>
+        <p>Traction motor control, regenerative braking, thermal management, and battery integration for optimal range and performance.</p>
+      </div>
+      
+      <div class="application-card">
+        <div class="app-icon">🏭</div>
+        <h3>Industrial Automation</h3>
+        <p>Precise speed and torque control for robotics, CNC machines, conveyor systems, and manufacturing equipment.</p>
+      </div>
+      
+      <div class="application-card">
+        <div class="app-icon">⚡</div>
+        <h3>Renewable Energy</h3>
+        <p>Wind turbine pitch control, solar tracking systems, and grid-tied inverters for maximum energy harvest.</p>
+      </div>
+      
+      <div class="application-card">
+        <div class="app-icon">🏠</div>
+        <h3>Home Appliances</h3>
+        <p>Energy-efficient control in washing machines, air conditioners, and HVAC systems.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Latest Trends -->
+  <div class="trends-section">
+    <h2>🚀 Latest Trends & Technologies</h2>
+    <div class="trends-grid">
+      <div class="trend-card">
+        <h3>AI-Optimized Control</h3>
+        <p>Machine learning algorithms for predictive maintenance, adaptive control, and self-tuning systems.</p>
+      </div>
+      
+      <div class="trend-card">
+        <h3>SiC & GaN Power Devices</h3>
+        <p>Wide-bandgap semiconductors enabling higher switching frequencies and greater efficiency.</p>
+      </div>
+      
+      <div class="trend-card">
+        <h3>Wireless Control</h3>
+        <p>Bluetooth, WiFi, and 5G-enabled motor systems for IoT integration and remote monitoring.</p>
+      </div>
+      
+      <div class="trend-card">
+        <h3>Integrated Motor Drives</h3>
+        <p>All-in-one solutions combining motor, controller, and gearbox for compact, efficient systems.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Why Here -->
+  <div class="why-section">
+    <div class="why-card">
+      <h2>🎯 Why Motor Control Matters Here</h2>
+      <p>Electric vehicles represent the future of transportation, and motor control is at the heart of this revolution. Understanding these systems is crucial for:</p>
+      <ul>
+        <li><strong>Innovation:</strong> Developing next-generation EV powertrains</li>
+        <li><strong>Efficiency:</strong> Maximizing range and performance</li>
+        <li><strong>Reliability:</strong> Ensuring safe, dependable operation</li>
+        <li><strong>Cost Reduction:</strong> Optimizing designs for mass adoption</li>
+      </ul>
+      <p>This knowledge bridge connects theoretical control systems with practical automotive applications.</p>
+    </div>
+  </div>
+
+  <!-- Open Loop V/f Control Section -->
+  <div class="control-method">
+    <h2>🔄 Open Loop V/f Control</h2>
+    
+    <div class="theory-section">
+      <h3>Theory & Fundamentals</h3>
+      <p>Open-loop control is often used during startup or in low-cost motor drives where position sensors are not available. In PMSM and BLDC motors, the controller generates voltage waveforms that force the rotor to follow a rotating magnetic field.</p>
+      
+      <p>The motor is driven using <strong>voltage-frequency (V/f)</strong> control along with a controlled ramp in electrical angle. The inverter produces phase voltages using techniques like <a href="spwm.html">SPWM</a> to approximate sinusoidal waveforms.</p>
+      
+      <p>Before closed-loop Field Oriented Control (FOC) can take over, open-loop alignment and acceleration ensure the rotor is synchronized with the stator field without stalling or excessive current.</p>
+    </div>
+
+    <div class="implementation-section">
+      <h3>🔧 Implementation & Resources</h3>
+      
+      <div class="resource-grid">
+        <div class="resource-card">
+          <h4>MATLAB/Simulink Model</h4>
+          <p>Interactive simulation demonstrating V/f control principles</p>
+          <a href="https://www.mathworks.com/matlabcentral/profile/authors/YOURID" target="_blank" class="resource-link">
+            View Simulation →
+          </a>
+        </div>
+        
+        <div class="resource-card">
+          <h4>Deployable Code</h4>
+          <p>Ready-to-run firmware for STM32 microcontroller</p>
+          <a href="#" class="resource-link">Download Code →</a>
+        </div>
+        
+        <div class="resource-card">
+          <h4>Hardware Setup</h4>
+          <p>Photos and videos of working V/f control implementation</p>
+          <a href="#" class="resource-link">View Demo →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="next-steps">
+      <h3>Ready for More Advanced Control?</h3>
+      <p>Open-loop methods provide a foundation, but closed-loop techniques offer superior performance. Explore:</p>
+      <div class="next-links">
+        <a href="#" class="next-link">Field Oriented Control (FOC)</a>
+        <a href="#" class="next-link">Sensorless Control</a>
+        <a href="#" class="next-link">Direct Torque Control</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
