@@ -1,57 +1,128 @@
-
 <!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SPWM</title>
+<title>SPWM - Sinusoidal PWM</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <header>
-    <h1>Sinusoidal PWM (SPWM)</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="projects.html">Projects</a>
-      <a href="updates.html">Updates</a>
-      <a href="about.html">About</a>
-      <a href="journey.html">Journey</a>
-      <a href="contact.html">Contact</a>
-    </nav>
-  </header>
-  
-  <section class="card">
-    <div class="page-header">
-      <h1>Sinusoidal Pulse Width Modulation</h1>
-      <p>Advanced PWM techniques for motor control</p>
-    </div>
+<header>
+  <h1>SPWM (Sinusoidal PWM)</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="topics.html">Topics</a>
+    <a href="updates.html">Updates</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
+
+<section class="content-section">
+  <!-- Breadcrumb Navigation -->
+  <div class="breadcrumb">
+    <a href="index.html">Home</a>
+    <span>/</span>
+    <a href="topics.html">Topics</a>
+    <span>/</span>
+    <a href="motor-controls.html">Motor Controls</a>
+    <span>/</span>
+    <span class="current">SPWM</span>
+  </div>
+
+  <!-- Topic Page Header -->
+  <div class="page-header">
+    <h1>Sinusoidal Pulse Width Modulation (SPWM)</h1>
+    <p>Advanced PWM techniques for smooth, efficient motor control</p>
+  </div>
+
+  <!-- Concept / Why It Matters -->
+  <div class="concept-section">
+    <h2>💡 What is SPWM and Why It Matters</h2>
+    <p>SPWM (Sinusoidal Pulse Width Modulation) is a fundamental technique used to generate sinusoidal AC voltages from a DC bus using high-frequency switching.</p>
     
-    <div class="content-card">
-      <p>SPWM (Sinusoidal Pulse Width Modulation) is a technique used to generate sinusoidal voltages from a DC bus using high-frequency switching.</p>
-  
-      <p>A sinusoidal reference is compared against a high-frequency triangular carrier. Where the sine wave is higher, the inverter switch turns ON. Where it is lower, it turns OFF.</p>
-  
-      <p>This creates a PWM waveform whose average value follows a sine wave, allowing smooth motor torque and reduced harmonics.</p>
-  
-      <a href="open-loop-pmsm.html" class="feature-link">← Back to Open Loop Control</a>
+    <p>In motor drives, SPWM enables:</p>
+    <ul>
+      <li><strong>Smooth torque:</strong> Sinusoidal phase currents reduce torque ripple</li>
+      <li><strong>Harmonic reduction:</strong> Lower noise and EMI compared to simpler switching schemes</li>
+      <li><strong>Efficiency:</strong> Optimized for different modulation indices and operating points</li>
+      <li><strong>Simplicity:</strong> Implementable on standard microcontrollers with PWM peripherals</li>
+    </ul>
+  </div>
+
+  <!-- Theory Section -->
+  <div class="theory-section">
+    <h2>📚 Theory & Fundamentals</h2>
+    <p><strong>How SPWM Works:</strong></p>
+    <p>A sinusoidal reference waveform is compared against a high-frequency triangular carrier signal. When the sine wave is higher than the triangle, the inverter switch turns ON. When it's lower, the switch turns OFF. The result is a pulse-width modulated signal whose average value (envelope) follows the sinusoidal reference.</p>
+    
+    <p><strong>Key Parameters:</strong></p>
+    <ul>
+      <li><strong>Modulation Index (m):</strong> Ratio of sine amplitude to triangle amplitude. Higher m increases output voltage.</li>
+      <li><strong>Carrier Frequency:</strong> Switching frequency (typically 10–20 kHz). Higher frequency = less filtering needed, but more switching losses.</li>
+      <li><strong>Fundamental Frequency:</strong> Motor speed command (0–400 Hz for EVs)</li>
+    </ul>
+
+    <p>🚧 <strong>Missing:</strong> Mathematical derivations, harmonic analysis, comparison with SVPWM, waveform diagrams</p>
+  </div>
+
+  <!-- Simulation / Implementation -->
+  <div class="implementation-section">
+    <h2>🔧 Implementation</h2>
+    <p><strong>Real-World SPWM Implementation:</strong></p>
+    <ul>
+      <li>Timer module generates the triangular carrier (PWM base frequency)</li>
+      <li>ADC samples the phase current and feedback signals</li>
+      <li>Microcontroller computes the sinusoidal reference and compares with carrier</li>
+      <li>PWM duty cycles are updated in real-time (typically every 100 µs)</li>
+    </ul>
+
+    <p>🚧 <strong>Missing:</strong> STM32 code snippets, MATLAB/Simulink models, timing diagrams</p>
+  </div>
+
+  <!-- Validation Section -->
+  <div class="validation-section">
+    <h2>✅ Validation & Testing</h2>
+    <p><strong>How to Validate SPWM Implementation:</strong></p>
+    <ul>
+      <li>Oscilloscope measurement of phase voltages and currents</li>
+      <li>FFT analysis to verify harmonic content</li>
+      <li>Motor torque ripple measurement under steady-state conditions</li>
+      <li>Thermal testing at rated speed and torque</li>
+    </ul>
+
+    <p>🚧 <strong>Missing:</strong> Experimental results, photos/videos from test bench, data plots</p>
+  </div>
+
+  <!-- References -->
+  <div class="references-section">
+    <h2>📖 References & Further Reading</h2>
+    <p>🚧 <strong>Under Development:</strong> Will include academic papers, application notes from motor manufacturers, and industry standards.</p>
+  </div>
+
+  <!-- Navigation Between Topics -->
+  <div class="section-nav">
+    <h3>Continue Learning in Motor Controls</h3>
+    <div class="nav-grid">
+      <a href="motor-controls.html" class="nav-item">
+        <span class="nav-label">← Back</span>
+        <h3>Motor Controls Overview</h3>
+        <p>Return to the Motor Controls section</p>
+      </a>
+      
+      <a href="topics.html" class="nav-item">
+        <span class="nav-label">Up →</span>
+        <h3>All Topics</h3>
+        <p>Browse other domains and topics</p>
+      </a>
     </div>
-  </section>
+  </div>
 
-<section class="card">
-<p>
-SPWM (Sinusoidal Pulse Width Modulation) is a technique used to generate sinusoidal voltages from a DC bus using high-frequency switching.
-</p>
-
-<p>
-A sinusoidal reference is compared against a high-frequency triangular carrier.
-Where the sine wave is higher, the inverter switch turns ON.
-Where it is lower, it turns OFF.
-</p>
-
-<p>
-This creates a PWM waveform whose average value follows a sine wave, allowing smooth motor torque and reduced harmonics.
-</p>
+  <!-- Last Updated -->
+  <div class="last-updated">
+    <p>Last updated: January 2026 | Status: Under active development</p>
+  </div>
 </section>
 
 </body>

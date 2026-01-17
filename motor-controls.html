@@ -12,7 +12,7 @@
   <h1>Motor Controls</h1>
   <nav>
     <a href="index.html">Home</a>
-    <a href="projects.html">Projects</a>
+    <a href="topics.html">Topics</a>
     <a href="updates.html">Updates</a>
     <a href="about.html">About</a>
     <a href="contact.html">Contact</a>
@@ -20,140 +20,132 @@
 </header>
 
 <section class="content-section">
+  <!-- Breadcrumb Navigation -->
+  <div class="breadcrumb">
+    <a href="index.html">Home</a>
+    <span>/</span>
+    <a href="topics.html">Topics</a>
+    <span>/</span>
+    <span class="current">Motor Controls</span>
+  </div>
+
+  <!-- Page Header with Table of Contents -->
   <div class="page-header">
     <h1>Motor Control Systems</h1>
-    <p>From basic concepts to advanced algorithms - powering the electric revolution</p>
+    <p>From fundamentals to deployed EV motor control — theory, implementation, and validation</p>
+  </div>
+
+  <!-- Section Table of Contents -->
+  <div class="toc-box">
+    <h3>Sections in this domain:</h3>
+    <ol>
+      <li><a href="#overview">Overview</a> — What is motor control and why it matters</li>
+      <li><a href="#machines">Machines: PMSM & BLDC</a> — Permanent magnet motor fundamentals</li>
+      <li><a href="#open-loop">Open-Loop Control</a> — V/f startup techniques</li>
+      <li><a href="#sensors">Sensors & Feedback</a> — Position and current sensing</li>
+      <li><a href="#closed-loop">Closed-Loop Control</a> — FOC and advanced algorithms</li>
+      <li><a href="#testing">Testing & Validation</a> — Commissioning and real-world validation</li>
+    </ol>
   </div>
 
   <!-- Overview Section -->
-  <div class="overview-section">
-    <div class="overview-card">
-      <h2>🔄 What is Motor Control?</h2>
-      <p>Motor control refers to the regulation and manipulation of electric motors to achieve desired mechanical output. It encompasses everything from simple on/off switching to sophisticated algorithms that optimize efficiency, torque, and speed across various applications.</p>
-      
-      <p>In electric vehicles, motor control is the "brain" that translates driver inputs into precise motor commands, ensuring smooth acceleration, regenerative braking, and optimal energy efficiency.</p>
-    </div>
-  </div>
-
-  <!-- Industry Applications -->
-  <div class="applications-section">
-    <h2>🏭 Industry Applications</h2>
-    <div class="applications-grid">
-      <div class="application-card">
-        <div class="app-icon">🚗</div>
-        <h3>Electric Vehicles</h3>
-        <p>Traction motor control, regenerative braking, thermal management, and battery integration for optimal range and performance.</p>
-      </div>
-      
-      <div class="application-card">
-        <div class="app-icon">🏭</div>
-        <h3>Industrial Automation</h3>
-        <p>Precise speed and torque control for robotics, CNC machines, conveyor systems, and manufacturing equipment.</p>
-      </div>
-      
-      <div class="application-card">
-        <div class="app-icon">⚡</div>
-        <h3>Renewable Energy</h3>
-        <p>Wind turbine pitch control, solar tracking systems, and grid-tied inverters for maximum energy harvest.</p>
-      </div>
-      
-      <div class="application-card">
-        <div class="app-icon">🏠</div>
-        <h3>Home Appliances</h3>
-        <p>Energy-efficient control in washing machines, air conditioners, and HVAC systems.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Latest Trends -->
-  <div class="trends-section">
-    <h2>🚀 Latest Trends & Technologies</h2>
-    <div class="trends-grid">
-      <div class="trend-card">
-        <h3>AI-Optimized Control</h3>
-        <p>Machine learning algorithms for predictive maintenance, adaptive control, and self-tuning systems.</p>
-      </div>
-      
-      <div class="trend-card">
-        <h3>SiC & GaN Power Devices</h3>
-        <p>Wide-bandgap semiconductors enabling higher switching frequencies and greater efficiency.</p>
-      </div>
-      
-      <div class="trend-card">
-        <h3>Wireless Control</h3>
-        <p>Bluetooth, WiFi, and 5G-enabled motor systems for IoT integration and remote monitoring.</p>
-      </div>
-      
-      <div class="trend-card">
-        <h3>Integrated Motor Drives</h3>
-        <p>All-in-one solutions combining motor, controller, and gearbox for compact, efficient systems.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Why Here -->
-  <div class="why-section">
-    <div class="why-card">
-      <h2>🎯 Why Motor Control Matters Here</h2>
-      <p>Electric vehicles represent the future of transportation, and motor control is at the heart of this revolution. Understanding these systems is crucial for:</p>
-      <ul>
-        <li><strong>Innovation:</strong> Developing next-generation EV powertrains</li>
-        <li><strong>Efficiency:</strong> Maximizing range and performance</li>
-        <li><strong>Reliability:</strong> Ensuring safe, dependable operation</li>
-        <li><strong>Cost Reduction:</strong> Optimizing designs for mass adoption</li>
-      </ul>
-      <p>This knowledge bridge connects theoretical control systems with practical automotive applications.</p>
-    </div>
-  </div>
-
-  <!-- Open Loop V/f Control Section -->
-  <div class="control-method">
-    <h2>🔄 Open Loop V/f Control</h2>
+  <div class="overview-section" id="overview">
+    <h2>🔄 Overview: What is Motor Control?</h2>
+    <p>Motor control refers to the regulation and manipulation of electric motors to achieve desired mechanical output. It encompasses everything from simple on/off switching to sophisticated algorithms that optimize efficiency, torque, and speed across various applications.</p>
     
-    <div class="theory-section">
-      <h3>Theory & Fundamentals</h3>
-      <p>Open-loop control is often used during startup or in low-cost motor drives where position sensors are not available. In PMSM and BLDC motors, the controller generates voltage waveforms that force the rotor to follow a rotating magnetic field.</p>
-      
-      <p>The motor is driven using <strong>voltage-frequency (V/f)</strong> control along with a controlled ramp in electrical angle. The inverter produces phase voltages using techniques like <a href="spwm.html">SPWM</a> to approximate sinusoidal waveforms.</p>
-      
-      <p>Before closed-loop Field Oriented Control (FOC) can take over, open-loop alignment and acceleration ensure the rotor is synchronized with the stator field without stalling or excessive current.</p>
-    </div>
+    <p>In electric vehicles, motor control is the "brain" that translates driver inputs into precise motor commands, ensuring smooth acceleration, regenerative braking, and optimal energy efficiency.</p>
 
-    <div class="implementation-section">
-      <h3>🔧 Implementation & Resources</h3>
-      
-      <div class="resource-grid">
-        <div class="resource-card">
-          <h4>MATLAB/Simulink Model</h4>
-          <p>Interactive simulation demonstrating V/f control principles</p>
-          <a href="https://www.mathworks.com/matlabcentral/profile/authors/YOURID" target="_blank" class="resource-link">
-            View Simulation →
-          </a>
-        </div>
-        
-        <div class="resource-card">
-          <h4>Deployable Code</h4>
-          <p>Ready-to-run firmware for STM32 microcontroller</p>
-          <a href="#" class="resource-link">Download Code →</a>
-        </div>
-        
-        <div class="resource-card">
-          <h4>Hardware Setup</h4>
-          <p>Photos and videos of working V/f control implementation</p>
-          <a href="#" class="resource-link">View Demo →</a>
-        </div>
-      </div>
-    </div>
+    <h3>Why Motor Control Matters</h3>
+    <ul>
+      <li><strong>Efficiency:</strong> Advanced control algorithms maximize energy usage and range</li>
+      <li><strong>Performance:</strong> Smooth torque delivery and responsive acceleration</li>
+      <li><strong>Reliability:</strong> Thermal protection and fault detection</li>
+      <li><strong>Cost:</strong> Optimized designs reduce manufacturing complexity</li>
+    </ul>
+  </div>
 
-    <div class="next-steps">
-      <h3>Ready for More Advanced Control?</h3>
-      <p>Open-loop methods provide a foundation, but closed-loop techniques offer superior performance. Explore:</p>
-      <div class="next-links">
-        <a href="#" class="next-link">Field Oriented Control (FOC)</a>
-        <a href="#" class="next-link">Sensorless Control</a>
-        <a href="#" class="next-link">Direct Torque Control</a>
-      </div>
+  <!-- Placeholder Sections -->
+  <div class="section-placeholder" id="machines">
+    <h2>⚙️ Machines: PMSM & BLDC</h2>
+    <p>🚧 <strong>Under Development</strong></p>
+    <p>This section will cover:</p>
+    <ul>
+      <li>Permanent magnet synchronous motor (PMSM) fundamentals</li>
+      <li>Brushless DC (BLDC) motor principles</li>
+      <li>Mechanical and electrical characteristics</li>
+      <li>Torque-speed curves and power limits</li>
+    </ul>
+  </div>
+
+  <div class="section-placeholder" id="open-loop">
+    <h2>🔄 Open-Loop Control</h2>
+    <p>🚧 <strong>Under Development</strong></p>
+    <p>This section will cover:</p>
+    <ul>
+      <li>Voltage-frequency (V/f) control theory</li>
+      <li>Sinusoidal PWM (SPWM) implementation</li>
+      <li>Startup sequences and alignment</li>
+      <li>MATLAB simulations and validation</li>
+    </ul>
+  </div>
+
+  <div class="section-placeholder" id="sensors">
+    <h2>📡 Sensors & Feedback Systems</h2>
+    <p>🚧 <strong>Under Development</strong></p>
+    <p>This section will cover:</p>
+    <ul>
+      <li>Hall effect position sensors</li>
+      <li>Encoders and resolvers</li>
+      <li>Current sensing (shunt, Hall-effect)</li>
+      <li>Signal conditioning and filtering</li>
+    </ul>
+  </div>
+
+  <div class="section-placeholder" id="closed-loop">
+    <h2>🎯 Closed-Loop Control (FOC & Beyond)</h2>
+    <p>🚧 <strong>Under Development</strong></p>
+    <p>This section will cover:</p>
+    <ul>
+      <li>Field-oriented control (FOC) principles</li>
+      <li>d-q frame transformations</li>
+      <li>Sensorless control algorithms</li>
+      <li>Direct torque control (DTC)</li>
+    </ul>
+  </div>
+
+  <div class="section-placeholder" id="testing">
+    <h2>✅ Testing & Validation</h2>
+    <p>🚧 <strong>Under Development</strong></p>
+    <p>This section will cover:</p>
+    <ul>
+      <li>Dynamometer testing methodologies</li>
+      <li>Real-world EV validation</li>
+      <li>Efficiency mapping and characterization</li>
+      <li>Thermal and EMI compliance testing</li>
+    </ul>
+  </div>
+
+  <!-- Navigation Between Sections -->
+  <div class="section-nav">
+    <h3>Explore More in Motor Controls</h3>
+    <div class="nav-grid">
+      <a href="spwm.html" class="nav-item">
+        <span class="nav-label">← Deep Dive Topic</span>
+        <h3>SPWM (Sinusoidal PWM)</h3>
+        <p>Advanced PWM techniques for smooth motor control</p>
+      </a>
+      
+      <a href="topics.html" class="nav-item">
+        <span class="nav-label">Back to Topics →</span>
+        <h3>All Topics</h3>
+        <p>Browse other domains: Battery, Power Electronics, Embedded</p>
+      </a>
     </div>
+  </div>
+
+  <!-- Last Updated -->
+  <div class="last-updated">
+    <p>Last updated: January 2026 | Status: Under active development</p>
   </div>
 </section>
 
