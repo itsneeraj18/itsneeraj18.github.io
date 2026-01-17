@@ -20,304 +20,58 @@
 </header>
 
 <section class="learning-hub">
-  <div class="page-header">
-    <h1>Explore Topics</h1>
-    <p>A structured knowledge base for EV design, control, and validation</p>
-  </div>
+  <div class="domain-tiles">
 
-  <!-- Domain 0: EV Fundamentals -->
-  <div class="domain-section">
-    <div class="domain-header">
-      <h2>🚗 EV Fundamentals</h2>
-      <p>Core concepts and architecture of electric vehicles</p>
-    </div>
-    
-    <div class="section-blocks">
-      <a href="#" class="section-block">
-        <span class="block-icon">📖</span>
-        <h3>Overview</h3>
-        <p>What makes electric vehicles different - architecture and principles</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">🔋</span>
-        <h3>EV Powertrain Basics</h3>
-        <p>Energy flow, efficiency, and key subsystems in EVs</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">⚡</span>
-        <h3>Voltage Systems</h3>
-        <p>High-voltage architectures, power distribution, and safety</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">📊</span>
-        <h3>Performance Metrics</h3>
-        <p>Range, efficiency, acceleration, and thermal management</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">🔌</span>
-        <h3>Charging Systems</h3>
-        <p>AC/DC charging, connectors, and power levels</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">🔌</span>
-        <h3>Precharge & Inrush Control</h3>
-        <p>High-voltage system startup, capacitor charging sequences</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">📦</span>
-        <h3>Power Distribution (PDB)</h3>
-        <p>Architecture, contactors, relays, protection devices, and integration</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">🛡️</span>
-        <h3>HV Protection & Safety</h3>
-        <p>Fuses, breakers, discharge circuits, isolation devices, compliance</p>
-      </a>
-    </div>
-  </div>
+    <a href="ev-fundamentals.html" class="domain-tile">
+      <div class="tile-icon">🚗</div>
+      <h2>EV Fundamentals</h2>
+      <p>Core concepts, architecture, safety, and testing of electric vehicles</p>
+      <div class="tile-meta">Coming soon</div>
+    </a>
 
-  <!-- Domain 1: Motor Controls -->
-  <div class="domain-section">
-    <div class="domain-header">
-      <h2>⚡ Motor Controls</h2>
-      <p>From fundamentals to deployed EV motor control systems</p>
-    </div>
-    
-    <div class="section-blocks">
-      <a href="motor-controls.html" class="section-block">
-        <span class="block-icon">📖</span>
-        <h3>Overview</h3>
-        <p>What is motor control and why it matters in EVs</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">⚙️</span>
-        <h3>Machines: PMSM & BLDC</h3>
-        <p>Permanent magnet synchronous and brushless DC motor fundamentals</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">🔄</span>
-        <h3>Open-Loop Control</h3>
-        <p>V/f control, SPWM, and startup techniques</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">🎯</span>
-        <h3>Closed-Loop Control</h3>
-        <p>Field-oriented control (FOC) and sensorless operation</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">📡</span>
-        <h3>Sensors & Feedback</h3>
-        <p>Hall sensors, encoders, and position estimation</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">✅</span>
-        <h3>Testing & Validation</h3>
-        <p>Benchmarking, real-world validation, and commissioning</p>
-      </a>
-    </div>
-  </div>
+    <a href="battery-bms.html" class="domain-tile">
+      <div class="tile-icon">🔋</div>
+      <h2>Battery & BMS</h2>
+      <p>Cells, packs, BMS architecture, estimation, and safety standards</p>
+      <div class="tile-meta">Coming soon</div>
+    </a>
 
-  <!-- Domain 2: Battery & BMS -->
-  <div class="domain-section">
-    <div class="domain-header">
-      <h2>🔋 Battery Systems & BMS</h2>
-      <p>Lithium-ion cells, packs, and intelligent management</p>
-    </div>
-    
-    <div class="section-blocks">
-      <a href="#" class="section-block">
-        <span class="block-icon">📖</span>
-        <h3>Overview</h3>
-        <p>Battery technology and role in EV performance</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">🧪</span>
-        <h3>Cell Chemistry</h3>
-        <p>Lithium-ion fundamentals, thermal behavior, aging</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">🔗</span>
-        <h3>Pack Design</h3>
-        <p>Series/parallel configurations, thermal management, safety</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">⚙️</span>
-        <h3>BMS Architecture</h3>
-        <p>Cell balancing, state estimation, fault protection</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">📊</span>
-        <h3>Monitoring & Control</h3>
-        <p>Real-time monitoring, SOC/SOH estimation, optimization</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">✅</span>
-        <h3>Testing & Safety</h3>
-        <p>Safety standards, abuse testing, validation</p>
-      </a>
-    </div>
-  </div>
+    <a href="motor-controls.html" class="domain-tile">
+      <div class="tile-icon">⚙️</div>
+      <h2>Motor Controls</h2>
+      <p>PMSM / BLDC control, open-loop startup, FOC, sensors, and validation</p>
+      <div class="tile-meta">Active</div>
+    </a>
 
-  <!-- Domain 3: Power Electronics -->
-  <div class="domain-section">
-    <div class="domain-header">
-      <h2>⚡ Power Electronics</h2>
-      <p>Inverters, converters, and high-efficiency power conversion</p>
-    </div>
-    
-    <div class="section-blocks">
-      <a href="#" class="section-block">
-        <span class="block-icon">📖</span>
-        <h3>Overview</h3>
-        <p>Power semiconductor devices and conversion principles</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">🔌</span>
-        <h3>Power Semiconductors</h3>
-        <p>MOSFETs, IGBTs, SiC, GaN, and emerging technologies</p>
-      </a>
-      
-      <a href="spwm.html" class="section-block">
-        <span class="block-icon">📝</span>
-        <h3>PWM Techniques</h3>
-        <p>SPWM, SVPWM, and harmonic optimization</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">⚙️</span>
-        <h3>Inverter Design</h3>
-        <p>Three-phase inverters, gate drivers, protection circuits</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">🔋</span>
-        <h3>DC-DC Converters</h3>
-        <p>Buck, boost, and isolated topologies for EV systems</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">✅</span>
-        <h3>Validation & Testing</h3>
-        <p>Efficiency testing, thermal analysis, EMI compliance</p>
-      </a>
-    </div>
-  </div>
+    <a href="power-electronics.html" class="domain-tile">
+      <div class="tile-icon">⚡</div>
+      <h2>Power Electronics</h2>
+      <p>Inverters, converters, switching devices, EMI/EMC, and testing</p>
+      <div class="tile-meta">Coming soon</div>
+    </a>
 
-  <!-- Domain 4: Embedded Systems & Control -->
-  <div class="domain-section">
-    <div class="domain-header">
-      <h2>🖥️ Embedded Systems & Algorithms</h2>
-      <p>Real-time control, algorithms, and microcontroller implementation</p>
-    </div>
-    
-    <div class="section-blocks">
-      <a href="#" class="section-block">
-        <span class="block-icon">📖</span>
-        <h3>Overview</h3>
-        <p>Embedded systems for EV control applications</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">💻</span>
-        <h3>Microcontroller Basics</h3>
-        <p>Architecture, peripherals, development tools</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">⏱️</span>
-        <h3>Real-Time Systems</h3>
-        <p>Interrupts, timers, PWM generation, sensing</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">🎯</span>
-        <h3>Control Algorithms</h3>
-        <p>PID, state machines, FOC, and optimization techniques</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">🔗</span>
-        <h3>Communication Protocols</h3>
-        <p>CAN, SPI, I2C, and wireless integration</p>
-      </a>
-      
-      <a href="#" class="section-block">
-        <span class="block-icon">✅</span>
-        <h3>Deployment & Testing</h3>
-        <p>Firmware validation, hardware-in-loop, commissioning</p>
-      </a>
-    </div>
-  </div>
+    <a href="embedded-systems.html" class="domain-tile">
+      <div class="tile-icon">🖥️</div>
+      <h2>Embedded Systems</h2>
+      <p>Real-time firmware, PWM, sensing, control algorithms, and deployment</p>
+      <div class="tile-meta">Coming soon</div>
+    </a>
 
-  <!-- Domain 5: Renewable Energy Systems -->
-  <div class="domain-section">
-    <div class="domain-header">
-      <h2>🌱 Renewable Energy Systems</h2>
-      <p>Solar PV, grid integration, and sustainable energy conversion</p>
-    </div>
-    
-    <div class="section-blocks">
-      <a href="renewable-energy.html" class="section-block">
-        <span class="block-icon">📖</span>
-        <h3>Overview</h3>
-        <p>Renewable energy fundamentals and system architectures</p>
-      </a>
-      
-      <a href="renewable-energy.html#solar-pv" class="section-block">
-        <span class="block-icon">☀️</span>
-        <h3>Solar PV Systems</h3>
-        <p>Grid-tied, standalone, grid-following, grid-forming inverters</p>
-      </a>
-      
-      <a href="renewable-energy.html#grid-integration" class="section-block">
-        <span class="block-icon">🔗</span>
-        <h3>Grid Integration & EV Infrastructure</h3>
-        <p>V2G, V2B, V2L, and scalability for EV charging</p>
-      </a>
-      
-      <a href="renewable-energy.html#storage" class="section-block">
-        <span class="block-icon">🔋</span>
-        <h3>Energy Storage & Batteries</h3>
-        <p>Battery systems, state-of-charge, second-life EV batteries</p>
-      </a>
-      
-      <a href="renewable-energy.html#microgrid" class="section-block">
-        <span class="block-icon">🏘️</span>
-        <h3>Microgrid Control</h3>
-        <p>Grid-forming control, frequency regulation, islanding</p>
-      </a>
-      
-      <a href="renewable-energy.html#optimization" class="section-block">
-        <span class="block-icon">📊</span>
-        <h3>Optimization & Efficiency</h3>
-        <p>Performance monitoring, predictive control, analytics</p>
-      </a>
-    </div>
-  </div>
+    <a href="renewable-energy.html" class="domain-tile">
+      <div class="tile-icon">🌱</div>
+      <h2>Renewable Energy</h2>
+      <p>Solar PV, grid integration, microgrids, and EV infrastructure</p>
+      <div class="tile-meta">Coming soon</div>
+    </a>
 
-  <!-- Placeholder Message -->
-  <div class="placeholder-message">
-    <p>🚧 <strong>Under Development:</strong> Most sections are being actively developed. More content will be added regularly.</p>
   </div>
 </section>
+
+<footer>
+  <p style="text-align:center; margin:2rem 0; color:#888; font-size:0.9rem;">
+    © 2026 EV & Electronics Lab. An open engineering knowledge base.
+  </p>
+</footer>
 
 </body>
 </html>
