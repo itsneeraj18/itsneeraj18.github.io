@@ -2571,3 +2571,39 @@ footer {
     display: none;
   }
 }
+/* Mobile header offset fix */
+@media (max-width: 768px) {
+  body {
+    padding-top: 90px; /* adjust if header height changes */
+  }
+}
+@media (max-width: 768px) {
+
+  .gallery-item {
+    min-width: 80%;
+    height: 220px;
+  }
+
+  .gallery-item img,
+  .gallery-item video {
+    object-fit: cover;
+  }
+}
+@media (max-width: 768px) {
+  .media-gallery::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 40px;
+    height: 100%;
+    background: linear-gradient(to left, rgba(0,0,0,0.8), transparent);
+    pointer-events: none;
+  }
+}
+@media (max-width: 768px) {
+  .narrative-content p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+}
