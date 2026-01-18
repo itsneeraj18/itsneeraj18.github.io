@@ -472,13 +472,30 @@ a:hover {
   box-shadow: 0 15px 35px rgba(79, 195, 247, 0.3);
 }
 
-/* Responsive Design */
+/* Tablet and larger screens */
+@media (max-width: 1024px) {
+  .hero-stats {
+    gap: 2rem;
+  }
+
+  .link-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .domain-tiles {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+  }
+}
+
+/* Mobile and tablet */
 @media (max-width: 768px) {
   .hero-stats {
     flex-direction: column;
     gap: 2rem;
   }
-  
+
   /* ---------- Mobile layout fix for feature cards ---------- */
   .feature-card {
     flex-direction: column !important;
@@ -498,26 +515,76 @@ a:hover {
 
   .feature-content {
     order: 2;
-    padding: 2rem;
+    padding: 1.5rem;
     text-align: center;
   }
 
   .feature-image {
     max-width: 100%;
     height: auto;
+    border-radius: 12px;
   }
 
   .feature-content h2 {
     font-size: var(--fs-h3);
-    margin-top: 0.5rem;
+    margin-top: 0;
+    margin-bottom: 1rem;
   }
 
   .feature-content p {
-    font-size: var(--fs-body-sm);
+    font-size: var(--fs-body);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
   }
 
   .feature-link {
     align-self: center;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+
+  .link-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .domain-tiles {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* Small screens */
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 1.4rem;
+  }
+
+  header nav a {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
+    min-width: 70px;
+  }
+
+  .hero-content h1 {
+    font-size: clamp(1.8rem, 12vw, 3rem);
+  }
+
+  .gallery-item {
+    flex: 0 0 260px;
+    height: 180px;
+  }
+
+  .timeline-horizontal {
+    padding-left: 1rem;
+  }
+
+  .timeline-entry {
+    padding-left: 1.5rem;
+  }
+
+  .timeline-entry::before {
+    left: 15px;
   }
 }
 
@@ -834,7 +901,7 @@ header nav a.active {
 
 /* Content spacing for fixed header */
 section {
-  padding-top: 140px;
+  
   padding-left: 2rem;
   padding-right: 2rem;
   padding-bottom: 3rem;
@@ -856,10 +923,24 @@ section {
   .contact-grid {
     grid-template-columns: 1fr;
   }
-  
+
   header nav {
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: 0.75rem;
+    padding-bottom: 1.5rem;
+  }
+
+  header nav a {
+    font-size: var(--fs-body-sm);
+    padding: 0.5rem 0.75rem;
+    min-width: 80px;
+    text-align: center;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+  }
+
+  header nav a:hover {
+    background: rgba(79, 195, 247, 0.1);
   }
   
   .timeline::before {
@@ -2223,11 +2304,16 @@ footer {
   font-size: 1.5rem;
 }
 
-/* ========== NEW ABOUT PAGE STYLES ========== */
+/* ========== RESPONSIVE HEADER SPACING ========== */
 
-/* Fix header overlap on About page */
-.about-page-header {
-  margin-top: 160px !important;
+/* Consistent header offset for all pages with fixed header */
+section:first-of-type {
+  margin-top: 120px;
+}
+
+/* Hero section already has full height, so no additional margin needed */
+.hero {
+  margin-top: 0;
 }
 
 /* Media Gallery - Horizontal Scroll with Reveal Animation */
@@ -2274,8 +2360,8 @@ footer {
 }
 
 .gallery-item {
-  flex: 0 0 350px;
-  height: 280px;
+  flex: 0 0 clamp(280px, 35vw, 350px);
+  height: clamp(200px, 25vw, 280px);
   border-radius: 15px;
   overflow: hidden;
   border: 1px solid rgba(79, 195, 247, 0.15);
@@ -2463,9 +2549,6 @@ footer {
 
 /* Responsive Timeline and About Sections */
 @media (max-width: 768px) {
-  .about-page-header {
-    margin-top: 140px !important;
-  }
 
   .timeline-horizontal {
     flex-direction: column;
@@ -2574,7 +2657,7 @@ footer {
 /* Mobile header offset fix */
 @media (max-width: 768px) {
   body {
-    padding-top: 90px; /* adjust if header height changes */
+    padding-top: 100px;
   }
 }
 @media (max-width: 768px) {
