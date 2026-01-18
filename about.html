@@ -52,7 +52,7 @@
     </p>
 
     <p>
-      Currently, I work on Battery Management Systems and e-Drive systems at Daimler Truck India, with a focus on functional testing, HIL validation, and high-voltage lab setup. In parallel, I continue to pursue personal technical projects, including the development of motor control algorithms for BLDC motors, as part of ongoing learning and experimentation.
+      Currently, I work on Battery Management Systems and e-Drive systems at Daimler Truck Innovation Center India, with a focus on functional testing, HIL validation, and high-voltage lab setup. In parallel, I continue to pursue personal technical projects, including the development of motor control algorithms for BLDC motors, as part of ongoing learning and experimentation.
     </p>
 
     <p>
@@ -124,7 +124,7 @@
     </div>
     <div class="timeline-entry">
       <div class="timeline-year">2025–Present</div>
-      <div class="timeline-title">Daimler Truck India</div>
+      <div class="timeline-title">Daimler Truck Innovation Center India</div>
       <div class="timeline-desc">BMS, e-Drive validation & HIL, HV Lab</div>
     </div>
   </div>
@@ -213,6 +213,28 @@
   });
 }
 
+// Visitor Counter
+function initVisitorCounter() {
+    const counterElement = document.getElementById('visitor-count');
+    const pageId = window.location.pathname;
+    const storageKey = `visitor_count_${pageId}`;
+
+    let count = parseInt(localStorage.getItem(storageKey)) || 0;
+    count++;
+    localStorage.setItem(storageKey, count);
+    counterElement.textContent = count;
+}
+
+// Initialize features
+document.addEventListener('DOMContentLoaded', function() {
+    initVisitorCounter();
+});
 </script>
+
+<!-- Visitor Counter -->
+<div class="visitor-counter" id="visitor-counter">
+  👁️ Visitors: <span id="visitor-count">0</span>
+</div>
+
 </body>
 </html>

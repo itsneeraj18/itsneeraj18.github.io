@@ -49,7 +49,7 @@
 
       <div class="contact-card">
         <h3>Send Message</h3>
-        <form action="https://formspree.io/f/YOURFORMID" method="POST" class="contact-form">
+        <form action="mailto:nd18yadav@gmail.com" method="POST" enctype="text/plain" class="contact-form">
           <div class="form-group">
             <input type="text" name="name" placeholder="Your name" required>
           </div>
@@ -64,7 +64,142 @@
       </div>
     </div>
   </div>
+
+  <!-- Visitor Counter -->
+  <div class="visitor-counter" id="visitor-counter">
+    👁️ Visitors: <span id="visitor-count">0</span>
+  </div>
 </section>
+
+<script>
+// Visitor Counter
+function initVisitorCounter() {
+    const counterElement = document.getElementById('visitor-count');
+    const pageId = window.location.pathname;
+    const storageKey = `visitor_count_${pageId}`;
+
+    let count = parseInt(localStorage.getItem(storageKey)) || 0;
+    count++;
+    localStorage.setItem(storageKey, count);
+    counterElement.textContent = count;
+}
+
+// Contact Form Enhancement
+function initContactForm() {
+    const form = document.querySelector('.contact-form');
+
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // For mailto forms, let the browser handle it naturally
+            // Add brief feedback before mail client opens
+            const submitBtn = form.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+
+            if (!form.checkValidity()) {
+                return; // Let browser handle validation
+            }
+
+            submitBtn.textContent = 'Opening email client...';
+            submitBtn.disabled = true;
+
+            // Re-enable button after a delay (in case user cancels)
+            setTimeout(() => {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                alert('Your email client should open with a pre-filled message. If it doesn\'t, please email nd18yadav@gmail.com directly.');
+            }, 3000);
+        });
+
+        // Real-time validation
+        const inputs = form.querySelectorAll('input, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                validateField(this);
+            });
+        });
+
+        function validateField(field) {
+            const value = field.value.trim();
+            let isValid = true;
+            let message = '';
+
+            if (field.hasAttribute('required') && !value) {
+                isValid = false;
+                message = 'This field is required';
+            } else if (field.type === 'email' && value) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(value)) {
+                    isValid = false;
+                    message = 'Please enter a valid email';
+                }
+            }
+
+            field.style.borderColor = isValid ? 'rgba(79, 195, 247, 0.3)' : '#f44336';
+
+            // Remove existing error message
+            const existingError = field.parentNode.querySelector('.error-message');
+            if (existingError) {
+                existingError.remove();
+            }
+
+            // Add error message if needed
+            if (!isValid && message) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.textContent = message;
+                errorDiv.style.color = '#f44336';
+                errorDiv.style.fontSize = 'var(--fs-small)';
+                errorDiv.style.marginTop = '0.25rem';
+                field.parentNode.appendChild(errorDiv);
+            }
+        }
+    }
+}
+
+// Initialize features
+document.addEventListener('DOMContentLoaded', function() {
+    initVisitorCounter();
+    initContactForm();
+});
+</script>
+
+<footer>
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3>Quick Links</h3>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="topics.html">Topics</a></li>
+        <li><a href="updates.html">Updates</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h3>Domains</h3>
+      <ul>
+        <li><a href="motor-controls.html">Motor Controls</a></li>
+        <li><a href="topics.html">Battery & BMS</a></li>
+        <li><a href="topics.html">Power Electronics</a></li>
+        <li><a href="topics.html">Embedded Systems</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h3>Connect</h3>
+      <ul>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="https://www.linkedin.com/in/neerajyadav18" target="_blank">LinkedIn</a></li>
+        <li><a href="mailto:nd18yadav@gmail.com">Email</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; 2026 EV & Electronics Lab. An open engineering knowledge base.</p>
+    <p>Last updated: January 2026</p>
+  </div>
+</footer>
 
 </body>
 </html>

@@ -62,31 +62,70 @@
       </div>
     </div>
 
-    <div class="timeline-item active">
-      <div class="timeline-marker"></div>
-      <div class="timeline-content">
-        <div class="update-card">
-          <div class="update-date">June 2026</div>
-          <h3>Motor Controller Success</h3>
-          <p>Motor controller powered up successfully. First tests passed with stable voltage regulation and current control.</p>
-          <div class="update-status">✅ Completed</div>
-        </div>
-      </div>
-    </div>
+  </div>
 
-    <div class="timeline-item active">
-      <div class="timeline-marker"></div>
-      <div class="timeline-content">
-        <div class="update-card">
-          <div class="update-date">May 2026</div>
-          <h3>Firmware Tuning</h3>
-          <p>Started tuning motor control firmware with PID parameter optimization and sensor calibration.</p>
-          <div class="update-status">🔄 In Progress</div>
-        </div>
-      </div>
-    </div>
+  <!-- Visitor Counter -->
+  <div class="visitor-counter" id="visitor-counter">
+    👁️ Visitors: <span id="visitor-count">0</span>
   </div>
 </section>
+
+<script>
+// Visitor Counter
+function initVisitorCounter() {
+    const counterElement = document.getElementById('visitor-count');
+    const pageId = window.location.pathname;
+    const storageKey = `visitor_count_${pageId}`;
+
+    let count = parseInt(localStorage.getItem(storageKey)) || 0;
+    count++;
+    localStorage.setItem(storageKey, count);
+    counterElement.textContent = count;
+}
+
+// Initialize features
+document.addEventListener('DOMContentLoaded', function() {
+    initVisitorCounter();
+});
+</script>
+
+<footer>
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3>Quick Links</h3>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="topics.html">Topics</a></li>
+        <li><a href="updates.html">Updates</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h3>Domains</h3>
+      <ul>
+        <li><a href="motor-controls.html">Motor Controls</a></li>
+        <li><a href="topics.html">Battery & BMS</a></li>
+        <li><a href="topics.html">Power Electronics</a></li>
+        <li><a href="topics.html">Embedded Systems</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h3>Connect</h3>
+      <ul>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="https://www.linkedin.com/in/neerajyadav18" target="_blank">LinkedIn</a></li>
+        <li><a href="mailto:nd18yadav@gmail.com">Email</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; 2026 EV & Electronics Lab. An open engineering knowledge base.</p>
+    <p>Last updated: January 2026</p>
+  </div>
+</footer>
 
 </body>
 </html>

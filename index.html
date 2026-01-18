@@ -192,5 +192,29 @@
   </div>
 </footer>
 
+<!-- Visitor Counter -->
+<div class="visitor-counter" id="visitor-counter">
+  👁️ Visitors: <span id="visitor-count">0</span>
+</div>
+
+<script>
+// Visitor Counter
+function initVisitorCounter() {
+    const counterElement = document.getElementById('visitor-count');
+    const pageId = window.location.pathname;
+    const storageKey = `visitor_count_${pageId}`;
+
+    let count = parseInt(localStorage.getItem(storageKey)) || 0;
+    count++;
+    localStorage.setItem(storageKey, count);
+    counterElement.textContent = count;
+}
+
+// Initialize features
+document.addEventListener('DOMContentLoaded', function() {
+    initVisitorCounter();
+});
+</script>
+
 </body>
 </html>
