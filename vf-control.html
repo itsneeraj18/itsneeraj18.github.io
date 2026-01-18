@@ -303,7 +303,107 @@
   </div>
 
   <div class="content-section">
-    <h2>9. Applications and Non-Applications</h2>
+    <h2>9. Practical Implementation Considerations</h2>
+
+    <p>
+    Open-loop V/f control may look trivial on paper, but real hardware imposes
+    constraints that must be handled deliberately. Most failures seen during
+    bring-up are not due to theory, but due to poor handling of transitions.
+    </p>
+
+    <h3>Frequency Ramping</h3>
+    <p>
+    The rotor cannot instantaneously follow a step change in electrical frequency.
+    Always apply a controlled frequency ramp to avoid loss of synchronism.
+    </p>
+    <ul>
+      <li>Use linear or S-curve ramps</li>
+      <li>Keep acceleration low during startup</li>
+      <li>Ramp frequency first, then voltage follows via V/f</li>
+    </ul>
+
+    <h3>Voltage Boost at Low Speed</h3>
+    <p>
+    At low frequencies, stator resistance dominates and reduces effective air-gap
+    flux. A small voltage boost is often required to produce usable torque.
+    </p>
+    <ul>
+      <li>Apply fixed or proportional voltage offset below base frequency</li>
+      <li>Avoid excessive boost to prevent overheating</li>
+    </ul>
+
+    <h3>Start / Stop Handling</h3>
+    <p>
+    Abrupt start or stop commands can desynchronize the rotor.
+    </p>
+    <ul>
+      <li>Always ramp down frequency before stopping</li>
+      <li>Avoid zero-frequency dwell with non-zero voltage</li>
+    </ul>
+
+    <h3>Direction Reversal</h3>
+    <p>
+    Instant frequency sign reversal is unsafe in open-loop control.
+    </p>
+    <ul>
+      <li>Ramp frequency to zero</li>
+      <li>Allow rotor to settle</li>
+      <li>Ramp up in opposite direction</li>
+    </ul>
+
+    <p>
+    These measures do not guarantee stability — they merely reduce the likelihood
+    of losing synchronism.
+    </p>
+  </div>
+
+  <div class="content-section">
+    <h2>10. Common Open-Loop V/f Implementation Methods</h2>
+
+    <h3>Method 1: Direct Sine Calculation (math.h)</h3>
+    <p>
+    The simplest implementation computes sine values in real time using standard
+    math functions.
+    </p>
+    <ul>
+      <li>Easy to understand and implement</li>
+      <li>High CPU load on low-cost MCUs</li>
+      <li>Floating-point dependency</li>
+    </ul>
+    <p>
+    Best suited for simulations, high-end controllers, or early bring-up.
+    </p>
+
+    <h3>Method 2: Sine Lookup Table (LUT)</h3>
+    <p>
+    A precomputed sine table stored in memory is indexed using a phase accumulator.
+    </p>
+    <ul>
+      <li>Low computational overhead</li>
+      <li>Deterministic timing</li>
+      <li>Widely used in embedded systems</li>
+    </ul>
+    <p>
+    Table resolution trades memory for waveform quality.
+    </p>
+
+    <h3>Method 3: Hall-Assisted Open-Loop (Hybrid)</h3>
+    <p>
+    In some systems, Hall sensor transitions are used only to align phase advance
+    or duty-cycle selection while still operating without current control.
+    </p>
+    <ul>
+      <li>Improves robustness during startup</li>
+      <li>Reduces risk of reverse rotation</li>
+      <li>Still not closed-loop torque control</li>
+    </ul>
+    <p>
+    This approach sits between pure open-loop and true closed-loop control.
+    </p>
+  </div>
+
+  <div class="content-section">
+    <h2>11. Applications and Non-Applications</h2>
 
     <div class="applications-grid">
       <div class="applications">
@@ -329,13 +429,22 @@
   </div>
 
   <div class="content-section">
-    <h2>10. Key Takeaways</h2>
+    <h2>12. Key Takeaways</h2>
     <ul class="key-takeaways-list">
       <li>Open-loop V/f control is simple, robust, and easy to implement</li>
       <li>It works only under predictable, light-load conditions</li>
       <li>No feedback means no correction under disturbances</li>
       <li>Best used as a starting point, not a final solution</li>
     </ul>
+
+    <div class="engineer-note">
+      <h3>Engineering Warning</h3>
+      <p>
+      If open-loop V/f control works only when the load is light and predictable,
+      it is not "working well" — it is simply operating within its assumptions.
+      Any apparent robustness disappears the moment those assumptions break.
+      </p>
+    </div>
 
     <div class="engineer-note">
       <h3>Engineer's Note</h3>

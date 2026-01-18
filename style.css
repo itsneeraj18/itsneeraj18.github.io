@@ -3168,6 +3168,17 @@ footer {
   margin: 0;
 }
 
+/* Engineering Warning - more prominent styling */
+.engineer-note:first-of-type {
+  background: linear-gradient(135deg, rgba(244, 67, 54, 0.1) 0%, rgba(244, 67, 54, 0.05) 100%);
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  border-left: 4px solid #f44336;
+}
+
+.engineer-note:first-of-type h3 {
+  color: #f44336;
+}
+
 /* Mobile responsive for streamlined V/f page */
 @media (max-width: 768px) {
   .content-intro,
