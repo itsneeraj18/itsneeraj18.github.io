@@ -2,176 +2,217 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>About Me</title>
+<title>About — Neeraj Yadav</title>
 <link rel="stylesheet" href="style.css">
-
-<style>
-body {
-  margin: 0;
-  background: black;
-  height: 300vh; /* creates scroll space */
-  overflow-x: hidden;
-}
-
-.scene {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.slide {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-position: center;
-  opacity: 0;
-  transition: opacity 0.3s linear;
-}
-
-.text {
-  position: absolute;
-  bottom: 15%;
-  width: 100%;
-  text-align: center;
-  color: white;
-  font-size: 2em;
-  background: rgba(0,0,0,0.5);
-  padding: 20px;
-}
-
-/* Floating navigation bar */
-
-.topnav {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  padding: 12px;
-  text-align: center;
-  background: rgba(0,0,0,0.6);
-  z-index: 1000;
-}
-
-.topnav a {
-  color: #4fc3f7;
-  margin: 0 12px;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.topnav a:hover {
-  text-decoration: underline;
-}
-</style>
-
 </head>
 
 <body>
 
-  <header>
-    <h1>About Me</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="topics.html">Topics</a>
-      <a href="updates.html">Updates</a>
-      <a href="about.html" class="active">About</a>
-      <a href="contact.html">Contact</a>
-    </nav>
-  </header>
- 
-  <section class="about-hero">
-    <div class="hero-content">
-      <h1>My Journey in Technology</h1>
-      <p>From curious kid to EV engineer</p>
+<header>
+  <h1>About</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="topics.html">Topics</a>
+    <a href="updates.html">Updates</a>
+    <a href="about.html" class="active">About</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
+
+<!-- Section 1: Page Header -->
+<section class="page-header about-page-header">
+  <h1>Neeraj Yadav</h1>
+  <p>Power Electronics Engineer | EV Systems & Control Specialist</p>
+</section>
+
+<!-- Section 2: Main Narrative (Streamlined) -->
+<section class="narrative-section">
+  <div class="narrative-content">
+    <p>
+      I am an engineer with a background in power electronics and electric drive systems, working primarily on high-voltage EV applications. My work spans power electronics hardware, embedded software, and system-level integration, with a strong focus on traction inverters for medium- and heavy-duty electric vehicles.
+    </p>
+  </div>
+</section>
+
+
+
+<!-- Section 4: Remaining Narrative -->
+<section class="narrative-section narrative-continued">
+  <div class="narrative-content">
+    <p>
+      My interest in power electronics began during my Master's project, where I designed and developed a 3.5 kVA grid-tied photovoltaic inverter, integrating both hardware and software. This work included the implementation of grid-synchronization algorithms such as SOGI-FLL, along with various PWM techniques for inverter control.
+    </p>
+
+    <p>
+      At TRESA Motors, I was involved in the design and development of an 800 V, 150 kW traction inverter, contributing to system-level requirement definition while considering functional safety aspects. My responsibilities included testing and validation of IGBT- and SiC-based power modules (such as SkiM and HybridPACK), as well as working with gate driver platforms including SKYPER 42LJR and Infineon 1EDI3051AS.
+    </p>
+
+    <p>
+      In addition to custom inverter development, I have worked extensively on testing, validation, and integration of off-the-shelf high-voltage EV components in commercial electric trucks. This includes systems such as DC–DC converters, traction inverters, air brake compressors, steering pumps, vehicle control units, and battery management systems. Hands-on work at this level has provided a strong understanding of EV architecture, including power flow, torque characteristics, derating strategies, and protection mechanisms.
+    </p>
+
+    <p>
+      Currently, I work on Battery Management Systems and e-Drive systems at Daimler Truck India, with a focus on functional testing, HIL validation, and high-voltage lab setup. In parallel, I continue to pursue personal technical projects, including the development of motor control algorithms for BLDC motors, as part of ongoing learning and experimentation.
+    </p>
+
+    <p>
+      I aim to continue learning and working on cutting-edge technologies that contribute to efficient, safe, and sustainable electric mobility.
+    </p>
+  </div>
+</section>
+
+<!-- Media Gallery Section -->
+<section class="media-gallery">
+  <div class="gallery-scroll">
+    <div class="gallery-item" data-gallery data-video>
+      <video width="100%" height="100%" style="object-fit: cover;" class="gallery-video" onclick="playVideoOnce(this)">
+        <source src="axm1.mp4" type="video/mp4">
+      </video>
     </div>
-  </section>
-  
-  <section class="about-content">
-    <div class="timeline">
-      <div class="timeline-item">
-        <div class="timeline-marker"></div>
-        <div class="timeline-content">
-          <div class="milestone-card">
-            <h3>Childhood Curiosity</h3>
-            <p>Breaking things apart to understand how they work - the foundation of my engineering journey.</p>
-            <div class="image-container">
-              <img src="child.jpg" alt="Curious child exploring electronics" class="milestone-image">
-            </div>
-          </div>
-        </div>
-      </div>
-  
-      <div class="timeline-item">
-        <div class="timeline-marker"></div>
-        <div class="timeline-content">
-          <div class="milestone-card">
-            <h3>Engineering Student</h3>
-            <p>Electronics Engineering degree, diving deep into circuits, machines, and embedded systems.</p>
-            <div class="image-container">
-              <img src="college.jpg" alt="College engineering studies" class="milestone-image">
-            </div>
-          </div>
-        </div>
-      </div>
-  
-      <div class="timeline-item">
-        <div class="timeline-marker"></div>
-        <div class="timeline-content">
-          <div class="milestone-card">
-            <h3>Masters in Power Electronics</h3>
-            <p>Specialized in motor control, EV technology, and advanced power systems.</p>
-            <div class="image-container">
-              <img src="masters.jpg" alt="Masters degree in power electronics" class="milestone-image">
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="gallery-item" data-gallery>
+      <img src="SOGI2.jpg" alt="PWM techniques">
     </div>
-  </section>
-  
-  <section class="about-website">
-    <div class="container">
-      <div class="website-header">
-        <h2>About This Website</h2>
-        <p class="subtitle">Building a community for EV and embedded systems enthusiasts</p>
-      </div>
-      
-      <div class="website-content">
-        <div class="mission-card">
-          <div class="mission-icon">🚀</div>
-          <h3>Our Mission</h3>
-          <p>To create an accessible platform where like-minded people can post, discuss, and stay updated with the latest technology in electric vehicles, embedded systems, and power electronics.</p>
-        </div>
-        
-        <div class="mission-card">
-          <div class="mission-icon">📚</div>
-          <h3>Filling the Knowledge Gaps</h3>
-          <p>One major focus is covering the very basic things, understandings, and concepts that are most often skipped during regular teaching or discussions and often remain unanswered. From fundamental electronics to advanced control theory, we break down complex topics into digestible explanations.</p>
-        </div>
-        
-        <div class="mission-card">
-          <div class="mission-icon">🤝</div>
-          <h3>Community Driven</h3>
-          <p>From personal experience, I'll be updating content regularly and encourage others to suggest topics, contribute tutorials, and participate in meaningful discussions. This platform grows stronger with community involvement.</p>
-        </div>
-        
-        <div class="mission-card">
-          <div class="mission-icon">🔬</div>
-          <h3>Practical Focus</h3>
-          <p>Every concept is explained with real-world applications, practical examples, and hands-on projects. Whether you're a beginner or experienced engineer, you'll find valuable insights and working code examples.</p>
-        </div>
-      </div>
-      
-      <div class="cta-section">
-        <h3>Join the Community</h3>
-        <p>Ready to learn, share, and contribute to the future of EV technology?</p>
-        <div class="cta-buttons">
-          <a href="topics.html" class="cta-button primary">Explore Topics</a>
-          <a href="contact.html" class="cta-button secondary">Get Involved</a>
-        </div>
-      </div>
+    <div class="gallery-item" data-gallery>
+      <img src="gdr1.jpeg" alt="Gate driver development">
     </div>
-  </section>
+    <div class="gallery-item" data-gallery>
+      <img src="inv1.jpeg" alt="800V traction inverter">
+    </div>
+    <div class="gallery-item" data-gallery>
+      <img src="SK_GDR.jpeg" alt="SKYPER gate driver">
+    </div>
+    <div class="gallery-item" data-gallery data-video>
+      <video width="100%" height="100%" style="object-fit: cover;" class="gallery-video" onclick="playVideoOnce(this)">
+        <source src="res1.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="gallery-item" data-gallery>
+      <img src="theta1.jpeg" alt="Control system">
+    </div>
+    <div class="gallery-item" data-gallery>
+      <img src="gdr3.jpeg" alt="Gate driver variant">
+    </div>
+  </div>
+  <button class="gallery-nav left" onclick="scrollGallery(-1)">‹</button>
+<button class="gallery-nav right" onclick="scrollGallery(1)">›</button>
+
+</section>
+
+<!-- Section 4: Career Timeline -->
+<section class="career-timeline">
+  <h2>Education & Career</h2>
+  <div class="timeline-horizontal">
+    <div class="timeline-entry">
+      <div class="timeline-year">2014–18</div>
+      <div class="timeline-title">Bachelor's Degree</div>
+      <div class="timeline-desc">Electrical Engineering</div>
+    </div>
+    <div class="timeline-entry">
+      <div class="timeline-year">2019–21</div>
+      <div class="timeline-title">Master's Degree</div>
+      <div class="timeline-desc">Power Electronics & Drives</div>
+    </div>
+    <div class="timeline-entry">
+      <div class="timeline-year">2021–22</div>
+      <div class="timeline-title">L&T</div>
+      <div class="timeline-desc">Exploration</div>
+    </div>
+    <div class="timeline-entry">
+      <div class="timeline-year">2022–25</div>
+      <div class="timeline-title">TRESA Motors</div>
+      <div class="timeline-desc">High-voltage traction inverter development, EV Journey</div>
+    </div>
+    <div class="timeline-entry">
+      <div class="timeline-year">2025–Present</div>
+      <div class="timeline-title">Daimler Truck India</div>
+      <div class="timeline-desc">BMS, e-Drive validation & HIL, HV Lab</div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3>Quick Links</h3>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="topics.html">Topics</a></li>
+        <li><a href="updates.html">Updates</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    
+    <div class="footer-section">
+      <h3>Domains</h3>
+      <ul>
+        <li><a href="ev-fundamentals.html">EV Fundamentals</a></li>
+        <li><a href="battery-bms.html">Battery & BMS</a></li>
+        <li><a href="motor-controls.html">Motor Controls</a></li>
+        <li><a href="power-electronics.html">Power Electronics</a></li>
+      </ul>
+    </div>
+    
+    <div class="footer-section">
+      <h3>Connect</h3>
+      <ul>
+        <li><a href="contact.html">Get in Touch</a></li>
+        <li><a href="#">GitHub</a></li>
+        <li><a href="#">LinkedIn</a></li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="footer-bottom">
+    <p>© 2026 EV & Electronics Lab. An open engineering knowledge base.</p>
+  </div>
+</footer>
+
+<script>
+  // Function to play video only once per click
+  function playVideoOnce(videoElement) {
+    if (videoElement.paused) {
+      videoElement.currentTime = 0;
+      videoElement.play();
+    }
+  }
+
+  // Prevent videos from looping
+  document.querySelectorAll('.gallery-video').forEach(video => {
+    video.addEventListener('ended', function() {
+      this.pause();
+      this.currentTime = 0;
+    });
+  });
+
+  // Intersection Observer for scroll-reveal gallery animation
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, index) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('reveal');
+        }, index * 100);
+      }
+    });
+  }, {
+    threshold: 0.3,
+    rootMargin: '0px 0px -100px 0px'
+  });
+
+  // Observe all gallery items
+  document.querySelectorAll('[data-gallery]').forEach(item => {
+    observer.observe(item);
+  });
+
+  function scrollGallery(direction) {
+  const gallery = document.querySelector('.gallery-scroll');
+  const scrollAmount = gallery.clientWidth * 0.7;
+  gallery.scrollBy({
+    left: direction * scrollAmount,
+    behavior: 'smooth'
+  });
+}
+
+</script>
+</body>
 </html>
