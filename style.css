@@ -479,21 +479,45 @@ a:hover {
     gap: 2rem;
   }
   
+  /* ---------- Mobile layout fix for feature cards ---------- */
   .feature-card {
-    flex-direction: column;
+    flex-direction: column !important;
+    text-align: center;
     min-height: auto;
   }
-  
+
   .feature-card:nth-child(even) {
-    flex-direction: column;
+    flex-direction: column !important;
   }
-  
+
+  .feature-visual {
+    order: 1;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
   .feature-content {
+    order: 2;
     padding: 2rem;
+    text-align: center;
   }
-  
+
+  .feature-image {
+    max-width: 100%;
+    height: auto;
+  }
+
   .feature-content h2 {
-    font-size: 2rem;
+    font-size: var(--fs-h3);
+    margin-top: 0.5rem;
+  }
+
+  .feature-content p {
+    font-size: var(--fs-body-sm);
+  }
+
+  .feature-link {
+    align-self: center;
   }
 }
 
