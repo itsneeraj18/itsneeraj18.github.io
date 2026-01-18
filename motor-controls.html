@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Motor Controls</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Motor Control Fundamentals</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -20,7 +21,8 @@
 </header>
 
 <section class="content-section">
-  <!-- Breadcrumb Navigation -->
+
+  <!-- Breadcrumb -->
   <div class="breadcrumb">
     <a href="index.html">Home</a>
     <span>/</span>
@@ -29,125 +31,375 @@
     <span class="current">Motor Controls</span>
   </div>
 
-  <!-- Page Header with Table of Contents -->
+  <!-- Page Header -->
   <div class="page-header">
-    <h1>Motor Control Systems</h1>
-    <p>From fundamentals to deployed EV motor control — theory, implementation, and validation</p>
+    <h1>Motor Control Fundamentals</h1>
+    <p>
+      Understanding what we control, why we control it, and how control strategies emerge
+      from application requirements.
+    </p>
   </div>
 
-  <!-- Section Table of Contents -->
-  <div class="toc-box">
-    <h3>Sections in this domain:</h3>
+  <!-- ===================== 1. WHAT IS MOTOR CONTROL ===================== -->
+  <section class="concept-section" id="overview">
+    <h2>1. What Is Motor Control?</h2>
+
+    <p>
+      Before discussing algorithms, transformations, or PWM techniques, motor control starts
+      with a simple but critical question:
+    </p>
+
+    <blockquote>
+      <strong>What does the application want from the motor at this moment — torque or speed?</strong>
+    </blockquote>
+
+    <p>
+      This decision defines the entire control strategy. Whether you are working on electric
+      vehicles, industrial drives, robotics, or HVAC systems, motor control exists to enforce
+      a desired <em>mechanical behavior</em> at the shaft.
+    </p>
+
+    <p>
+      Speed and torque are not independent choices — they are linked by the mechanical load.
+      Control systems decide which variable must be regulated tightly and which can be a
+      consequence of physics.
+    </p>
+  </section>
+
+  <!-- ===================== 2. TORQUE VS SPEED ===================== -->
+  <section class="concept-section">
+    <h2>2. Torque vs Speed — Application Perspective</h2>
+
+    <p>
+      Most real-world applications can be categorized by whether they primarily demand
+      <strong>torque control</strong> or <strong>speed control</strong>.
+    </p>
+
+    <ul>
+      <li>
+        <strong>Electric Vehicles:</strong> Driver pedal commands torque. Speed is a result of
+        vehicle dynamics and road load.
+      </li>
+      <li>
+        <strong>Conveyors & Cranes:</strong> Torque control ensures smooth motion under varying load.
+      </li>
+      <li>
+        <strong>CNC Spindles:</strong> Speed must remain constant despite cutting forces.
+      </li>
+      <li>
+        <strong>Fans & Pumps:</strong> Speed control dominates for flow and efficiency regulation.
+      </li>
+    </ul>
+
+    <p>
+      In practice, <strong>torque control dominates dynamic systems</strong>, while speed control
+      is used when steady-state behavior must be enforced.
+    </p>
+
+    <p>
+      This is why EV traction drives are fundamentally torque-controlled systems with
+      speed supervision layered on top.
+    </p>
+  </section>
+
+  <!-- ===================== 3. MOTOR AS MOTOR & GENERATOR ===================== -->
+  <section class="concept-section">
+    <h2>3. Electric Machines: Motor and Generator Are the Same Device</h2>
+
+    <p>
+      An electric machine is inherently reversible.
+    </p>
+
+    <ul>
+      <li>
+        Rotate the shaft mechanically → voltage appears at the terminals (generator action).
+      </li>
+      <li>
+        Apply voltage greater than back-EMF → torque is produced (motor action).
+      </li>
+      <li>
+        Allow back-EMF to dominate → energy flows back to the supply (regeneration).
+      </li>
+    </ul>
+
+    <p>
+      This reversibility is not a special feature — it is a direct consequence of
+      electromagnetic laws. Regenerative braking in EVs and energy recovery in industrial
+      systems rely entirely on this principle.
+    </p>
+
+    <p>
+      From a control perspective, the inverter’s job is always the same:
+      <strong>apply the correct voltage vector to overcome or cooperate with back-EMF</strong>.
+    </p>
+  </section>
+
+  <!-- ===================== 4. WHAT WE ACTUALLY CONTROL ===================== -->
+  <section class="concept-section">
+    <h2>4. What Can Actually Be Controlled?</h2>
+
+    <p>
+      Although applications talk about speed and torque, an AC motor fundamentally allows
+      independent control of only two electromagnetic quantities:
+    </p>
+
     <ol>
-      <li><a href="#overview">Overview</a> — What is motor control and why it matters</li>
-      <li><a href="#machines">Machines: PMSM & BLDC</a> — Permanent magnet motor fundamentals</li>
-      <li><a href="#open-loop">Open-Loop Control</a> — V/f startup techniques</li>
-      <li><a href="#sensors">Sensors & Feedback</a> — Position and current sensing</li>
-      <li><a href="#closed-loop">Closed-Loop Control</a> — FOC and advanced algorithms</li>
-      <li><a href="#testing">Testing & Validation</a> — Commissioning and real-world validation</li>
+      <li>
+        <strong>Flux</strong> — establishes the magnetic field in the machine
+      </li>
+      <li>
+        <strong>Torque-producing current</strong> — interacts with flux to generate torque
+      </li>
     </ol>
-  </div>
 
-  <!-- Overview Section -->
-  <div class="overview-section" id="overview">
-    <h2>🔄 Overview: What is Motor Control?</h2>
-    <p>Motor control refers to the regulation and manipulation of electric motors to achieve desired mechanical output. It encompasses everything from simple on/off switching to sophisticated algorithms that optimize efficiency, torque, and speed across various applications.</p>
-    
-    <p>In electric vehicles, motor control is the "brain" that translates driver inputs into precise motor commands, ensuring smooth acceleration, regenerative braking, and optimal energy efficiency.</p>
+    <p>
+      Speed is not directly controlled. It is the mechanical outcome of torque balance between
+      the motor and the load.
+    </p>
 
-    <h3>Why Motor Control Matters</h3>
+    <p>
+      Modern control techniques transform three-phase currents into a rotating reference
+      frame so that flux and torque behave like independent DC quantities. This is not new
+      physics — it is a structured way of applying well-understood principles.
+    </p>
+  </section>
+
+  <!-- ===================== 5. TORQUE–SPEED CHARACTERISTICS ===================== -->
+  <section class="concept-section">
+    <h2>5. Torque–Speed Characteristics Define Everything</h2>
+
+    <p>
+      Every motor-driven system operates at the intersection of:
+    </p>
+
     <ul>
-      <li><strong>Efficiency:</strong> Advanced control algorithms maximize energy usage and range</li>
-      <li><strong>Performance:</strong> Smooth torque delivery and responsive acceleration</li>
-      <li><strong>Reliability:</strong> Thermal protection and fault detection</li>
-      <li><strong>Cost:</strong> Optimized designs reduce manufacturing complexity</li>
+      <li>The motor’s torque–speed capability</li>
+      <li>The load’s torque demand</li>
+      <li>The controller’s ability to enforce limits</li>
     </ul>
-  </div>
 
-  <!-- Placeholder Sections -->
-  <div class="section-placeholder" id="machines">
-    <h2>⚙️ Machines: PMSM & BLDC</h2>
-    <p>🚧 <strong>Under Development</strong></p>
-    <p>This section will cover:</p>
+    <p>
+      Understanding constant torque regions, constant power regions, and field-weakening
+      is essential for EVs, industrial drives, and high-speed machines.
+    </p>
+
+    <p>
+      Control strategies exist to ensure the machine follows this envelope safely,
+      efficiently, and repeatably.
+    </p>
+  </section>
+
+  <!-- ===================== 6. WHERE CONTROL STRATEGIES FIT ===================== -->
+  <section class="concept-section">
+    <h2>6. Where Control Strategies Fit</h2>
+
+    <p>
+      With the fundamentals in place, different motor control strategies can be understood
+      as tools with specific strengths and limitations:
+    </p>
+
     <ul>
-      <li>Permanent magnet synchronous motor (PMSM) fundamentals</li>
-      <li>Brushless DC (BLDC) motor principles</li>
-      <li>Mechanical and electrical characteristics</li>
-      <li>Torque-speed curves and power limits</li>
+      <li>
+        <strong>Open-Loop V/f Control:</strong> Simple scalar control for motor bring-up and
+        light-load applications.
+      </li>
+      <li>
+        <strong>Field-Oriented Control (FOC):</strong> Precise torque control across the full
+        speed range — dominant in EV traction systems.
+      </li>
+      <li>
+        <strong>Advanced Extensions:</strong> MTPA, flux weakening, sensorless observers,
+        and efficiency optimization.
+      </li>
     </ul>
-  </div>
 
-  <div class="section-placeholder" id="open-loop">
-    <h2>🔄 Open-Loop Control</h2>
-    <p>🚧 <strong>Under Development</strong></p>
-    <p>This section will cover:</p>
-    <ul>
-      <li>Voltage-frequency (V/f) control theory</li>
-      <li>Sinusoidal PWM (SPWM) implementation</li>
-      <li>Startup sequences and alignment</li>
-      <li>MATLAB simulations and validation</li>
-    </ul>
-  </div>
+    <p>
+      Each method exists because a specific application demands it — not because the
+      mathematics is elegant.
+    </p>
+  </section>
 
-  <div class="section-placeholder" id="sensors">
-    <h2>📡 Sensors & Feedback Systems</h2>
-    <p>🚧 <strong>Under Development</strong></p>
-    <p>This section will cover:</p>
-    <ul>
-      <li>Hall effect position sensors</li>
-      <li>Encoders and resolvers</li>
-      <li>Current sensing (shunt, Hall-effect)</li>
-      <li>Signal conditioning and filtering</li>
-    </ul>
-  </div>
+  <!-- ===================== TOPIC LINKS ===================== -->
+  <section class="learning-module">
+    <div class="module-header">
+      <h2>Motor Control Topics</h2>
+      <p>Explore individual techniques and implementations</p>
+    </div>
 
-  <div class="section-placeholder" id="closed-loop">
-    <h2>🎯 Closed-Loop Control (FOC & Beyond)</h2>
-    <p>🚧 <strong>Under Development</strong></p>
-    <p>This section will cover:</p>
-    <ul>
-      <li>Field-oriented control (FOC) principles</li>
-      <li>d-q frame transformations</li>
-      <li>Sensorless control algorithms</li>
-      <li>Direct torque control (DTC)</li>
-    </ul>
-  </div>
-
-  <div class="section-placeholder" id="testing">
-    <h2>✅ Testing & Validation</h2>
-    <p>🚧 <strong>Under Development</strong></p>
-    <p>This section will cover:</p>
-    <ul>
-      <li>Dynamometer testing methodologies</li>
-      <li>Real-world EV validation</li>
-      <li>Efficiency mapping and characterization</li>
-      <li>Thermal and EMI compliance testing</li>
-    </ul>
-  </div>
-
-  <!-- Navigation Between Sections -->
-  <div class="section-nav">
-    <h3>Explore More in Motor Controls</h3>
-    <div class="nav-grid">
-      <a href="spwm.html" class="nav-item">
-        <span class="nav-label">← Deep Dive Topic</span>
-        <h3>SPWM (Sinusoidal PWM)</h3>
-        <p>Advanced PWM techniques for smooth motor control</p>
+    <div class="topic-grid">
+      <a href="vf-control.html" class="topic-card">
+        <h3>Open-Loop V/f Control</h3>
+        <p>Scalar control for simple and light-load applications</p>
+        <div class="tech-tags">
+          <span class="tag">Scalar</span>
+          <span class="tag">Fundamentals</span>
+        </div>
       </a>
-      
-      <a href="topics.html" class="nav-item">
-        <span class="nav-label">All Topics →</span>
-        <h3>Explore Other Domains</h3>
-        <p>Battery, Power Electronics, Embedded Systems, and more</p>
+
+      <a href="foc.html" class="topic-card">
+        <h3>Field-Oriented Control (FOC)</h3>
+        <p>High-performance torque control for EVs and industrial drives</p>
+        <div class="tech-tags">
+          <span class="tag">Vector Control</span>
+          <span class="tag">EV</span>
+        </div>
       </a>
+
+      <a href="spwm.html" class="topic-card">
+        <h3>SPWM & Modulation</h3>
+        <p>Generating inverter switching signals</p>
+        <div class="tech-tags">
+          <span class="tag">PWM</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Motor Control Topics Overview -->
+  <div class="topics-overview-section">
+    <h2>Motor Control Topics Overview</h2>
+    <p class="overview-intro">Explore our comprehensive motor control learning path, from fundamental concepts to advanced implementation techniques.</p>
+
+    <div class="topics-roadmap">
+      <!-- Fundamentals -->
+      <div class="roadmap-phase">
+        <h3>🎯 Fundamentals</h3>
+        <div class="phase-topics">
+          <div class="topic-item available">
+            <div class="topic-icon">🔄</div>
+            <div class="topic-content">
+              <h4><a href="#overview">What is Motor Control?</a></h4>
+              <p>Core concepts, control strategies, and application requirements</p>
+              <span class="topic-status available">Available</span>
+            </div>
+          </div>
+
+          <div class="topic-item available">
+            <div class="topic-icon">⚙️</div>
+            <div class="topic-content">
+              <h4><a href="#machines">PMSM & BLDC Machines</a></h4>
+              <p>Permanent magnet synchronous motors, characteristics, and fundamentals</p>
+              <span class="topic-status coming-soon">Coming Soon</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Control Techniques -->
+      <div class="roadmap-phase">
+        <h3>🎛️ Control Techniques</h3>
+        <div class="phase-topics">
+          <div class="topic-item available">
+            <div class="topic-icon">🔄</div>
+            <div class="topic-content">
+              <h4><a href="vf-control.html">Open-Loop V/f Control</a></h4>
+              <p>Scalar control for motor bring-up, light loads, and cost-sensitive applications</p>
+              <span class="topic-status available">Available</span>
+            </div>
+          </div>
+
+          <div class="topic-item available">
+            <div class="topic-icon">📡</div>
+            <div class="topic-content">
+              <h4><a href="#sensors">Sensors & Feedback</a></h4>
+              <p>Position sensors, current measurement, and feedback systems</p>
+              <span class="topic-status coming-soon">Coming Soon</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advanced Control -->
+      <div class="roadmap-phase">
+        <h3>🚀 Advanced Control</h3>
+        <div class="phase-topics">
+          <div class="topic-item available">
+            <div class="topic-icon">🎯</div>
+            <div class="topic-content">
+              <h4><a href="#closed-loop">Field-Oriented Control (FOC)</a></h4>
+              <p>Vector control implementation with MATLAB simulation and real hardware</p>
+              <span class="topic-status available">Available</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Validation & Testing -->
+      <div class="roadmap-phase">
+        <h3>✅ Validation & Testing</h3>
+        <div class="phase-topics">
+          <div class="topic-item available">
+            <div class="topic-icon">🔬</div>
+            <div class="topic-content">
+              <h4><a href="#testing">Testing & Validation</a></h4>
+              <p>Dynamometer testing, efficiency mapping, and real-world validation</p>
+              <span class="topic-status coming-soon">Coming Soon</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Learning Path -->
+    <div class="learning-path">
+      <h3>Recommended Learning Path</h3>
+      <div class="path-steps">
+        <div class="path-step">
+          <span class="step-number">1</span>
+          <span class="step-title">Start Here</span>
+          <p>Understand motor control fundamentals</p>
+        </div>
+        <div class="path-arrow">→</div>
+        <div class="path-step">
+          <span class="step-number">2</span>
+          <span class="step-title">Build Foundation</span>
+          <p>Learn machine characteristics</p>
+        </div>
+        <div class="path-arrow">→</div>
+        <div class="path-step">
+          <span class="step-number">3</span>
+          <span class="step-title">Master Control</span>
+          <p>V/f and FOC techniques</p>
+        </div>
+        <div class="path-arrow">→</div>
+        <div class="path-step">
+          <span class="step-number">4</span>
+          <span class="step-title">Go Advanced</span>
+          <p>Sensors and validation</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Access Links -->
+    <div class="quick-access">
+      <h3>Quick Access</h3>
+      <div class="quick-access-grid">
+        <a href="vf-control.html" class="access-link">
+          <span class="link-icon">🔄</span>
+          <span class="link-text">Try V/f Control Demo</span>
+        </a>
+        <a href="#closed-loop" class="access-link">
+          <span class="link-icon">📊</span>
+          <span class="link-text">View FOC Simulation</span>
+        </a>
+        <a href="topics.html" class="access-link">
+          <span class="link-icon">📚</span>
+          <span class="link-text">Explore All Domains</span>
+        </a>
+        <a href="index.html" class="access-link">
+          <span class="link-icon">🏠</span>
+          <span class="link-text">Back to Home</span>
+        </a>
+      </div>
     </div>
   </div>
 
-  <!-- Navigation Footer -->
+  <!-- Footer Navigation -->
   <section class="nav-grid">
     <a href="topics.html" class="nav-button">← All Topics</a>
     <a href="index.html" class="nav-button">Home →</a>
   </section>
+
 </section>
 
 </body>

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open-Loop V/f Control | Motor Controls</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+  <h1>Open-Loop V/f Control</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="topics.html">Topics</a>
+    <a href="updates.html">Updates</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
+
+<section class="content-section">
+  <!-- Breadcrumb Navigation -->
+  <div class="breadcrumb">
+    <a href="index.html">Home</a>
+    <span>/</span>
+    <a href="topics.html">Topics</a>
+    <span>/</span>
+    <a href="motor-controls.html">Motor Controls</a>
+    <span>/</span>
+    <span class="current">Open-Loop V/f Control</span>
+  </div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1>Open-Loop V/f Control of PMSM/BLDC Motors</h1>
+    <p>What this page covers</p>
+  </div>
+
+  <!-- Page Introduction -->
+  <div class="content-intro">
+    <div class="intro-content">
+      <p>This page explains open-loop V/f (Volts-per-Hertz) control as used for PMSM and BLDC motors. The focus is on why it works, how it is implemented, and where it fails, from a practical engineering perspective.</p>
+
+      <h3>By the end of this page, you should be able to:</h3>
+      <ul class="learning-objectives">
+        <li>Understand the operating principle of V/f control</li>
+        <li>Implement a basic V/f controller using SPWM</li>
+        <li>Identify startup and low-speed challenges</li>
+        <li>Decide when V/f control is appropriate — and when it is not</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Video Demonstration -->
+  <div class="video-demo-section">
+    <h2>🎥 Live Demonstration</h2>
+    <div class="video-container">
+      <video controls preload="metadata" class="demo-video">
+        <source src="OLVF1.mp4" type="video/mp4">
+        <p>Your browser does not support the video tag. <a href="OLVF1.mp4">Download the video</a></p>
+      </video>
+      <div class="video-description">
+        <h3>15 Pole Pair BLDC Machine - Open-Loop V/f Control</h3>
+        <p>Here's a 15 pole pair BLDC machine operating in open-loop V/f control with 24V supply, 10% modulation index, and 10Hz frequency.</p>
+        <div class="video-specs">
+          <div class="spec-item">
+            <span class="spec-label">Motor Type:</span>
+            <span class="spec-value">15-pole BLDC</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Supply Voltage:</span>
+            <span class="spec-value">24V</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Modulation Index:</span>
+            <span class="spec-value">10%</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Frequency:</span>
+            <span class="spec-value">10Hz</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Learning Resources -->
+  <div class="resources-section">
+    <h2>🛠️ Interactive Learning Resources</h2>
+
+    <div class="resources-grid">
+      <div class="resource-card simulation">
+        <div class="resource-header">
+          <span class="resource-icon">📊</span>
+          <h3>MATLAB Simulation</h3>
+        </div>
+        <p>Complete open-loop V/f control simulation for PMSM using Sine PWM. Includes motor model, controller implementation, and analysis tools.</p>
+        <div class="resource-features">
+          <span class="feature-tag">Free Download</span>
+          <span class="feature-tag">Simulink Model</span>
+          <span class="feature-tag">Sine PWM</span>
+        </div>
+        <a href="https://in.mathworks.com/matlabcentral/fileexchange/177949-open-loop-v-f-control-of-pmsm-using-sine-pwm" class="resource-link" target="_blank" rel="noopener">
+          Download Simulation →
+        </a>
+      </div>
+
+      <div class="resource-card documentation">
+        <div class="resource-header">
+          <span class="resource-icon">📚</span>
+          <h3>Technical Documentation</h3>
+        </div>
+        <p>Detailed explanation of V/f control theory, implementation considerations, and practical applications in motor control systems.</p>
+        <div class="resource-features">
+          <span class="feature-tag">Theory</span>
+          <span class="feature-tag">Implementation</span>
+          <span class="feature-tag">Applications</span>
+        </div>
+        <a href="#theory-section" class="resource-link">
+          Read Documentation →
+        </a>
+      </div>
+    </div>
+
+    <div class="resource-note">
+      <p><strong>💡 Pro Tip:</strong> Start with the simulation to understand the concepts, then watch the video to see real hardware implementation, and finally read the theory for complete understanding.</p>
+    </div>
+  </div>
+
+  <!-- Main Content Sections -->
+  <div class="content-section" id="theory-section">
+    <h2>1. Where Open-Loop V/f Control Fits</h2>
+    <p>Open-loop V/f control sits at the simplest end of the motor control spectrum.</p>
+
+    <p>It does not attempt to:</p>
+    <ul>
+      <li>control torque explicitly</li>
+      <li>regulate current</li>
+      <li>track rotor position</li>
+    </ul>
+
+    <p>Instead, it assumes the motor rotor will follow a rotating stator field generated by the inverter.</p>
+
+    <p>This makes it attractive for:</p>
+    <ul>
+      <li>motor bring-up</li>
+      <li>no-load or light-load operation</li>
+      <li>cost-sensitive applications</li>
+      <li>lab testing and demonstrations</li>
+    </ul>
+
+    <p>It also makes it fundamentally unsuitable for traction or dynamic applications.</p>
+  </div>
+
+  <div class="content-section">
+    <h2>2. Basic Operating Principle</h2>
+    <p>The electrical speed of the motor is set by the stator electrical frequency. The magnetic flux is set by the applied stator voltage.</p>
+
+    <div class="math-highlight">
+      <p>To maintain approximately constant air-gap flux:</p>
+      <div class="math-formula">
+        <strong>V / f = constant</strong>
+      </div>
+    </div>
+
+    <p>Increasing frequency increases speed. Increasing voltage maintains flux.</p>
+
+    <p><strong>If frequency increases without a corresponding voltage increase, flux weakens and torque drops.</strong></p>
+  </div>
+
+  <div class="content-section">
+    <h2>3. Intuitive View (Engineering Perspective)</h2>
+    <p>Think of V/f control as open-loop field generation.</p>
+
+    <p>You are:</p>
+    <ul>
+      <li>commanding a rotating magnetic field</li>
+      <li>assuming the rotor stays synchronized</li>
+      <li>not correcting for load disturbances</li>
+    </ul>
+
+    <p>There is no feedback loop to recover if synchronism is lost.</p>
+
+    <p>This assumption holds only when:</p>
+    <ul>
+      <li>load torque is low</li>
+      <li>acceleration is gentle</li>
+      <li>operating conditions are predictable</li>
+    </ul>
+  </div>
+
+  <div class="content-section">
+    <h2>4. Control Architecture (Minimal)</h2>
+    <p>A typical open-loop V/f implementation follows this flow:</p>
+
+    <div class="control-flow">
+      <div class="flow-item">Speed reference</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-item">Electrical frequency command</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-item">Voltage reference = (V/f ratio × frequency)</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-item">Sinusoidal reference generation</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-item">SPWM</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-item">Inverter → Motor</div>
+    </div>
+
+    <div class="emphasis-box">
+      <h4>What is intentionally missing:</h4>
+      <ul>
+        <li>rotor position feedback</li>
+        <li>current control loop</li>
+        <li>torque regulation</li>
+      </ul>
+      <p><em>This is by design.</em></p>
+    </div>
+  </div>
+
+  <div class="content-section">
+    <h2>5. Startup and Low-Speed Behavior</h2>
+    <p>At standstill:</p>
+    <ul>
+      <li>back-EMF is zero</li>
+      <li>torque production is weak</li>
+      <li>rotor position is unknown</li>
+    </ul>
+
+    <p>As a result, most practical implementations include:</p>
+    <ul>
+      <li>a minimum starting frequency</li>
+      <li>voltage boost at low speed</li>
+      <li>a controlled frequency ramp</li>
+    </ul>
+
+    <p>These measures improve startup reliability but do not guarantee synchronism under load.</p>
+  </div>
+
+  <div class="content-section">
+    <h2>6. Flux, Back-EMF, and Load Effects</h2>
+    <p>Motor flux is proportional to V / f.</p>
+
+    <div class="vf-analysis">
+      <div class="analysis-item">
+        <strong>If V/f is too low</strong> → weak flux, low torque
+      </div>
+      <div class="analysis-item">
+        <strong>If V/f is too high</strong> → magnetic saturation, heating
+      </div>
+    </div>
+
+    <p>Back-EMF increases with speed and opposes the applied voltage. Since back-EMF is not measured in open-loop control, load-dependent speed error accumulates.</p>
+
+    <p>Under sudden load changes:</p>
+    <ul>
+      <li>current rises uncontrollably</li>
+      <li>rotor may slip</li>
+      <li>synchronism can be lost</li>
+    </ul>
+
+    <p><em>This is a fundamental limitation, not an implementation flaw.</em></p>
+  </div>
+
+  <div class="content-section">
+    <h2>7. Torque Control Limitations</h2>
+    <p>In V/f control:</p>
+    <ul>
+      <li>flux is assumed, not regulated</li>
+      <li>current is uncontrolled</li>
+      <li>torque becomes load-dependent</li>
+    </ul>
+
+    <p>Practical consequences:</p>
+    <ul>
+      <li>poor dynamic response</li>
+      <li>torque ripple</li>
+      <li>stalling risk under transients</li>
+    </ul>
+
+    <p>For this reason, V/f control is not a substitute for vector control or FOC.</p>
+  </div>
+
+  <div class="content-section">
+    <h2>8. PWM Strategy</h2>
+    <p>Sinusoidal PWM (SPWM) is commonly used.</p>
+
+    <div class="pwm-details">
+      <ul>
+        <li>sinusoidal reference vs triangular carrier</li>
+        <li>modulation index defines output voltage</li>
+        <li>linear region operation up to modulation index ≈ 1</li>
+      </ul>
+    </div>
+
+    <p>At higher speeds:</p>
+    <ul>
+      <li>DC bus voltage limits output</li>
+      <li>voltage margin reduces</li>
+      <li>efficiency drops</li>
+    </ul>
+  </div>
+
+  <div class="content-section">
+    <h2>9. Applications and Non-Applications</h2>
+
+    <div class="applications-grid">
+      <div class="applications">
+        <h3>✅ Appropriate use cases</h3>
+        <ul>
+          <li>fans and blowers</li>
+          <li>pumps with predictable load</li>
+          <li>motor bring-up and validation</li>
+          <li>educational and lab setups</li>
+        </ul>
+      </div>
+
+      <div class="non-applications">
+        <h3>❌ Avoid V/f control for:</h3>
+        <ul>
+          <li>EV traction drives</li>
+          <li>robotics and servo systems</li>
+          <li>high-efficiency applications</li>
+          <li>dynamic torque control</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-section">
+    <h2>10. Key Takeaways</h2>
+    <ul class="key-takeaways-list">
+      <li>Open-loop V/f control is simple, robust, and easy to implement</li>
+      <li>It works only under predictable, light-load conditions</li>
+      <li>No feedback means no correction under disturbances</li>
+      <li>Best used as a starting point, not a final solution</li>
+    </ul>
+
+    <div class="engineer-note">
+      <h3>Engineer's Note</h3>
+      <p>In real EV inverter development, V/f control is often the first firmware loaded to verify power-stage health before enabling current control and FOC.</p>
+    </div>
+  </div>
+
+  <!-- Section Navigation -->
+  <div class="section-nav">
+    <h3>Navigate Through Motor Control Topics</h3>
+    <div class="nav-grid">
+      <a href="#" class="nav-item disabled">
+        <span class="nav-label">← Previous</span>
+        <h3>PMSM vs BLDC</h3>
+        <p>Understanding motor types and characteristics</p>
+      </a>
+
+      <a href="#" class="nav-item disabled">
+        <span class="nav-label">Next →</span>
+        <h3>Sensors & Feedback</h3>
+        <p>Position sensing and current measurement</p>
+      </a>
+    </div>
+  </div>
+
+  <!-- Quick Navigation Footer -->
+  <section class="nav-grid">
+    <a href="motor-controls.html" class="nav-button">← Motor Controls</a>
+    <a href="topics.html" class="nav-button">All Topics →</a>
+    <a href="index.html" class="nav-button">Home</a>
+  </section>
+</section>
+
+</body>
+</html>
