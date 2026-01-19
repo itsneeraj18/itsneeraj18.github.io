@@ -86,14 +86,23 @@
   </div>
 
   <!-- Visitor Counter -->
-  <div class="visitor-counter" id="visitor-counter">
-    👁️ Visitors: <span id="visitor-count">0</span>
+  <div class="visitor-counter" id="visitor-counter" style="display: none;">
+    👁️ Your visits: <span id="visitor-count">0</span>
   </div>
 </section>
 
 <script>
-// Visitor Counter
+// Visitor Counter (Owner Only)
 function initVisitorCounter() {
+    // Only show counter for site owner
+    const isOwner = localStorage.getItem('site_owner') === 'neeraj';
+    const counterDiv = document.getElementById('visitor-counter');
+
+    if (!isOwner) {
+        counterDiv.style.display = 'none';
+        return;
+    }
+
     const counterElement = document.getElementById('visitor-count');
     const pageId = window.location.pathname;
     const storageKey = `visitor_count_${pageId}`;
@@ -102,6 +111,9 @@ function initVisitorCounter() {
     count++;
     localStorage.setItem(storageKey, count);
     counterElement.textContent = count;
+
+    // Show the counter
+    counterDiv.style.display = 'block';
 }
 
 // Contact Form Enhancement with Formspree
