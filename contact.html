@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contact</title>
-<link rel="stylesheet" href="style.css">
-
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact | EV & Electronics Lab</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -21,14 +20,24 @@
   </nav>
 </header>
 
-<section class="contact-section">
-  <div class="contact-container">
-    <div class="contact-header">
-      <h1>Get In Touch</h1>
-      <p>Let's discuss your EV project or collaboration opportunities</p>
-    </div>
+<section class="content-section">
 
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <a href="index.html">Home</a>
+    <span>/</span>
+    <span class="current">Contact</span>
+  </div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1>Get in Touch</h1>
+    <p>Have a question, suggestion, or feedback? I read every message — feel free to reach out.</p>
+  </div>
+
+  <div class="contact-content">
     <div class="contact-grid">
+      <!-- Professional Links -->
       <div class="contact-card">
         <h3>Professional Links</h3>
         <div class="contact-links">
@@ -42,24 +51,35 @@
           </a>
           <a href="mailto:nd18yadav@gmail.com" class="contact-link">
             <span class="link-icon">✉️</span>
-            Send Email
+            Direct Email
           </a>
         </div>
       </div>
 
+      <!-- Contact Form -->
       <div class="contact-card">
         <h3>Send Message</h3>
-        <form action="mailto:nd18yadav@gmail.com" method="POST" enctype="text/plain" class="contact-form">
-          <div class="form-group">
-            <input type="text" name="name" placeholder="Your name" required>
-          </div>
-          <div class="form-group">
-            <input type="email" name="email" placeholder="Your email" required>
-          </div>
-          <div class="form-group">
-            <textarea name="message" rows="5" placeholder="Your message..." required></textarea>
-          </div>
+        <form id="contact-form" action="https://formspree.io/f/mvzzrqyl" method="POST" class="contact-form">
+          <label>
+            Name
+            <input type="text" name="name" required>
+          </label>
+
+          <label>
+            Email
+            <input type="email" name="email" required>
+          </label>
+
+          <label>
+            Message
+            <textarea name="message" rows="6" required></textarea>
+          </label>
+
           <button type="submit" class="submit-btn">Send Message</button>
+
+          <p class="form-note">Your message will be sent directly — no email client needed.</p>
+
+          <p id="form-status"></p>
         </form>
       </div>
     </div>
@@ -84,37 +104,61 @@ function initVisitorCounter() {
     counterElement.textContent = count;
 }
 
-// Contact Form Enhancement
+// Contact Form Enhancement with Formspree
 function initContactForm() {
-    const form = document.querySelector('.contact-form');
+    const form = document.getElementById('contact-form');
+    const status = document.getElementById('form-status');
+    const submitBtn = form.querySelector('.submit-btn');
 
     if (form) {
-        form.addEventListener('submit', function(e) {
-            // For mailto forms, let the browser handle it naturally
-            // Add brief feedback before mail client opens
-            const submitBtn = form.querySelector('.submit-btn');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = new FormData(form);
+
+            // Update button state
             const originalText = submitBtn.textContent;
-
-            if (!form.checkValidity()) {
-                return; // Let browser handle validation
-            }
-
-            submitBtn.textContent = 'Opening email client...';
+            submitBtn.textContent = 'Sending...';
             submitBtn.disabled = true;
+            status.textContent = '';
 
-            // Re-enable button after a delay (in case user cancels)
-            setTimeout(() => {
+            try {
+                const response = await fetch(form.action, {
+                    method: form.method,
+                    body: data,
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (response.ok) {
+                    status.textContent = "✅ Thanks! Your message has been sent successfully.";
+                    status.style.color = "#4caf50";
+                    form.reset();
+                } else {
+                    status.textContent = "⚠️ Oops! Something went wrong. Please try again later.";
+                    status.style.color = "#e53935";
+                }
+            } catch (error) {
+                status.textContent = "⚠️ Network error. Please check your connection and try again.";
+                status.style.color = "#e53935";
+                console.error('Form submission error:', error);
+            } finally {
+                // Reset button
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
-                alert('Your email client should open with a pre-filled message. If it doesn\'t, please email nd18yadav@gmail.com directly.');
-            }, 3000);
+            }
         });
 
-        // Real-time validation
+        // Real-time validation with better UX
         const inputs = form.querySelectorAll('input, textarea');
         inputs.forEach(input => {
             input.addEventListener('blur', function() {
                 validateField(this);
+            });
+
+            input.addEventListener('input', function() {
+                // Clear errors as user types
+                if (this.style.borderColor !== 'rgba(79, 195, 247, 0.3)') {
+                    validateField(this);
+                }
             });
         });
 
@@ -130,7 +174,7 @@ function initContactForm() {
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!emailRegex.test(value)) {
                     isValid = false;
-                    message = 'Please enter a valid email';
+                    message = 'Please enter a valid email address';
                 }
             }
 

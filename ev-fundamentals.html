@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EV Fundamentals</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EV Fundamentals - Electric Vehicle Basics</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -20,7 +21,8 @@
 </header>
 
 <section class="content-section">
-  <!-- Breadcrumb Navigation -->
+
+  <!-- Breadcrumb -->
   <div class="breadcrumb">
     <a href="index.html">Home</a>
     <span>/</span>
@@ -31,147 +33,341 @@
 
   <!-- Page Header -->
   <div class="page-header">
-    <h1>EV Fundamentals</h1>
-    <p>Core concepts and architecture of electric vehicles — from powertrain basics to high-voltage systems</p>
+    <h1>Understanding How an Electric Vehicle Works — From First Principles</h1>
+    <p>Building intuition about EVs before diving into components, control systems, and engineering details</p>
   </div>
 
-  <!-- Table of Contents -->
-  <div class="toc-box">
-    <h3>Topics in this domain:</h3>
-    <ol>
-      <li><a href="#overview">Overview</a> — What makes EVs different</li>
-      <li><a href="#powertrain">EV Powertrain Basics</a> — Energy flow and architecture</li>
-      <li><a href="#voltage">Voltage Systems</a> — High-voltage design and safety</li>
-      <li><a href="#performance">Performance Metrics</a> — Range, efficiency, thermal management</li>
-      <li><a href="#charging">Charging Systems</a> — AC/DC charging and connectors</li>
-      <li><a href="#precharge">Precharge & Inrush Control</a> — HV system startup sequences</li>
-      <li><a href="#pdb">Power Distribution (PDB)</a> — Contactors, relays, protection devices</li>
-      <li><a href="#hv-safety">HV Protection & Safety</a> — Fuses, breakers, isolation</li>
-      <li><a href="#fundamentals">Industry Standards & Compliance</a> — ISO, SAE, and certification</li>
-    </ol>
-  </div>
+  <!-- Section 1: Why EVs Are Different -->
+  <section class="concept-section" id="ev-vs-ice">
+    <h2>1. Why EVs Are Fundamentally Different from ICE Vehicles</h2>
 
-  <!-- Overview Section -->
-  <div class="overview-section" id="overview">
-    <h2>🚗 Overview: What Makes EVs Different?</h2>
-    <p>Electric vehicles represent a fundamental shift in automotive architecture. Unlike internal combustion engines (ICEs) with their complex mechanical transmissions, EVs feature simplified drivetrains powered by high-voltage battery systems, electric motors, and sophisticated power electronics.</p>
-    
-    <p>This domain covers the foundational concepts you need to understand EV systems: from basic powertrain architecture to advanced high-voltage management strategies.</p>
+    <p>
+      Before diving into components, control, or software, it is important to understand one core idea:
+    </p>
 
-    <h3>Key EV Subsystems</h3>
-    <ul>
-      <li><strong>High-Voltage Battery:</strong> 200-400V lithium-ion packs with BMS</li>
-      <li><strong>Motor & Inverter:</strong> Propulsion motor and power conversion</li>
-      <li><strong>Thermal Management:</strong> Battery and motor cooling systems</li>
-      <li><strong>Charging Infrastructure:</strong> AC and DC charging systems</li>
-      <li><strong>Safety Systems:</strong> HV isolation, fault detection, emergency shutdown</li>
-    </ul>
-  </div>
+    <blockquote>
+      <strong>An electric vehicle is not just a vehicle with a different engine — it is a completely different system philosophy.</strong>
+    </blockquote>
 
-  <!-- Placeholder Sections -->
-  <div class="section-placeholder" id="powertrain">
-    <h2>🔋 EV Powertrain Basics</h2>
-    <p>🚧 <strong>Under Development</strong></p>
-    <p>This section will cover:</p>
-    <ul>
-      <li>Single and multi-motor architectures</li>
-      <li>Energy flow from battery to wheels</li>
-      <li>Regenerative braking systems</li>
-      <li>Power distribution and efficiency analysis</li>
-    </ul>
-  </div>
+    <div class="comparison-table">
+      <div class="comparison-header">
+        <h3>System Philosophy Comparison</h3>
+      </div>
 
-  <div class="section-placeholder" id="voltage">
-    <h2>⚡ Voltage Systems</h2>
-    <p>🚧 <strong>Under Development</strong></p>
-    <p>This section will cover:</p>
-    <ul>
-      <li>High-voltage (HV) architecture design</li>
-      <li>Battery topology and cell arrangements</li>
-      <li>High-voltage bus design principles</li>
-      <li>Electrical safety standards and compliance</li>
-    </ul>
-  </div>
+      <div class="comparison-grid">
+        <div class="comparison-aspect">
+          <h4>🔥 Internal Combustion Engine (ICE)</h4>
+          <ul>
+            <li>Energy stored as fuel</li>
+            <li>Energy released through combustion</li>
+            <li>Mechanical motion produced directly</li>
+            <li>Control is mostly mechanical + simple electronics</li>
+          </ul>
+        </div>
 
-  <div class="section-placeholder" id="performance">
-    <h2>📊 Performance Metrics</h2>
-    <p>🚧 <strong>Under Development</strong></p>
-    <p>This section will cover:</p>
-    <ul>
-      <li>Range calculation and estimation</li>
-      <li>Energy efficiency metrics (Wh/km)</li>
-      <li>Acceleration and power delivery profiles</li>
-      <li>Thermal management and temperature limits</li>
-    </ul>
-  </div>
+        <div class="comparison-aspect">
+          <h4>⚡ Electric Vehicle (EV)</h4>
+          <ul>
+            <li>Energy stored electrically</li>
+            <li>Energy converted electronically</li>
+            <li>Motion produced by an electric motor</li>
+            <li>Control is software-driven</li>
+          </ul>
+        </div>
+      </div>
 
-  <div class="section-placeholder" id="charging">
-    <h2>🔌 Charging Systems</h2>
-    <p>🚧 <strong>Under Development</strong></p>
-    <p>This section will cover:</p>
-    <ul>
-      <li>AC charging (Level 1, 2, 3)</li>
-      <li>DC fast charging (CCS, CHAdeMO, NACS)</li>
-      <li>On-board charger (OBC) design</li>
-      <li>Charging protocols and safety</li>
-    </ul>
-  </div>
-
-  <div class="section-placeholder" id="precharge">
-    <h2>🔌 Precharge & Inrush Control</h2>
-    <p>🚧 <strong>Under Development</strong></p>
-    <p>This section will cover:</p>
-    <ul>
-      <li>High-voltage system startup sequence</li>
-      <li>Capacitor pre-charging circuits</li>
-      <li>Inrush current limiting</li>
-      <li>Soft-start relay control strategies</li>
-    </ul>
-  </div>
-
-  <div class="section-placeholder" id="pdb">
-    <h2>📦 Power Distribution (PDB)</h2>
-    <p>🚧 <strong>Under Development</strong></p>
-    <p>This section will cover:</p>
-    <ul>
-      <li>Power distribution architecture</li>
-      <li>Main contactor and relay design</li>
-      <li>Bus bar design and thermal management</li>
-      <li>Integration with BMS and safety systems</li>
-    </ul>
-  </div>
-
-  <div class="section-placeholder" id="hv-safety">
-    <h2>🛡️ HV Protection & Safety</h2>
-    <p>🚧 <strong>Under Development</strong></p>
-    <p>This section will cover:</p>
-    <ul>
-      <li>High-voltage fuses and breakers</li>
-      <li>Isolation monitoring (IMVL)</li>
-      <li>Emergency shutdown circuits</li>
-      <li>Human safety and shock protection</li>
-    </ul>
-  </div>
-
-  <div class="section-placeholder" id="fundamentals">
-    <h2>📋 Industry Standards & Compliance</h2>
-    <p>🚧 <strong>Under Development</strong></p>
-    <p>This section will cover:</p>
-    <ul>
-      <li>ISO 26262 (Functional Safety)</li>
-      <li>ISO 6469 (Electrical safety of EVs)</li>
-      <li>SAE standards for EVs</li>
-      <li>Regional certification (FMVSS, ECE, etc.)</li>
-    </ul>
-  </div>
-
-  <!-- Navigation Footer -->
-  <section class="nav-grid">
-    <a href="topics.html" class="nav-button">← All Topics</a>
-    <a href="index.html" class="nav-button">Home →</a>
+      <div class="key-insight">
+        <p><strong>This single difference changes everything — architecture, safety, control, efficiency, and even how the vehicle feels to drive.</strong></p>
+      </div>
+    </div>
   </section>
 
-  <div class="last-updated">Last updated: January 2026 | Status: Under active development</div>
+  <!-- Section 2: Detailed Comparison -->
+  <section class="concept-section" id="system-comparison">
+    <h2>2. ICE vs EV — Side-by-Side System Comparison</h2>
+
+    <div class="detailed-comparison">
+      <div class="comparison-row">
+        <div class="comparison-label">Energy Source</div>
+        <div class="comparison-value ice">Petrol / Diesel</div>
+        <div class="comparison-value ev">Battery (electrical energy)</div>
+      </div>
+
+      <div class="comparison-row">
+        <div class="comparison-label">Energy Conversion</div>
+        <div class="comparison-value ice">Combustion → heat → mechanical motion</div>
+        <div class="comparison-value ev">Electrical energy → electromagnetic torque</div>
+      </div>
+
+      <div class="comparison-row">
+        <div class="comparison-label">Powertrain Complexity</div>
+        <div class="comparison-value ice">Engine, gearbox, clutch, exhaust, fuel system</div>
+        <div class="comparison-value ev">Battery, inverter, motor (fewer moving parts)</div>
+      </div>
+
+      <div class="comparison-row">
+        <div class="comparison-label">Control Nature</div>
+        <div class="comparison-value ice">Engine speed follows combustion</div>
+        <div class="comparison-value ev">Torque commanded directly by software</div>
+      </div>
+
+      <div class="comparison-row">
+        <div class="comparison-label">Efficiency</div>
+        <div class="comparison-value ice">~25–35%</div>
+        <div class="comparison-value ev">~85–95% (motor + inverter)</div>
+      </div>
+    </div>
+
+    <div class="takeaway-box">
+      <h3>📌 Key Takeaway</h3>
+      <p><strong>ICE vehicles are fuel-flow–controlled systems.</strong></p>
+      <p><strong>EVs are power- and torque-controlled systems.</strong></p>
+    </div>
+  </section>
+
+  <!-- Section 3: Living System Analogy -->
+  <section class="concept-section" id="living-system">
+    <h2>3. A Simple Analogy: The EV as a Living System</h2>
+
+    <p>
+      To build intuition, it helps to think of an EV like a living organism:
+    </p>
+
+    <div class="system-analogy">
+      <div class="organ-system">
+        <div class="organ-icon">❤️</div>
+        <div class="organ-content">
+          <h4>Battery → Heart</h4>
+          <p>Stores and supplies energy to the entire system</p>
+        </div>
+      </div>
+
+      <div class="organ-system">
+        <div class="organ-icon">🧠</div>
+        <div class="organ-content">
+          <h4>Inverter → Brain + Muscles Interface</h4>
+          <p>Converts commands into electrical action</p>
+        </div>
+      </div>
+
+      <div class="organ-system">
+        <div class="organ-icon">💪</div>
+        <div class="organ-content">
+          <h4>Motor → Muscles</h4>
+          <p>Produces motion and torque on demand</p>
+        </div>
+      </div>
+
+      <div class="organ-system">
+        <div class="organ-icon">🧠</div>
+        <div class="organ-content">
+          <h4>VCU / Software → Nervous System</h4>
+          <p>Decides how much, when, and how safely</p>
+        </div>
+      </div>
+
+      <div class="organ-system">
+        <div class="organ-icon">🩸</div>
+        <div class="organ-content">
+          <h4>Cables & Busbars → Blood Vessels</h4>
+          <p>Carry energy across the system efficiently</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="analogy-conclusion">
+      If any one of these is unhealthy, the whole vehicle derates or shuts down — just like a real organism.
+    </p>
+  </section>
+
+  <!-- Section 4: What Moves an EV -->
+  <section class="concept-section" id="what-moves-ev">
+    <h2>4. What Actually Moves an EV?</h2>
+
+    <div class="driving-comparison">
+      <div class="driving-scenario">
+        <h3>In an ICE vehicle:</h3>
+        <div class="scenario-steps">
+          <div class="step">Pressing accelerator → <strong>increases fuel</strong></div>
+          <div class="step">Engine speed rises → <strong>torque comes as consequence</strong></div>
+        </div>
+      </div>
+
+      <div class="driving-scenario">
+        <h3>In an EV:</h3>
+        <div class="scenario-steps">
+          <div class="step">Pressing accelerator → <strong>directly commands torque</strong></div>
+          <div class="step">Motor produces torque → <strong>vehicle speed changes as result</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ev-feel">
+      <h3>This is why EVs feel:</h3>
+      <ul>
+        <li><strong>More responsive</strong> — instant torque delivery</li>
+        <li><strong>Smoother</strong> — no gear shifts or engine revving</li>
+        <li><strong>Quieter</strong> — electric motor operation</li>
+      </ul>
+    </div>
+
+    <div class="mindset-shift">
+      <h3>📌 Important Mindset Shift</h3>
+      <p><strong>In EVs, torque is the primary controlled variable — speed is the outcome.</strong></p>
+      <p>This idea will appear again in motor control, regenerative braking, traction control, and drive modes.</p>
+    </div>
+  </section>
+
+  <!-- Section 5: Energy Flow -->
+  <section class="concept-section" id="energy-flow">
+    <h2>5. Energy Flow in an EV (Conceptual)</h2>
+
+    <p>
+      At the most basic level, every EV operates on this loop:
+    </p>
+
+    <div class="energy-flow-diagram">
+      <div class="flow-path">
+        <div class="flow-step battery">Battery</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step inverter">Inverter</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step motor">Motor</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step wheels">Wheels</div>
+      </div>
+
+      <div class="regeneration-path">
+        <div class="regen-arrow">↑</div>
+        <div class="regen-label">Regeneration</div>
+      </div>
+    </div>
+
+    <div class="energy-explanation">
+      <div class="energy-mode">
+        <h4>🚗 During Acceleration</h4>
+        <p>Energy flows from battery to wheels through the powertrain</p>
+      </div>
+
+      <div class="energy-mode">
+        <h4>🔄 During Braking</h4>
+        <p>Energy flows from wheels back to battery through regeneration</p>
+      </div>
+
+      <div class="energy-insight">
+        <p><strong>No additional hardware is required — the motor simply reverses its role from motor to generator.</strong></p>
+        <p>This bidirectional flow is one of the biggest advantages of EVs over traditional vehicles.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 6: Software Importance -->
+  <section class="concept-section" id="software-importance">
+    <h2>6. Why Software Matters So Much in EVs</h2>
+
+    <div class="software-comparison">
+      <div class="system-type">
+        <h3>🔥 ICE Vehicles</h3>
+        <ul>
+          <li>Mechanical systems dominate behavior</li>
+          <li>Software fine-tunes performance</li>
+          <li>Hardware defines capabilities</li>
+        </ul>
+      </div>
+
+      <div class="system-type">
+        <h3>⚡ EVs</h3>
+        <ul>
+          <li>Software defines behavior</li>
+          <li>Hardware provides possibilities</li>
+          <li>Same components, different software = different vehicles</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="software-examples">
+      <h3>Examples of Software-Defined Behavior:</h3>
+      <ul>
+        <li><strong>Same motor, different torque maps</strong> → different driving feel</li>
+        <li><strong>Same battery, different limits</strong> → different range & life</li>
+        <li><strong>Same hardware, different software</strong> → different vehicle class</li>
+      </ul>
+    </div>
+
+    <p class="software-conclusion">
+      This is why EVs are often called <strong>"software-defined vehicles"</strong> — the same physical hardware
+      can behave like a sports car, a luxury cruiser, or an efficiency machine depending on software configuration.
+    </p>
+  </section>
+
+  <!-- Section 7: What's Coming Next -->
+  <section class="concept-section" id="coming-next">
+    <h2>7. What EV Fundamentals Will Cover Next</h2>
+
+    <p>
+      This fundamentals section will gradually expand into deeper topics:
+    </p>
+
+    <div class="topic-roadmap">
+      <div class="roadmap-item">
+        <h4>🏗️ EV Architecture</h4>
+        <p>HV & LV domains, system partitioning, and safety isolation</p>
+      </div>
+
+      <div class="roadmap-item">
+        <h4>⚡ Energy and Power Flow</h4>
+        <p>Detailed analysis of bidirectional energy conversion</p>
+      </div>
+
+      <div class="roadmap-item">
+        <h4>🎛️ Control Layers</h4>
+        <p>Driver → vehicle → inverter → motor control hierarchy</p>
+      </div>
+
+      <div class="roadmap-item">
+        <h4>🛡️ Safety & HV Concepts</h4>
+        <p>Electrical safety, isolation, and high-voltage handling</p>
+      </div>
+
+      <div class="roadmap-item">
+        <h4>🔄 Operating Modes</h4>
+        <p>Start-up, drive, regen, fault handling, and diagnostics</p>
+      </div>
+    </div>
+
+    <p class="roadmap-note">
+      Each topic builds on the intuition developed here — understanding the system philosophy
+      before diving into technical implementation.
+    </p>
+  </section>
+
+  <!-- Section 8: Reader Note -->
+  <section class="concept-section" id="reader-note">
+    <h2>8. A Note to the Reader</h2>
+
+    <div class="reader-message">
+      <p>
+        This site is structured to help you:
+      </p>
+
+      <ul>
+        <li><strong>Think like a system engineer</strong> — understanding interconnections</li>
+        <li><strong>Understand why design decisions exist</strong> — not just what they are</li>
+        <li><strong>Connect theory with real vehicles</strong> — from concept to implementation</li>
+      </ul>
+
+      <p>
+        If you understand this page well, everything that follows — motor control, BMS, testing, validation —
+        will feel natural instead of fragmented. You will see the "why" behind the engineering choices.
+      </p>
+    </div>
+  </section>
+
+  <!-- Navigation -->
+  <section class="nav-grid">
+    <a href="topics.html" class="nav-button">← All Topics</a>
+    <a href="motor-controls.html" class="nav-button">Motor Controls →</a>
+  </section>
 </section>
 
 <footer>
@@ -185,19 +381,18 @@
         <li><a href="about.html">About</a></li>
       </ul>
     </div>
-    
+
     <div class="footer-section">
       <h3>Domains</h3>
       <ul>
-        <li><a href="ev-fundamentals.html">EV Fundamentals</a></li>
-        <li><a href="battery-bms.html">Battery & BMS</a></li>
         <li><a href="motor-controls.html">Motor Controls</a></li>
-        <li><a href="power-electronics.html">Power Electronics</a></li>
-        <li><a href="embedded-systems.html">Embedded Systems</a></li>
-        <li><a href="renewable-energy.html">Renewable Energy</a></li>
+        <li><a href="ev-fundamentals.html">EV Fundamentals</a></li>
+        <li><a href="topics.html">Battery & BMS</a></li>
+        <li><a href="topics.html">Power Electronics</a></li>
+        <li><a href="topics.html">Embedded Systems</a></li>
       </ul>
     </div>
-    
+
     <div class="footer-section">
       <h3>Connect</h3>
       <ul>
@@ -207,8 +402,36 @@
       </ul>
     </div>
   </div>
-  <p style="text-align: center; margin-top: 2rem; color: #888; font-size: 0.9rem;">© 2026 EV & Electronics Lab. An open engineering knowledge base.</p>
+
+  <div class="footer-bottom">
+    <p>&copy; 2026 EV & Electronics Lab. An open engineering knowledge base.</p>
+    <p>Last updated: January 2026</p>
+  </div>
 </footer>
+
+<!-- Visitor Counter -->
+<div class="visitor-counter" id="visitor-counter">
+  👁️ Visitors: <span id="visitor-count">0</span>
+</div>
+
+<script>
+// Visitor Counter
+function initVisitorCounter() {
+    const counterElement = document.getElementById('visitor-count');
+    const pageId = window.location.pathname;
+    const storageKey = `visitor_count_${pageId}`;
+
+    let count = parseInt(localStorage.getItem(storageKey)) || 0;
+    count++;
+    localStorage.setItem(storageKey, count);
+    counterElement.textContent = count;
+}
+
+// Initialize features
+document.addEventListener('DOMContentLoaded', function() {
+    initVisitorCounter();
+});
+</script>
 
 </body>
 </html>
