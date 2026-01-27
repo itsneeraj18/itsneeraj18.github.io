@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>EV Fundamentals – HV Safety & Protection Components</title>
+</head>
+
+<body>
+
+  <!-- PAGE HEADER -->
+  <section class="page-header">
+    <h1>HV Safety & Protection Components</h1>
+    <p>
+      The silent guardians of every electric vehicle — responsible for isolation,
+      protection, and safe power delivery.
+    </p>
+  </section>
+
+  <!-- INTRO -->
+  <section class="content-section">
+    <p class="section-intro">
+      While motors, batteries, and inverters get the spotlight, EV safety depends
+      on a collection of less glamorous but absolutely critical components.
+      This page introduces those systems, their purpose, and how they are typically implemented.
+    </p>
+  </section>
+
+  <!-- ================================================= -->
+  <!-- 1. POWER DISTRIBUTION UNIT -->
+  <!-- ================================================= -->
+  <section class="concept-section">
+    <h2>1. High Voltage Power Distribution Unit (HV PDU)</h2>
+
+    <p>
+      The HV Power Distribution Unit acts as the central routing hub for high-voltage
+      power, distributing energy from the battery to subsystems such as the inverter,
+      DC-DC converter, on-board charger, and HVAC.
+    </p>
+
+    <ul>
+      <li>Contains contactors, fuses, HVIL loops, and current sensing</li>
+      <li>Provides controlled sequencing of HV power</li>
+      <li>Acts as a safety boundary between battery and loads</li>
+    </ul>
+
+    <div class="highlight-box">
+      <h3>Why it matters</h3>
+      <p>
+        A well-designed HV PDU prevents uncontrolled energization and localizes
+        faults before they propagate across the vehicle.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================================================= -->
+  <!-- 2. CONTACTORS / BREAKERS -->
+  <!-- ================================================= -->
+  <section class="concept-section">
+    <h2>2. Contactors & Circuit Breakers</h2>
+
+    <p>
+      Contactors are electrically controlled switches designed to safely connect
+      and disconnect high-voltage circuits under load.
+    </p>
+
+    <h3>a. Relay vs Contactor vs Switchgear</h3>
+    <ul>
+      <li><strong>Relays:</strong> Low power, LV signaling, not suitable for HV load interruption</li>
+      <li><strong>Contactors:</strong> Designed for HV DC, arc suppression, safety isolation</li>
+      <li><strong>Switchgear:</strong> Industrial-grade assemblies (rare in vehicles)</li>
+    </ul>
+
+    <h3>b. Unipolar vs Bipolar</h3>
+    <ul>
+      <li><strong>Unipolar:</strong> Breaks only HV+</li>
+      <li><strong>Bipolar:</strong> Breaks both HV+ and HV− for higher safety</li>
+    </ul>
+
+    <h3>c. Feedback vs Non-feedback</h3>
+    <ul>
+      <li>Auxiliary contacts confirm actual contact state</li>
+      <li>Prevents welded-contact failure scenarios</li>
+    </ul>
+
+    <div class="engineer-note">
+      <h3>Engineer’s note</h3>
+      <p>
+        State feedback is mandatory in many safety concepts — commanded open
+        does not always mean electrically open.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================================================= -->
+  <!-- 3. ISOLATION MONITORING DEVICE -->
+  <!-- ================================================= -->
+  <section class="concept-section">
+    <h2>3. Isolation Monitoring Device (IMD)</h2>
+
+    <p>
+      The Isolation Monitoring Device continuously checks the resistance between
+      the high-voltage system and vehicle chassis ground.
+    </p>
+
+    <ul>
+      <li>Detects leakage and insulation degradation</li>
+      <li>Prevents dangerous touch voltages</li>
+      <li>Mandatory in most EV safety standards</li>
+    </ul>
+
+    <h3>Key characteristics</h3>
+    <ul>
+      <li>Analog or CAN communication interfaces</li>
+      <li>Active measurement using injected signals</li>
+      <li>Thresholds defined in Ω/V (e.g., 100 or 500 Ω/V)</li>
+    </ul>
+
+    <div class="highlight-box">
+      <h3>Working principle</h3>
+      <p>
+        IMDs inject a known signal into the HV system and measure return paths
+        to determine insulation resistance without interrupting operation.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================================================= -->
+  <!-- 4. HV FUSE -->
+  <!-- ================================================= -->
+  <section class="concept-section">
+    <h2>4. High Voltage Fuses</h2>
+
+    <p>
+      HV fuses provide irreversible protection against catastrophic short circuits.
+    </p>
+
+    <ul>
+      <li>Designed to interrupt extremely high DC fault currents</li>
+      <li>Protects wiring, battery, and contactors</li>
+    </ul>
+
+    <h3>Key parameters</h3>
+    <ul>
+      <li>I²t rating (energy let-through)</li>
+      <li>Breaking capacity</li>
+      <li>Melting and clearing characteristics</li>
+    </ul>
+  </section>
+
+  <!-- ================================================= -->
+  <!-- 5. EMERGENCY SWITCH & MSD -->
+  <!-- ================================================= -->
+  <section class="concept-section">
+    <h2>5. Emergency Switch & Manual Service Disconnect (MSD)</h2>
+
+    <p>
+      These devices allow immediate or manual isolation of the HV system
+      during service or emergency conditions.
+    </p>
+
+    <ul>
+      <li>Often integrates a fuse element</li>
+      <li>Physically separates HV circuit</li>
+      <li>Required for service safety compliance</li>
+    </ul>
+  </section>
+
+  <!-- ================================================= -->
+  <!-- 6. HVIL -->
+  <!-- ================================================= -->
+  <section class="concept-section">
+    <h2>6. High Voltage Interlock Loop (HVIL)</h2>
+
+    <p>
+      HVIL ensures that high-voltage is disabled whenever connectors or enclosures
+      are opened.
+    </p>
+
+    <h3>Implementation</h3>
+    <ul>
+      <li>Series loop through all HV connectors</li>
+      <li>Monitored by BMS or VCU</li>
+    </ul>
+
+    <h3>Why current-based, not voltage-based?</h3>
+    <ul>
+      <li>Resistant to EMI and noise</li>
+      <li>Detects partial opens and tampering</li>
+      <li>More reliable fault detection</li>
+    </ul>
+  </section>
+
+  <!-- ================================================= -->
+  <!-- 7. MECHANICAL & COLOR SAFETY -->
+  <!-- ================================================= -->
+  <section class="concept-section">
+    <h2>7. Mechanical & Visual Safety Conventions</h2>
+
+    <ul>
+      <li>Creepage & clearance rules for HV</li>
+      <li>Orange color convention for HV cables</li>
+      <li>Poka-yoke connectors to prevent mis-mating</li>
+      <li>Limit switches for enclosure verification</li>
+    </ul>
+  </section>
+
+  <!-- ================================================= -->
+  <!-- 8. LV PDU / VCU -->
+  <!-- ================================================= -->
+  <section class="concept-section">
+    <h2>8. Low Voltage PDU / VCU Power Switching</h2>
+
+    <p>
+      Similar protection concepts exist on the low-voltage side, typically using
+      MOSFETs or relays to control auxiliary loads.
+    </p>
+
+    <ul>
+      <li>Controls pumps, fans, heaters, ECUs</li>
+      <li>Lower ratings (12V / 24V)</li>
+      <li>Often includes diagnostics and current sensing</li>
+    </ul>
+  </section>
+
+</body>
+</html>

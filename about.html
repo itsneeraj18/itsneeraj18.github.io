@@ -34,6 +34,8 @@
   </div>
 </section>
 
+
+
 <!-- Section 4: Remaining Narrative -->
 <section class="narrative-section narrative-continued">
   <div class="narrative-content">
@@ -50,7 +52,7 @@
     </p>
 
     <p>
-      Currently, I work on Battery Management Systems and e-Drive systems at Daimler Truck Innovation Center India, with a focus on functional testing, HIL validation, and high-voltage lab setup. In parallel, I continue to pursue personal technical projects, including the development of motor control algorithms for BLDC motors, as part of ongoing learning and experimentation.
+      Currently, I work on Battery Management Systems and e-Drive systems at Daimler Truck India, with a focus on functional testing, HIL validation, and high-voltage lab setup. In parallel, I continue to pursue personal technical projects, including the development of motor control algorithms for BLDC motors, as part of ongoing learning and experimentation.
     </p>
 
     <p>
@@ -122,7 +124,7 @@
     </div>
     <div class="timeline-entry">
       <div class="timeline-year">2025–Present</div>
-      <div class="timeline-title">Daimler Truck Innovation Center India</div>
+      <div class="timeline-title">Daimler Truck India</div>
       <div class="timeline-desc">BMS, e-Drive validation & HIL, HV Lab</div>
     </div>
   </div>
@@ -210,41 +212,6 @@
     behavior: 'smooth'
   });
 }
-
-// Visitor Counter (Owner Only)
-function initVisitorCounter() {
-    // Only show counter for site owner
-    const isOwner = localStorage.getItem('site_owner') === 'neeraj';
-    const counterDiv = document.getElementById('visitor-counter');
-
-    if (!isOwner) {
-        counterDiv.style.display = 'none';
-        return;
-    }
-
-    const counterElement = document.getElementById('visitor-count');
-    const pageId = window.location.pathname;
-    const storageKey = `visitor_count_${pageId}`;
-
-    let count = parseInt(localStorage.getItem(storageKey)) || 0;
-    count++;
-    localStorage.setItem(storageKey, count);
-    counterElement.textContent = count;
-
-    // Show the counter
-    counterDiv.style.display = 'block';
-}
-
-// Initialize features
-document.addEventListener('DOMContentLoaded', function() {
-    initVisitorCounter();
-});
 </script>
-
-<!-- Visitor Counter -->
-  <div class="visitor-counter" id="visitor-counter" style="display: none;">
-    👁️ Your visits: <span id="visitor-count">0</span>
-  </div>
-
 </body>
 </html>

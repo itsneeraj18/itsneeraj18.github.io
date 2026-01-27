@@ -1,9 +1,71 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Open-Loop V/f Control | Motor Controls</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Open-Loop V/f Control | Motor Controls</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Page-level layout safety -->
+  <style>
+    .content-section {
+      max-width: 1100px;
+      margin: auto;
+      padding: 0 1.25rem;
+    }
+
+    img, video {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 1.25rem auto;
+    }
+
+    video {
+      max-height: 420px;
+    }
+
+    .media-caption {
+      font-size: 0.9rem;
+      color: #666;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    blockquote {
+      border-left: 4px solid #ccc;
+      padding-left: 1rem;
+      margin-left: 0;
+      color: #444;
+      font-style: italic;
+    }
+
+    .scroll-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 10px 14px;
+      font-size: 16px;
+      border-radius: 50%;
+      border: none;
+      background: #222;
+      color: #fff;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 999;
+    }
+
+    .scroll-btn.visible {
+      opacity: 0.85;
+      pointer-events: auto;
+    }
+
+    .scroll-btn:hover {
+      opacity: 1;
+    }
+  </style>
 </head>
 
 <body>
@@ -20,611 +82,231 @@
 </header>
 
 <section class="content-section">
-  <!-- Breadcrumb Navigation -->
+
+  <!-- Breadcrumb -->
   <div class="breadcrumb">
-    <a href="index.html">Home</a>
-    <span>/</span>
-    <a href="topics.html">Topics</a>
-    <span>/</span>
-    <a href="motor-controls.html">Motor Controls</a>
-    <span>/</span>
+    <a href="index.html">Home</a> /
+    <a href="topics.html">Topics</a> /
+    <a href="motor-controls.html">Motor Controls</a> /
     <span class="current">Open-Loop V/f Control</span>
   </div>
 
   <!-- Page Header -->
   <div class="page-header">
-    <h1>Open-Loop V/f Control of PMSM/BLDC Motors</h1>
-    <p>What this page covers</p>
+    <h1>Open-Loop V/f Control of PMSM / BLDC Motors</h1>
+    <p>
+      A practical, assumption-driven control method used for motor bring-up,
+      testing, and low-performance applications.
+    </p>
   </div>
 
-  <!-- Page Introduction -->
-  <div class="content-intro">
-    <div class="intro-content">
-      <p>This page explains open-loop V/f (Volts-per-Hertz) control as used for PMSM and BLDC motors. The focus is on why it works, how it is implemented, and where it fails, from a practical engineering perspective.</p>
+  <!-- Orientation -->
+  <section class="concept-section">
+    <p>
+      Open-loop V/f (Volts-per-Hertz) control is the simplest way to operate
+      an AC motor using an inverter. It relies on predictable physics rather
+      than feedback, making it easy to implement—but fragile under load.
+    </p>
 
-      <h3>By the end of this page, you should be able to:</h3>
-      <ul class="learning-objectives">
-        <li>Understand the operating principle of V/f control</li>
-        <li>Implement a basic V/f controller using SPWM</li>
-        <li>Identify startup and low-speed challenges</li>
-        <li>Decide when V/f control is appropriate — and when it is not</li>
-      </ul>
+    <blockquote>
+      V/f control works not because it is smart, but because the system
+      behaves nicely when we do not push it.
+    </blockquote>
+  </section>
+
+  <!-- Video Demo -->
+  <section class="concept-section">
+    <h2>Live Hardware Demonstration</h2>
+
+    <video controls muted preload="metadata">
+      <source src="OLVF1.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+
+    <div class="media-caption">
+      15-pole-pair BLDC motor running open-loop V/f control  
+      (24 V DC bus, 10% modulation, 10 Hz electrical frequency)
     </div>
-  </div>
+  </section>
 
-  <!-- Video Demonstration -->
-  <div class="video-demo-section">
-    <h2>🎥 Live Demonstration</h2>
-    <div class="video-container">
-      <video controls preload="metadata" class="demo-video">
-        <source src="OLVF1.mp4" type="video/mp4">
-        <p>Your browser does not support the video tag. <a href="OLVF1.mp4">Download the video</a></p>
-      </video>
-      <div class="video-description">
-        <h3>15 Pole Pair BLDC Machine - Open-Loop V/f Control</h3>
-        <p>Here's a 15 pole pair BLDC machine operating in open-loop V/f control with 24V supply, 10% modulation index, and 10Hz frequency.</p>
-        <div class="video-specs">
-          <div class="spec-item">
-            <span class="spec-label">Motor Type:</span>
-            <span class="spec-value">15-pole BLDC</span>
-          </div>
-          <div class="spec-item">
-            <span class="spec-label">Supply Voltage:</span>
-            <span class="spec-value">24V</span>
-          </div>
-          <div class="spec-item">
-            <span class="spec-label">Modulation Index:</span>
-            <span class="spec-value">10%</span>
-          </div>
-          <div class="spec-item">
-            <span class="spec-label">Frequency:</span>
-            <span class="spec-value">10Hz</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Interactive Learning Resources -->
-  <div class="resources-section">
-    <h2>🛠️ Interactive Learning Resources</h2>
-
-    <div class="resources-grid">
-      <div class="resource-card simulation">
-        <div class="resource-header">
-          <span class="resource-icon">📊</span>
-          <h3>MATLAB Simulation</h3>
-        </div>
-        <p>Complete open-loop V/f control simulation for PMSM using Sine PWM. Includes motor model, controller implementation, and analysis tools.</p>
-        <div class="resource-features">
-          <span class="feature-tag">Free Download</span>
-          <span class="feature-tag">Simulink Model</span>
-          <span class="feature-tag">Sine PWM</span>
-        </div>
-        <a href="https://in.mathworks.com/matlabcentral/fileexchange/177949-open-loop-v-f-control-of-pmsm-using-sine-pwm" class="resource-link" target="_blank" rel="noopener">
-          Download Simulation →
-        </a>
-      </div>
-
-      <div class="resource-card documentation">
-        <div class="resource-header">
-          <span class="resource-icon">📚</span>
-          <h3>Technical Documentation</h3>
-        </div>
-        <p>Detailed explanation of V/f control theory, implementation considerations, and practical applications in motor control systems.</p>
-        <div class="resource-features">
-          <span class="feature-tag">Theory</span>
-          <span class="feature-tag">Implementation</span>
-          <span class="feature-tag">Applications</span>
-        </div>
-        <a href="#theory-section" class="resource-link">
-          Read Documentation →
-        </a>
-      </div>
-    </div>
-
-    <div class="resource-note">
-      <p><strong>💡 Pro Tip:</strong> Start with the simulation to understand the concepts, then watch the video to see real hardware implementation, and finally read the theory for complete understanding.</p>
-    </div>
-  </div>
-
-  <!-- Main Content Sections -->
-  <div class="content-section" id="theory-section">
+  <!-- Where it fits -->
+  <section class="concept-section">
     <h2>1. Where Open-Loop V/f Control Fits</h2>
-    <p>Open-loop V/f control sits at the simplest end of the motor control spectrum.</p>
-
-    <p>It does not attempt to:</p>
-    <ul>
-      <li>control torque explicitly</li>
-      <li>regulate current</li>
-      <li>track rotor position</li>
-    </ul>
-
-    <p>Instead, it assumes the motor rotor will follow a rotating stator field generated by the inverter.</p>
-
-    <p>This makes it attractive for:</p>
-    <ul>
-      <li>motor bring-up</li>
-      <li>no-load or light-load operation</li>
-      <li>cost-sensitive applications</li>
-      <li>lab testing and demonstrations</li>
-    </ul>
-
-    <p>It also makes it fundamentally unsuitable for traction or dynamic applications.</p>
-  </div>
-
-  <div class="content-section">
-    <h2>2. Basic Operating Principle</h2>
-    <p>The electrical speed of the motor is set by the stator electrical frequency. The magnetic flux is set by the applied stator voltage.</p>
-
-    <div class="math-highlight">
-      <p>To maintain approximately constant air-gap flux:</p>
-      <div class="math-formula">
-        <strong>V / f = constant</strong>
-      </div>
-    </div>
-
-    <p>Increasing frequency increases speed. Increasing voltage maintains flux.</p>
-
-    <p><strong>If frequency increases without a corresponding voltage increase, flux weakens and torque drops.</strong></p>
-  </div>
-
-  <div class="content-section">
-    <h2>3. Intuitive View (Engineering Perspective)</h2>
-    <p>Think of V/f control as open-loop field generation.</p>
-
-    <p>You are:</p>
-    <ul>
-      <li>commanding a rotating magnetic field</li>
-      <li>assuming the rotor stays synchronized</li>
-      <li>not correcting for load disturbances</li>
-    </ul>
-
-    <p>There is no feedback loop to recover if synchronism is lost.</p>
-
-    <p>This assumption holds only when:</p>
-    <ul>
-      <li>load torque is low</li>
-      <li>acceleration is gentle</li>
-      <li>operating conditions are predictable</li>
-    </ul>
-  </div>
-
-  <div class="content-section">
-    <h2>4. Control Architecture (Minimal)</h2>
-    <p>A typical open-loop V/f implementation follows this flow:</p>
-
-    <div class="control-flow">
-      <div class="flow-item">Speed reference</div>
-      <div class="flow-arrow">↓</div>
-      <div class="flow-item">Electrical frequency command</div>
-      <div class="flow-arrow">↓</div>
-      <div class="flow-item">Voltage reference = (V/f ratio × frequency)</div>
-      <div class="flow-arrow">↓</div>
-      <div class="flow-item">Sinusoidal reference generation</div>
-      <div class="flow-arrow">↓</div>
-      <div class="flow-item">SPWM</div>
-      <div class="flow-arrow">↓</div>
-      <div class="flow-item">Inverter → Motor</div>
-    </div>
-
-    <div class="emphasis-box">
-      <h4>What is intentionally missing:</h4>
-      <ul>
-        <li>rotor position feedback</li>
-        <li>current control loop</li>
-        <li>torque regulation</li>
-      </ul>
-      <p><em>This is by design.</em></p>
-    </div>
-  </div>
-
-  <div class="content-section">
-    <h2>5. Startup and Low-Speed Behavior</h2>
-    <p>At standstill:</p>
-    <ul>
-      <li>back-EMF is zero</li>
-      <li>torque production is weak</li>
-      <li>rotor position is unknown</li>
-    </ul>
-
-    <p>As a result, most practical implementations include:</p>
-    <ul>
-      <li>a minimum starting frequency</li>
-      <li>voltage boost at low speed</li>
-      <li>a controlled frequency ramp</li>
-    </ul>
-
-    <p>These measures improve startup reliability but do not guarantee synchronism under load.</p>
-  </div>
-
-  <div class="content-section">
-    <h2>6. Flux, Back-EMF, and Load Effects</h2>
-    <p>Motor flux is proportional to V / f.</p>
-
-    <div class="vf-analysis">
-      <div class="analysis-item">
-        <strong>If V/f is too low</strong> → weak flux, low torque
-      </div>
-      <div class="analysis-item">
-        <strong>If V/f is too high</strong> → magnetic saturation, heating
-      </div>
-    </div>
-
-    <p>Back-EMF increases with speed and opposes the applied voltage. Since back-EMF is not measured in open-loop control, load-dependent speed error accumulates.</p>
-
-    <p>Under sudden load changes:</p>
-    <ul>
-      <li>current rises uncontrollably</li>
-      <li>rotor may slip</li>
-      <li>synchronism can be lost</li>
-    </ul>
-
-    <p><em>This is a fundamental limitation, not an implementation flaw.</em></p>
-  </div>
-
-  <div class="content-section">
-    <h2>7. Torque Control Limitations</h2>
-    <p>In V/f control:</p>
-    <ul>
-      <li>flux is assumed, not regulated</li>
-      <li>current is uncontrolled</li>
-      <li>torque becomes load-dependent</li>
-    </ul>
-
-    <p>Practical consequences:</p>
-    <ul>
-      <li>poor dynamic response</li>
-      <li>torque ripple</li>
-      <li>stalling risk under transients</li>
-    </ul>
-
-    <p>For this reason, V/f control is not a substitute for vector control or FOC.</p>
-  </div>
-
-  <div class="content-section">
-    <h2>8. PWM Strategy</h2>
-    <p>Sinusoidal PWM (SPWM) is commonly used.</p>
-
-    <div class="pwm-details">
-      <ul>
-        <li>sinusoidal reference vs triangular carrier</li>
-        <li>modulation index defines output voltage</li>
-        <li>linear region operation up to modulation index ≈ 1</li>
-      </ul>
-    </div>
-
-    <p>At higher speeds:</p>
-    <ul>
-      <li>DC bus voltage limits output</li>
-      <li>voltage margin reduces</li>
-      <li>efficiency drops</li>
-    </ul>
-  </div>
-
-  <div class="content-section">
-    <h2>9. Practical Implementation Considerations</h2>
 
     <p>
-    Open-loop V/f control may look trivial on paper, but real hardware imposes
-    constraints that must be handled deliberately. Most failures seen during
-    bring-up are not due to theory, but due to poor handling of transitions.
+      V/f control sits at the lowest end of the motor-control complexity spectrum.
+      It avoids feedback entirely and assumes the rotor will follow the rotating
+      stator field.
     </p>
+
+    <p>It deliberately does <strong>not</strong> include:</p>
+    <ul>
+      <li>Rotor position sensing</li>
+      <li>Current regulation</li>
+      <li>Torque control loops</li>
+    </ul>
+  </section>
+
+  <!-- Principle -->
+  <section class="concept-section">
+    <h2>2. Basic Operating Principle</h2>
+
+    <p>
+      Electrical frequency sets speed.  
+      Voltage magnitude sets magnetic flux.
+    </p>
+
+    <p><strong>Key condition:</strong></p>
+    <blockquote>
+      Maintain V / f ≈ constant to keep air-gap flux stable
+    </blockquote>
+
+    <p>
+      Increasing frequency without increasing voltage weakens flux,
+      reducing torque capability.
+    </p>
+  </section>
+
+  <!-- EMF -->
+  <section class="concept-section">
+    <h2>3. Back-EMF in PMSM Motors</h2>
+
+    <p>
+      As the rotor spins, permanent magnets induce voltage in the stator windings.
+      This back-EMF increases with speed and directly opposes the applied voltage.
+    </p>
+
+    <img src="bemfpmsm.jpeg" alt="Measured PMSM back-EMF waveforms">
+    <div class="media-caption">
+      Measured PMSM back-EMF waveforms showing sinusoidal shape and 120° phase shift
+    </div>
+
+    <video controls muted preload="metadata">
+      <source src="bemfvid.mp4" type="video/mp4">
+    </video>
+
+    <div class="media-caption">
+      Real-time back-EMF measurement during mechanical rotation
+    </div>
+  </section>
+
+  <!-- Control chain -->
+  <section class="concept-section">
+    <h2>4. Minimal Control Architecture</h2>
+
+    <ul>
+      <li>Speed reference → electrical frequency</li>
+      <li>Frequency → voltage via fixed V/f ratio</li>
+      <li>Sine reference generation</li>
+      <li>SPWM modulation</li>
+      <li>Inverter → motor</li>
+    </ul>
+
+    <p>
+      No feedback exists to correct errors once synchronism is lost.
+    </p>
+  </section>
+
+  <!-- Practical issues -->
+  <section class="concept-section">
+    <h2>5. Practical Implementation Considerations</h2>
 
     <h3>Frequency Ramping</h3>
     <p>
-    The rotor cannot instantaneously follow a step change in electrical frequency.
-    Always apply a controlled frequency ramp to avoid loss of synchronism.
+      Always ramp frequency. The rotor cannot follow instantaneous changes.
     </p>
-    <ul>
-      <li>Use linear or S-curve ramps</li>
-      <li>Keep acceleration low during startup</li>
-      <li>Ramp frequency first, then voltage follows via V/f</li>
-    </ul>
 
-    <h3>Voltage Boost at Low Speed</h3>
+    <h3>Low-Speed Voltage Boost</h3>
     <p>
-    At low frequencies, stator resistance dominates and reduces effective air-gap
-    flux. A small voltage boost is often required to produce usable torque.
+      At low frequency, stator resistance dominates.
+      A small voltage boost is often required.
     </p>
-    <ul>
-      <li>Apply fixed or proportional voltage offset below base frequency</li>
-      <li>Avoid excessive boost to prevent overheating</li>
-    </ul>
-
-    <h3>Start / Stop Handling</h3>
-    <p>
-    Abrupt start or stop commands can desynchronize the rotor.
-    </p>
-    <ul>
-      <li>Always ramp down frequency before stopping</li>
-      <li>Avoid zero-frequency dwell with non-zero voltage</li>
-    </ul>
 
     <h3>Direction Reversal</h3>
     <p>
-    Instant frequency sign reversal is unsafe in open-loop control.
+      Ramp frequency to zero, allow settling, then reverse.
     </p>
+  </section>
+
+  <!-- Implementation methods -->
+  <section class="concept-section">
+    <h2>6. Common Implementation Methods</h2>
+
+    <h3>Direct Sine Calculation</h3>
     <ul>
-      <li>Ramp frequency to zero</li>
-      <li>Allow rotor to settle</li>
-      <li>Ramp up in opposite direction</li>
+      <li>Simple</li>
+      <li>CPU intensive</li>
     </ul>
 
-    <p>
-    These measures do not guarantee stability — they merely reduce the likelihood
-    of losing synchronism.
-    </p>
-  </div>
-
-  <div class="content-section">
-    <h2>10. Common Open-Loop V/f Implementation Methods</h2>
-
-    <h3>Method 1: Direct Sine Calculation (math.h)</h3>
-    <p>
-    The simplest implementation computes sine values in real time using standard
-    math functions.
-    </p>
+    <h3>Sine Lookup Table (LUT)</h3>
     <ul>
-      <li>Easy to understand and implement</li>
-      <li>High CPU load on low-cost MCUs</li>
-      <li>Floating-point dependency</li>
+      <li>Deterministic</li>
+      <li>Industry standard</li>
     </ul>
-    <p>
-    Best suited for simulations, high-end controllers, or early bring-up.
-    </p>
 
-    <h3>Method 2: Sine Lookup Table (LUT)</h3>
-    <p>
-    A precomputed sine table stored in memory is indexed using a phase accumulator.
-    </p>
+    <h3>Hall-Assisted Open-Loop</h3>
     <ul>
-      <li>Low computational overhead</li>
-      <li>Deterministic timing</li>
-      <li>Widely used in embedded systems</li>
+      <li>Improved startup reliability</li>
+      <li>Still not torque control</li>
     </ul>
-    <p>
-    Table resolution trades memory for waveform quality.
-    </p>
+  </section>
 
-    <h3>Method 3: Hall-Assisted Open-Loop (Hybrid)</h3>
-    <p>
-    In some systems, Hall sensor transitions are used only to align phase advance
-    or duty-cycle selection while still operating without current control.
-    </p>
-    <ul>
-      <li>Improves robustness during startup</li>
-      <li>Reduces risk of reverse rotation</li>
-      <li>Still not closed-loop torque control</li>
-    </ul>
-    <p>
-    This approach sits between pure open-loop and true closed-loop control.
-    </p>
-  </div>
-
-  <div class="content-section">
-    <h2>11. Applications and Non-Applications</h2>
+  <!-- Applications -->
+  <section class="concept-section">
+    <h2>7. Applications & Limitations</h2>
 
     <div class="applications-grid">
-      <div class="applications">
-        <h3>✅ Appropriate use cases</h3>
+      <div>
+        <h3>Suitable</h3>
         <ul>
-          <li>fans and blowers</li>
-          <li>pumps with predictable load</li>
-          <li>motor bring-up and validation</li>
-          <li>educational and lab setups</li>
+          <li>Fans and blowers</li>
+          <li>Pumps</li>
+          <li>Motor bring-up</li>
+          <li>Education</li>
         </ul>
       </div>
 
-      <div class="non-applications">
-        <h3>❌ Avoid V/f control for:</h3>
+      <div>
+        <h3>Not Suitable</h3>
         <ul>
-          <li>EV traction drives</li>
-          <li>robotics and servo systems</li>
-          <li>high-efficiency applications</li>
-          <li>dynamic torque control</li>
+          <li>EV traction</li>
+          <li>Servo drives</li>
+          <li>Dynamic torque systems</li>
         </ul>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="content-section">
-    <h2>12. Key Takeaways</h2>
-    <ul class="key-takeaways-list">
-      <li>Open-loop V/f control is simple, robust, and easy to implement</li>
-      <li>It works only under predictable, light-load conditions</li>
-      <li>No feedback means no correction under disturbances</li>
-      <li>Best used as a starting point, not a final solution</li>
+  <!-- Takeaways -->
+  <section class="concept-section">
+    <h2>Key Takeaways</h2>
+
+    <ul>
+      <li>V/f control is simple and assumption-heavy</li>
+      <li>No feedback means no correction</li>
+      <li>Excellent for bring-up, poor for performance</li>
     </ul>
 
-    <div class="engineer-note">
-      <h3>Engineering Warning</h3>
-      <p>
-      If open-loop V/f control works only when the load is light and predictable,
-      it is not "working well" — it is simply operating within its assumptions.
-      Any apparent robustness disappears the moment those assumptions break.
-      </p>
-    </div>
+    <p>
+      In EV inverter development, V/f control is typically the
+      <em>first firmware flashed</em>—never the last.
+    </p>
+  </section>
 
-    <div class="engineer-note">
-      <h3>Engineer's Note</h3>
-      <p>In real EV inverter development, V/f control is often the first firmware loaded to verify power-stage health before enabling current control and FOC.</p>
-    </div>
-  </div>
-
-  <!-- Section Navigation -->
-  <div class="section-nav">
-    <h3>Navigate Through Motor Control Topics</h3>
-    <div class="nav-grid">
-      <a href="#" class="nav-item disabled">
-        <span class="nav-label">← Previous</span>
-        <h3>PMSM vs BLDC</h3>
-        <p>Understanding motor types and characteristics</p>
-      </a>
-
-      <a href="#" class="nav-item disabled">
-        <span class="nav-label">Next →</span>
-        <h3>Sensors & Feedback</h3>
-        <p>Position sensing and current measurement</p>
-      </a>
-    </div>
-  </div>
-
-  <!-- Quick Navigation Footer -->
+  <!-- Footer Nav -->
   <section class="nav-grid">
     <a href="motor-controls.html" class="nav-button">← Motor Controls</a>
     <a href="topics.html" class="nav-button">All Topics →</a>
     <a href="index.html" class="nav-button">Home</a>
   </section>
-  </section>
 
-  <!-- Visitor Counter -->
-  <div class="visitor-counter" id="visitor-counter">
-    👁️ Your visits: <span id="visitor-count">0</span>
-  </div>
+</section>
 
-  <!-- Comments Section -->
-  <div class="comment-section">
-    <h3>💬 Questions or Feedback?</h3>
-    <p>Have questions about V/f control implementation, or want to share your experience? Leave a comment below!</p>
 
-    <form class="comment-form" id="comment-form">
-      <input type="text" class="comment-author" id="comment-author" placeholder="Your name (optional)" maxlength="50">
-      <textarea class="comment-input" id="comment-text" placeholder="Share your thoughts, ask questions, or provide feedback about V/f control..." maxlength="500" required></textarea>
-      <button type="submit" class="comment-submit">Post Comment</button>
-    </form>
-
-    <div class="comments-list" id="comments-list">
-      <!-- Comments will be loaded here -->
-    </div>
-  </div>
-
-  <script>
-// Visitor Counter
-function initVisitorCounter() {
-    const counterElement = document.getElementById('visitor-count');
-    const pageId = window.location.pathname;
-    const storageKey = `visitor_count_${pageId}`;
-
-    let count = parseInt(localStorage.getItem(storageKey)) || 0;
-    count++;
-    localStorage.setItem(storageKey, count);
-    counterElement.textContent = count;
-}
-
-// Comment System
-function initCommentSystem() {
-    const commentForm = document.getElementById('comment-form');
-    const commentText = document.getElementById('comment-text');
-    const commentAuthor = document.getElementById('comment-author');
-    const commentsList = document.getElementById('comments-list');
-
-    // Load existing comments
-    loadComments();
-
-    // Handle form submission
-    commentForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        const text = commentText.value.trim();
-        const author = commentAuthor.value.trim() || 'Anonymous';
-
-        if (text.length === 0) return;
-
-        const comment = {
-            id: Date.now(),
-            author: author,
-            text: text,
-            date: new Date().toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            })
-        };
-
-        saveComment(comment);
-        displayComment(comment);
-
-        // Clear form
-        commentText.value = '';
-        commentAuthor.value = '';
-    });
-
-    function saveComment(comment) {
-        const pageId = window.location.pathname;
-        const storageKey = `comments_${pageId}`;
-        const comments = JSON.parse(localStorage.getItem(storageKey)) || [];
-        comments.unshift(comment); // Add to beginning
-        localStorage.setItem(storageKey, JSON.stringify(comments.slice(0, 10))); // Keep only latest 10
-    }
-
-    function loadComments() {
-        const pageId = window.location.pathname;
-        const storageKey = `comments_${pageId}`;
-        const comments = JSON.parse(localStorage.getItem(storageKey)) || [];
-
-        comments.forEach(comment => displayComment(comment));
-    }
-
-    function displayComment(comment) {
-        const commentElement = document.createElement('div');
-        commentElement.className = 'comment-item';
-        commentElement.innerHTML = `
-            <div class="comment-header">
-                <span class="comment-author-name">${comment.author}</span>
-                <span class="comment-date">${comment.date}</span>
-            </div>
-            <p class="comment-content">${comment.text.replace(/\n/g, '<br>')}</p>
-        `;
-        commentsList.insertBefore(commentElement, commentsList.firstChild);
-    }
-}
-
-// Initialize features
-document.addEventListener('DOMContentLoaded', function() {
-    initVisitorCounter();
-    initCommentSystem();
-});
-</script>
+<script src="script.js"></script>
 
 <footer>
-  <div class="footer-content">
-    <div class="footer-section">
-      <h3>Quick Links</h3>
-      <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="topics.html">Topics</a></li>
-        <li><a href="updates.html">Updates</a></li>
-        <li><a href="about.html">About</a></li>
-      </ul>
-    </div>
-
-    <div class="footer-section">
-      <h3>Domains</h3>
-      <ul>
-        <li><a href="motor-controls.html">Motor Controls</a></li>
-        <li><a href="topics.html">Battery & BMS</a></li>
-        <li><a href="topics.html">Power Electronics</a></li>
-        <li><a href="topics.html">Embedded Systems</a></li>
-      </ul>
-    </div>
-
-    <div class="footer-section">
-      <h3>Connect</h3>
-      <ul>
-        <li><a href="contact.html">Contact</a></li>
-        <li><a href="https://www.linkedin.com/in/neerajyadav18" target="_blank">LinkedIn</a></li>
-        <li><a href="mailto:nd18yadav@gmail.com">Email</a></li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="footer-bottom">
-    <p>&copy; 2026 EV & Electronics Lab. An open engineering knowledge base.</p>
-    <p>Last updated: January 2026</p>
-  </div>
+  <p>&copy; 2026 EV & Electronics Lab</p>
 </footer>
 
 </body>

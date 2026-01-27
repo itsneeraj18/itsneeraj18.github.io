@@ -5,6 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Motor Control Fundamentals</title>
   <link rel="stylesheet" href="style.css">
+
+  <style>
+    img, video {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 1.5rem auto;
+    }
+    video {
+      max-height: 420px;
+    }
+    blockquote {
+      border-left: 4px solid #ccc;
+      padding-left: 1rem;
+      margin: 1.5rem 0;
+      color: #444;
+      font-style: italic;
+    }
+  </style>
 </head>
 
 <body>
@@ -20,732 +39,182 @@
   </nav>
 </header>
 
-<section class="content-section">
+<section class="content-section container">
 
-  <!-- Breadcrumb -->
+
   <div class="breadcrumb">
-    <a href="index.html">Home</a>
-    <span>/</span>
-    <a href="topics.html">Topics</a>
-    <span>/</span>
+    <a href="index.html">Home</a> /
+    <a href="topics.html">Topics</a> /
     <span class="current">Motor Controls</span>
   </div>
 
-  <!-- Page Header -->
   <div class="page-header">
     <h1>Motor Control Fundamentals</h1>
     <p>
-      Understanding what we control, why we control it, and how control strategies emerge
-      from application requirements.
+      How motors are commanded, limited, and shaped to meet real application demands.
     </p>
   </div>
 
-  <!-- ===================== 1. WHAT IS MOTOR CONTROL ===================== -->
+  <!-- Orientation -->
+  <section class="page-orientation">
+    <p>
+      Motor control is not about equations first — it is about deciding
+      <strong>what behavior the machine must produce</strong>.
+      This page builds intuition from application needs and only then
+      connects them to control strategies.
+    </p>
+  </section>
+
+  <!-- 1 -->
   <section class="concept-section" id="overview">
     <h2>1. What Is Motor Control?</h2>
 
     <p>
-      Before discussing algorithms, transformations, or PWM techniques, motor control starts
-      with a simple but critical question:
+      Every motor control problem begins with a simple decision.
     </p>
 
     <blockquote>
-      <strong>What does the application want from the motor at this moment — torque or speed?</strong>
+      Do we need to control torque, or do we need to control speed?
     </blockquote>
 
     <p>
-      This decision defines the entire control strategy. Whether you are working on electric
-      vehicles, industrial drives, robotics, or HVAC systems, motor control exists to enforce
-      a desired <em>mechanical behavior</em> at the shaft.
-    </p>
-
-    <p>
-      Speed and torque are not independent choices — they are linked by the mechanical load.
-      Control systems decide which variable must be regulated tightly and which can be a
-      consequence of physics.
+      Control systems exist to enforce mechanical behavior at the shaft.
+      Mathematics is a tool — not the goal.
     </p>
   </section>
 
-  <!-- ===================== 2. TORQUE VS SPEED ===================== -->
+  <!-- 2 -->
   <section class="concept-section">
-    <h2>2. Torque vs Speed — Application Perspective</h2>
-
-    <p>
-      Most real-world applications can be categorized by whether they primarily demand
-      <strong>torque control</strong> or <strong>speed control</strong>.
-    </p>
+    <h2>2. Torque vs Speed — Application View</h2>
 
     <ul>
-      <li>
-        <strong>Electric Vehicles:</strong> Driver pedal commands torque. Speed is a result of
-        vehicle dynamics and road load.
-      </li>
-      <li>
-        <strong>Conveyors & Cranes:</strong> Torque control ensures smooth motion under varying load.
-      </li>
-      <li>
-        <strong>CNC Spindles:</strong> Speed must remain constant despite cutting forces.
-      </li>
-      <li>
-        <strong>Fans & Pumps:</strong> Speed control dominates for flow and efficiency regulation.
-      </li>
+      <li><strong>EV traction:</strong> Torque commanded directly, speed emerges</li>
+      <li><strong>Conveyors & cranes:</strong> Torque dominates under load changes</li>
+      <li><strong>CNC spindles:</strong> Speed must remain constant</li>
+      <li><strong>Fans & pumps:</strong> Speed sets flow</li>
     </ul>
 
     <p>
-      In practice, <strong>torque control dominates dynamic systems</strong>, while speed control
-      is used when steady-state behavior must be enforced.
-    </p>
-
-    <p>
-      This is why EV traction drives are fundamentally torque-controlled systems with
-      speed supervision layered on top.
+      Most dynamic systems are torque-controlled.
+      Speed control is usually layered on top.
     </p>
   </section>
 
-  <!-- ===================== 3. MOTOR AS MOTOR & GENERATOR ===================== -->
+  <!-- 3 -->
   <section class="concept-section">
-    <h2>3. Electric Machines: Motor and Generator Are the Same Device</h2>
-
-    <p>
-      An electric machine is inherently reversible.
-    </p>
+    <h2>3. Motor and Generator Are the Same Machine</h2>
 
     <ul>
-      <li>
-        Rotate the shaft mechanically → voltage appears at the terminals (generator action).
-      </li>
-      <li>
-        Apply voltage greater than back-EMF → torque is produced (motor action).
-      </li>
-      <li>
-        Allow back-EMF to dominate → energy flows back to the supply (regeneration).
-      </li>
+      <li>Mechanical rotation → voltage appears</li>
+      <li>Applied voltage exceeds EMF → motoring</li>
+      <li>EMF exceeds applied voltage → generating</li>
     </ul>
 
     <p>
-      This reversibility is not a special feature — it is a direct consequence of
-      electromagnetic laws. Regenerative braking in EVs and energy recovery in industrial
-      systems rely entirely on this principle.
-    </p>
-
-    <p>
-      From a control perspective, the inverter’s job is always the same:
-      <strong>apply the correct voltage vector to overcome or cooperate with back-EMF</strong>.
+      Regeneration is not a special mode.
+      It is the same machine obeying the same laws.
     </p>
   </section>
 
-  <!-- ===================== 4. EMF IN PMSM MOTORS ===================== -->
+  <!-- 4 -->
   <section class="concept-section">
-    <h2>4. EMF in PMSM Motors: The Voltage Generated by Rotation</h2>
+    <h2>4. Back-EMF in PMSM Machines</h2>
 
     <p>
-      When a PMSM rotor spins, its permanent magnets induce voltage in the stator windings.
-      This voltage, called <strong>back-EMF</strong>, is fundamental to motor operation.
+      Permanent magnets induce voltage in the stator as the rotor spins.
+      This voltage — back-EMF — defines both speed limits and regeneration.
     </p>
 
-    <div class="emf-visualization">
-      <h3>Observed EMF Waveforms in a PMSM Motor</h3>
-      <div class="emf-diagram">
-        <div class="emf-media-grid">
-          <div class="emf-media-item">
-            <div class="media-label">📊 Static Waveform Analysis</div>
-            <div class="emf-image-container">
-              <img src="bemfpmsm.jpeg" alt="PMSM EMF Waveforms - Three-phase back-EMF voltages showing sinusoidal characteristics with 120° phase shift" class="emf-image">
-            </div>
-          </div>
+    <img src="bemfpmsm.jpeg" alt="Measured PMSM back-EMF waveforms">
 
-          <div class="emf-media-item">
-            <div class="media-label">🎬 Dynamic EMF Measurement</div>
-            <div class="emf-video-container">
-              <video controls muted class="emf-video" preload="metadata">
-                <source src="bemfvid.mp4" type="video/mp4">
-                <p>Your browser does not support the video tag. <a href="bemfvid.mp4">Download the EMF video</a></p>
-              </video>
-            </div>
-          </div>
-        </div>
-
-        <div class="emf-caption">
-          <p><strong>Two-phase EMF waveforms from a PMSM motor</strong></p>
-          <p>Sinusoidal back-EMF voltages showing characteristic 120° phase shift between phases A and B. The video shows real-time measurement while the image provides detailed waveform analysis.</p>
-          <div class="measurement-details">
-            <div class="measurement-item">
-              <span class="measurement-label">Phase A Voltage:</span>
-              <span class="measurement-value">Measured EMF waveform</span>
-            </div>
-            <div class="measurement-item">
-              <span class="measurement-label">Phase B Voltage:</span>
-              <span class="measurement-value">120° phase shift from Phase A</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <h3>EMF Fundamentals</h3>
-
-    <div class="emf-explanation">
-      <div class="emf-concept">
-        <h4>Back-EMF Magnitude</h4>
-        <p>EMF voltage is proportional to:</p>
-        <ul>
-          <li>Rotational speed (ω)</li>
-          <li>Magnetic flux density (B)</li>
-          <li>Number of turns (N)</li>
-          <li>Effective air-gap length</li>
-        </ul>
-        <p><strong>E ∝ ω × B × N</strong></p>
-      </div>
-
-      <div class="emf-concept">
-        <h4>EMF Shape</h4>
-        <p>In an ideal PMSM:</p>
-        <ul>
-          <li>Sinusoidal EMF waveforms</li>
-          <li>120° electrical phase shift between phases</li>
-          <li>Constant amplitude (surface-mounted magnets)</li>
-          <li>Frequency = (pole pairs) × (mechanical speed)</li>
-        </ul>
-      </div>
-    </div>
-
-    <h3>Practical Implications</h3>
+    <video controls muted preload="metadata">
+      <source src="bemfvid.mp4" type="video/mp4">
+    </video>
 
     <p>
-      The generated EMF has critical implications for motor control:
+      Back-EMF magnitude scales with speed and flux:
+      <strong>E ∝ ω × Φ</strong>
     </p>
-
-    <ul>
-      <li>
-        <strong>Speed Sensing:</strong> EMF frequency reveals rotor speed without physical sensors.
-      </li>
-      <li>
-        <strong>Voltage Limits:</strong> Applied voltage must exceed EMF for motoring, creating speed-dependent voltage requirements.
-      </li>
-      <li>
-        <strong>Regenerative Braking:</strong> When EMF exceeds applied voltage, the machine becomes a generator.
-      </li>
-      <li>
-        <strong>Control Bandwidth:</strong> EMF provides natural damping and affects dynamic response.
-      </li>
-    </ul>
-
-    <div class="emf-note">
-      <p>
-        <strong>Engineering Insight:</strong> The EMF waveform you observe tells you about the motor's magnetic design.
-        Perfectly sinusoidal EMF indicates excellent magnet distribution and minimal cogging.
-      </p>
-    </div>
   </section>
 
-  <!-- ===================== 5. WHAT WE ACTUALLY CONTROL ===================== -->
+  <!-- 5 -->
   <section class="concept-section">
-    <h2>4. What Can Actually Be Controlled?</h2>
-
-    <p>
-      Although applications talk about speed and torque, an AC motor fundamentally allows
-      independent control of only two electromagnetic quantities:
-    </p>
+    <h2>5. What Can Actually Be Controlled?</h2>
 
     <ol>
-      <li>
-        <strong>Flux</strong> — establishes the magnetic field in the machine
-      </li>
-      <li>
-        <strong>Torque-producing current</strong> — interacts with flux to generate torque
-      </li>
+      <li>Flux (field strength)</li>
+      <li>Torque-producing current</li>
     </ol>
 
     <p>
-      Speed is not directly controlled. It is the mechanical outcome of torque balance between
-      the motor and the load.
-    </p>
-
-    <p>
-      Modern control techniques transform three-phase currents into a rotating reference
-      frame so that flux and torque behave like independent DC quantities. This is not new
-      physics — it is a structured way of applying well-understood principles.
+      Speed is never controlled directly.
+      It is the outcome of torque balance.
     </p>
   </section>
 
-  <!-- ===================== 5. TORQUE–SPEED CHARACTERISTICS ===================== -->
+  <!-- 6 -->
   <section class="concept-section">
-    <h2>5. Torque–Speed Characteristics Define Everything</h2>
+    <h2>6. Torque–Speed Envelope</h2>
 
     <p>
-      Every motor-driven system operates at the intersection of:
+      Every operating point lies at the intersection of:
     </p>
 
     <ul>
-      <li>The motor’s torque–speed capability</li>
-      <li>The load’s torque demand</li>
-      <li>The controller’s ability to enforce limits</li>
+      <li>Motor capability</li>
+      <li>Load demand</li>
+      <li>Controller limits</li>
     </ul>
 
     <p>
-      Understanding constant torque regions, constant power regions, and field-weakening
-      is essential for EVs, industrial drives, and high-speed machines.
-    </p>
-
-    <p>
-      Control strategies exist to ensure the machine follows this envelope safely,
-      efficiently, and repeatably.
+      Control strategies exist to stay inside this envelope safely.
     </p>
   </section>
 
-  <!-- ===================== 6. WHERE CONTROL STRATEGIES FIT ===================== -->
+  <!-- 7 -->
   <section class="concept-section">
-    <h2>6. Where Control Strategies Fit</h2>
-
-    <p>
-      With the fundamentals in place, different motor control strategies can be understood
-      as tools with specific strengths and limitations:
-    </p>
+    <h2>7. Where Control Strategies Fit</h2>
 
     <ul>
-      <li>
-        <strong>Open-Loop V/f Control:</strong> Simple scalar control for motor bring-up and
-        light-load applications.
-      </li>
-      <li>
-        <strong>Field-Oriented Control (FOC):</strong> Precise torque control across the full
-        speed range — dominant in EV traction systems.
-      </li>
-      <li>
-        <strong>Advanced Extensions:</strong> MTPA, flux weakening, sensorless observers,
-        and efficiency optimization.
-      </li>
+      <li><strong>Open-loop V/f:</strong> Bring-up and light load</li>
+      <li><strong>FOC:</strong> Precise torque control</li>
+      <li><strong>Advanced:</strong> MTPA, flux weakening, observers</li>
     </ul>
-
-    <p>
-      Each method exists because a specific application demands it — not because the
-      mathematics is elegant.
-    </p>
   </section>
 
-  <!-- ===================== TOPIC LINKS ===================== -->
+  <!-- Topics -->
   <section class="learning-module">
-    <div class="module-header">
-      <h2>Motor Control Topics</h2>
-      <p>Explore individual techniques and implementations</p>
-    </div>
+    <h2>Continue Learning</h2>
 
     <div class="topic-grid">
       <a href="vf-control.html" class="topic-card">
         <h3>Open-Loop V/f Control</h3>
-        <p>Scalar control for simple and light-load applications</p>
-        <div class="tech-tags">
-          <span class="tag">Scalar</span>
-          <span class="tag">Fundamentals</span>
-        </div>
+        <p>Scalar control for early-stage operation</p>
       </a>
 
       <a href="foc.html" class="topic-card">
-        <h3>Field-Oriented Control (FOC)</h3>
-        <p>High-performance torque control for EVs and industrial drives</p>
-        <div class="tech-tags">
-          <span class="tag">Vector Control</span>
-          <span class="tag">EV</span>
-        </div>
+        <h3>Field-Oriented Control</h3>
+        <p>Vector control for high performance</p>
       </a>
 
       <a href="spwm.html" class="topic-card">
         <h3>SPWM & Modulation</h3>
-        <p>Generating inverter switching signals</p>
-        <div class="tech-tags">
-          <span class="tag">PWM</span>
-        </div>
+        <p>How inverters create AC waveforms</p>
       </a>
     </div>
   </section>
 
-  <!-- Motor Control Topics Overview -->
-  <div class="topics-overview-section">
-    <h2>Motor Control Topics Overview</h2>
-    <p class="overview-intro">Explore our comprehensive motor control learning path, from fundamental concepts to advanced implementation techniques.</p>
-
-    <div class="topics-roadmap">
-      <!-- Fundamentals -->
-      <div class="roadmap-phase">
-        <h3>🎯 Fundamentals</h3>
-        <div class="phase-topics">
-          <div class="topic-item available">
-            <div class="topic-icon">🔄</div>
-            <div class="topic-content">
-              <h4><a href="#overview">What is Motor Control?</a></h4>
-              <p>Core concepts, control strategies, and application requirements</p>
-              <span class="topic-status available">Available</span>
-            </div>
-          </div>
-
-          <div class="topic-item available">
-            <div class="topic-icon">⚙️</div>
-            <div class="topic-content">
-              <h4><a href="#machines">PMSM & BLDC Machines</a></h4>
-              <p>Permanent magnet synchronous motors, characteristics, and fundamentals</p>
-              <span class="topic-status coming-soon">Coming Soon</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Control Techniques -->
-      <div class="roadmap-phase">
-        <h3>🎛️ Control Techniques</h3>
-        <div class="phase-topics">
-          <div class="topic-item available">
-            <div class="topic-icon">🔄</div>
-            <div class="topic-content">
-              <h4><a href="vf-control.html">Open-Loop V/f Control</a></h4>
-              <p>Scalar control for motor bring-up, light loads, and cost-sensitive applications</p>
-              <span class="topic-status available">Available</span>
-            </div>
-          </div>
-
-          <div class="topic-item available">
-            <div class="topic-icon">📡</div>
-            <div class="topic-content">
-              <h4><a href="#sensors">Sensors & Feedback</a></h4>
-              <p>Position sensors, current measurement, and feedback systems</p>
-              <span class="topic-status coming-soon">Coming Soon</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Advanced Control -->
-      <div class="roadmap-phase">
-        <h3>🚀 Advanced Control</h3>
-        <div class="phase-topics">
-          <div class="topic-item available">
-            <div class="topic-icon">🎯</div>
-            <div class="topic-content">
-              <h4><a href="#closed-loop">Field-Oriented Control (FOC)</a></h4>
-              <p>Vector control implementation with MATLAB simulation and real hardware</p>
-              <span class="topic-status available">Available</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Validation & Testing -->
-      <div class="roadmap-phase">
-        <h3>✅ Validation & Testing</h3>
-        <div class="phase-topics">
-          <div class="topic-item available">
-            <div class="topic-icon">🔬</div>
-            <div class="topic-content">
-              <h4><a href="#testing">Testing & Validation</a></h4>
-              <p>Dynamometer testing, efficiency mapping, and real-world validation</p>
-              <span class="topic-status coming-soon">Coming Soon</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Learning Path -->
-    <div class="learning-path">
-      <h3>Recommended Learning Path</h3>
-      <div class="path-steps">
-        <div class="path-step">
-          <span class="step-number">1</span>
-          <span class="step-title">Start Here</span>
-          <p>Understand motor control fundamentals</p>
-        </div>
-        <div class="path-arrow">→</div>
-        <div class="path-step">
-          <span class="step-number">2</span>
-          <span class="step-title">Build Foundation</span>
-          <p>Learn machine characteristics</p>
-        </div>
-        <div class="path-arrow">→</div>
-        <div class="path-step">
-          <span class="step-number">3</span>
-          <span class="step-title">Master Control</span>
-          <p>V/f and FOC techniques</p>
-        </div>
-        <div class="path-arrow">→</div>
-        <div class="path-step">
-          <span class="step-number">4</span>
-          <span class="step-title">Go Advanced</span>
-          <p>Sensors and validation</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Quick Access Links -->
-    <div class="quick-access">
-      <h3>Quick Access</h3>
-      <div class="quick-access-grid">
-        <a href="vf-control.html" class="access-link">
-          <span class="link-icon">🔄</span>
-          <span class="link-text">Try V/f Control Demo</span>
-        </a>
-        <a href="#closed-loop" class="access-link">
-          <span class="link-icon">📊</span>
-          <span class="link-text">View FOC Simulation</span>
-        </a>
-        <a href="topics.html" class="access-link">
-          <span class="link-icon">📚</span>
-          <span class="link-text">Explore All Domains</span>
-        </a>
-        <a href="index.html" class="access-link">
-          <span class="link-icon">🏠</span>
-          <span class="link-text">Back to Home</span>
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <!-- Footer Navigation -->
   <section class="nav-grid">
     <a href="topics.html" class="nav-button">← All Topics</a>
-    <a href="index.html" class="nav-button">Home →</a>
+    <a href="vf-control.html" class="nav-button">Next: V/f Control →</a>
   </section>
 
-  </section>
-
-  <!-- Visitor Counter -->
-  <div class="visitor-counter" id="visitor-counter" style="display: none;">
-    👁️ Your visits: <span id="visitor-count">0</span>
-  </div>
-
-  <!-- Comments Section -->
-  <div class="comment-section">
-    <h3>💬 Share Your Thoughts</h3>
-    <p>Have questions about motor control or V/f implementation? Leave a comment below!</p>
-
-    <form class="comment-form" id="comment-form">
-      <input type="text" class="comment-author" id="comment-author" placeholder="Your name (optional)" maxlength="50">
-      <textarea class="comment-input" id="comment-text" placeholder="Share your thoughts, ask questions, or provide feedback..." maxlength="500" required></textarea>
-      <button type="submit" class="comment-submit">Post Comment</button>
-    </form>
-
-    <div class="comments-list" id="comments-list">
-      <!-- Comments will be loaded here -->
-    </div>
-  </div>
-
-  <script>
-// Visitor Counter (Owner Only)
-function initVisitorCounter() {
-    // Only show counter for site owner
-    const isOwner = localStorage.getItem('site_owner') === 'neeraj';
-    const counterDiv = document.getElementById('visitor-counter');
-
-    if (!isOwner) {
-        counterDiv.style.display = 'none';
-        return;
-    }
-
-    const counterElement = document.getElementById('visitor-count');
-    const pageId = window.location.pathname;
-    const storageKey = `visitor_count_${pageId}`;
-
-    let count = parseInt(localStorage.getItem(storageKey)) || 0;
-    count++;
-    localStorage.setItem(storageKey, count);
-    counterElement.textContent = count;
-
-    // Show the counter
-    counterDiv.style.display = 'block';
-}
-
-// Comment System
-function initCommentSystem() {
-    const commentForm = document.getElementById('comment-form');
-    const commentText = document.getElementById('comment-text');
-    const commentAuthor = document.getElementById('comment-author');
-    const commentsList = document.getElementById('comments-list');
-
-    // Load existing comments
-    loadComments();
-
-    // Handle form submission
-    commentForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        const text = commentText.value.trim();
-        const author = commentAuthor.value.trim() || 'Anonymous';
-
-        if (text.length === 0) return;
-
-        const comment = {
-            id: Date.now(),
-            author: author,
-            text: text,
-            date: new Date().toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            })
-        };
-
-        saveComment(comment);
-        displayComment(comment);
-
-        // Clear form
-        commentText.value = '';
-        commentAuthor.value = '';
-    });
-
-    function saveComment(comment) {
-        const pageId = window.location.pathname;
-        const storageKey = `comments_${pageId}`;
-        const comments = JSON.parse(localStorage.getItem(storageKey)) || [];
-        comments.unshift(comment); // Add to beginning
-        localStorage.setItem(storageKey, JSON.stringify(comments.slice(0, 10))); // Keep only latest 10
-    }
-
-    function loadComments() {
-        const pageId = window.location.pathname;
-        const storageKey = `comments_${pageId}`;
-        const comments = JSON.parse(localStorage.getItem(storageKey)) || [];
-
-        comments.forEach(comment => displayComment(comment));
-    }
-
-    function displayComment(comment) {
-        const commentElement = document.createElement('div');
-        commentElement.className = 'comment-item';
-        commentElement.innerHTML = `
-            <div class="comment-header">
-                <span class="comment-author-name">${comment.author}</span>
-                <span class="comment-date">${comment.date}</span>
-            </div>
-            <p class="comment-content">${comment.text.replace(/\n/g, '<br>')}</p>
-        `;
-        commentsList.insertBefore(commentElement, commentsList.firstChild);
-    }
-}
-
-// EMF Media Enhancement
-function initEMFMedia() {
-    const emfImage = document.querySelector('.emf-image');
-    const emfVideo = document.querySelector('.emf-video');
-
-    // Create overlay element
-    const overlay = document.createElement('div');
-    overlay.className = 'media-zoom-overlay';
-    document.body.appendChild(overlay);
-
-    // Function to close zoom
-    function closeZoom() {
-        const zoomedElement = document.querySelector('.media-zoomed');
-        if (zoomedElement) {
-            zoomedElement.classList.remove('media-zoomed');
-            overlay.classList.remove('active');
-        }
-    }
-
-    // Function to open zoom
-    function openZoom(element) {
-        element.classList.add('media-zoomed');
-        overlay.classList.add('active');
-    }
-
-    // ESC key handler
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            closeZoom();
-        }
-    });
-
-    // Overlay click handler
-    overlay.addEventListener('click', closeZoom);
-
-    // Image zoom functionality
-    if (emfImage) {
-        emfImage.addEventListener('click', function(event) {
-            event.stopPropagation(); // Prevent document click from firing
-            if (this.classList.contains('media-zoomed')) {
-                closeZoom();
-            } else {
-                openZoom(this);
-            }
-        });
-
-        emfImage.addEventListener('mouseenter', function() {
-            this.title = 'Click to zoom • Shows actual PMSM EMF waveforms with 120° phase shift';
-        });
-    }
-
-    // Video enhancement
-    if (emfVideo) {
-        // Ensure video stays muted
-        emfVideo.addEventListener('volumechange', function() {
-            if (!this.muted) {
-                this.muted = true;
-            }
-        });
-
-        // Add zoom functionality for video too
-        emfVideo.addEventListener('click', function(event) {
-            event.stopPropagation(); // Prevent document click from firing
-            if (this.classList.contains('media-zoomed')) {
-                closeZoom();
-            } else {
-                openZoom(this);
-            }
-        });
-
-        // Add tooltip
-        emfVideo.addEventListener('mouseenter', function() {
-            this.title = 'Click to zoom • EMF measurement video • Muted playback shows real-time waveforms';
-        });
-    }
-}
-
-// Initialize features
-document.addEventListener('DOMContentLoaded', function() {
-    initVisitorCounter();
-    initCommentSystem();
-    initEMFMedia();
-
-    // Header positioning is now handled by CSS
-});
-</script>
+</section>
 
 <footer>
-  <div class="footer-content">
-    <div class="footer-section">
-      <h3>Quick Links</h3>
-      <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="topics.html">Topics</a></li>
-        <li><a href="updates.html">Updates</a></li>
-        <li><a href="about.html">About</a></li>
-      </ul>
-    </div>
-
-    <div class="footer-section">
-      <h3>Domains</h3>
-      <ul>
-        <li><a href="motor-controls.html">Motor Controls</a></li>
-        <li><a href="topics.html">Battery & BMS</a></li>
-        <li><a href="topics.html">Power Electronics</a></li>
-        <li><a href="topics.html">Embedded Systems</a></li>
-      </ul>
-    </div>
-
-    <div class="footer-section">
-      <h3>Connect</h3>
-      <ul>
-        <li><a href="contact.html">Contact</a></li>
-        <li><a href="https://www.linkedin.com/in/neerajyadav18" target="_blank">LinkedIn</a></li>
-        <li><a href="mailto:nd18yadav@gmail.com">Email</a></li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="footer-bottom">
-    <p>&copy; 2026 EV & Electronics Lab. An open engineering knowledge base.</p>
-    <p>Last updated: January 2026</p>
-  </div>
+  <p>&copy; 2026 EV & Electronics Lab</p>
 </footer>
 
 </body>
+<script src="script.js"></script>
 </html>
