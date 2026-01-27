@@ -369,6 +369,7 @@ a:hover {
   overflow: hidden;
 }
 
+
 /* Standardized Image Styling */
 .feature-image,
 .milestone-image,
@@ -412,6 +413,30 @@ a:hover {
   object-fit: cover;
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 10px;
+}
+
+/* Standardized static image card caption styling (matches HV component style) */
+.static-img-card {
+  margin: 2.5rem 0;
+  text-align: center;
+}
+.static-img-caption {
+  margin-top: 0.75rem;
+  font-size: 1.08rem;
+  color: var(--color-primary);
+  background: rgba(79, 195, 247, 0.08);
+  border-radius: 8px;
+  padding: 0.7rem 1.2rem;
+  display: inline-block;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  box-shadow: 0 2px 12px rgba(79,195,247,0.06);
+}
+@media (max-width: 600px) {
+  .static-img-caption {
+    font-size: 0.98rem;
+    padding: 0.5rem 0.7rem;
+  }
 }
 
 /* Pattern backgrounds for visual elements */
