@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // 'hv-safety-components.html',
         'motor-controls.html',
         'vf-control.html',
+        'pmsm-foc-guide.html',
         'spwm.html',
         'battery-bms.html',
         'power-electronics.html',
