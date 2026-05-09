@@ -4,6 +4,386 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SPWM - Sinusoidal PWM</title>
 <link rel="stylesheet" href="style.css">
+<style>
+  /* SPWM specific styles */
+  .spwm-visualization {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 2rem 0;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  }
+
+  .waveform-container {
+    position: relative;
+    height: 300px;
+    background: #000;
+    border-radius: 8px;
+    margin: 1rem 0;
+    overflow: hidden;
+  }
+
+  .controls-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+
+  .control-group {
+    background: #2a2a2a;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #444;
+  }
+
+  .control-group label {
+    display: block;
+    color: #4fc3f7;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+
+  .control-group input[type="range"] {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .control-group .value-display {
+    color: #fff;
+    font-family: monospace;
+    font-size: 0.9rem;
+  }
+
+  .math-card {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    border-left: 4px solid #4fc3f7;
+    box-shadow: inset 0 0 0 1px rgba(79, 195, 247, 0.05);
+  }
+
+  .formula {
+    font-family: inherit;
+    color: #e5f7ff;
+    font-size: 1rem;
+    line-height: 1.75;
+    text-align: left;
+    background: rgba(79, 195, 247, 0.06);
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    border: 1px solid rgba(79, 195, 247, 0.2);
+    margin: 1rem 0;
+    white-space: pre-wrap;
+  }
+
+  .comparison-panel {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .comparison-panel h2 {
+    margin-top: 0;
+    color: #4fc3f7;
+  }
+
+  .comparison-panel p {
+    color: #ccc;
+    margin: 0.75rem 0 1.5rem;
+    line-height: 1.7;
+  }
+
+  .comparison-bars {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .comparison-item {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1fr) 150px;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .comparison-item:last-child {
+    border-bottom: none;
+  }
+
+  .comparison-item strong {
+    color: #ddd;
+    font-size: 0.95rem;
+  }
+
+  .comparison-bar {
+    height: 18px;
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .comparison-bar-fill {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, #4ade80, #22c55e);
+    transition: width 1s ease;
+  }
+
+  .comparison-meta {
+    color: #aaa;
+    font-size: 0.88rem;
+    white-space: nowrap;
+  }
+
+  .harmonic-graph {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .graph-title {
+    color: #4fc3f7;
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+
+  .graph-bars {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 1rem;
+    align-items: end;
+    min-height: 180px;
+  }
+
+  .graph-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: #ddd;
+    font-size: 0.85rem;
+  }
+
+  .graph-bar-fill {
+    width: 100%;
+    background: linear-gradient(180deg, #4fc3f7, #22c55e);
+    border-radius: 8px 8px 0 0;
+    transition: height 1s ease;
+    position: relative;
+  }
+
+  .graph-bar-value {
+    color: #fff;
+    font-size: 0.8rem;
+  }
+
+  .waveform-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .waveform-card {
+    background: #0e0e0e;
+    border: 1px solid #222;
+    border-radius: 16px;
+    padding: 1.35rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .waveform-card h4 {
+    margin: 0;
+    color: #4fc3f7;
+    font-size: 1rem;
+  }
+
+  .waveform-card p {
+    margin: 0;
+    color: #aaa;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .waveform-svg {
+    width: 100%;
+    min-height: 160px;
+    background: #050505;
+    border-radius: 12px;
+    border: 1px solid #222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem;
+  }
+
+  .waveform-svg svg {
+    width: 100%;
+    max-height: 140px;
+  }
+
+  .performance-insight {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .performance-insight h3 {
+    margin: 0 0 0.75rem;
+    color: #4fc3f7;
+  }
+
+  .performance-insight ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    color: #ddd;
+  }
+
+  .performance-insight li {
+    margin-bottom: 0.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .controls-panel {
+      grid-template-columns: 1fr;
+    }
+
+    .spwm-types-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .waveform-container {
+      height: 250px;
+    }
+
+    .comparison-item {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+      align-items: stretch;
+    }
+
+    .comparison-meta {
+      white-space: normal;
+    }
+  }
+
+  .spwm-types-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .spwm-type-card {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  }
+
+  .spwm-type-card h3 {
+    color: #4fc3f7;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .spwm-type-card .advantages,
+  .spwm-type-card .disadvantages {
+    margin: 1rem 0;
+  }
+
+  .spwm-type-card .advantages ul,
+  .spwm-type-card .disadvantages ul {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+  }
+
+  .spwm-type-card .advantages li {
+    color: #4ade80;
+  }
+
+  .spwm-type-card .disadvantages li {
+    color: #f87171;
+  }
+
+  .thd-analysis {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .thd-chart {
+    height: 250px;
+    background: #000;
+    border-radius: 8px;
+    margin: 1rem 0;
+    display: flex;
+    align-items: end;
+    justify-content: space-around;
+    padding: 1rem;
+  }
+
+  .thd-bar {
+    width: 40px;
+    background: linear-gradient(to top, #4fc3f7, #00d4ff);
+    border-radius: 4px 4px 0 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: end;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding-top: 0.5rem;
+  }
+
+  .thd-bar.fundamental {
+    background: linear-gradient(to top, #4ade80, #22c55e);
+  }
+
+  .thd-bar::after {
+    content: attr(data-value) '%';
+    position: absolute;
+    top: -25px;
+    color: #4fc3f7;
+    font-size: 0.7rem;
+  }
+
+  @media (max-width: 768px) {
+    .controls-panel {
+      grid-template-columns: 1fr;
+    }
+
+    .spwm-types-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .waveform-container {
+      height: 250px;
+    }
+  }
+</style>
 </head>
 
 <body>
@@ -34,89 +414,589 @@
   <!-- Topic Page Header -->
   <div class="page-header">
     <h1>Sinusoidal Pulse Width Modulation (SPWM)</h1>
-    <p>Advanced PWM techniques for smooth, efficient motor control</p>
+    <p>The foundation of modern motor control - generating smooth AC waveforms from DC power</p>
   </div>
 
-  <!-- Concept / Why It Matters -->
+  <!-- What is SPWM -->
   <div class="concept-section">
-    <h2>💡 What is SPWM and Why It Matters</h2>
-    <p>SPWM (Sinusoidal Pulse Width Modulation) is a fundamental technique used to generate sinusoidal AC voltages from a DC bus using high-frequency switching.</p>
-    <div class="static-img-card" style="margin:2rem auto; max-width:400px;">
-      <img src="spwm_waveform.jpg" alt="SPWM waveform example">
-      <div class="static-img-caption">SPWM waveform: Sine reference vs. triangle carrier</div>
+    <h2>🎯 What is SPWM?</h2>
+    <p><strong>Sinusoidal Pulse Width Modulation (SPWM)</strong> is a technique that converts DC bus voltage into AC voltage waveforms by comparing a sinusoidal reference signal with a high-frequency triangular carrier wave. This creates a PWM signal whose average value follows the sinusoidal reference, enabling smooth motor control.</p>
+
+    <div class="key-benefits" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin: 2rem 0;">
+      <div style="background: #1a1a1a; padding: 1.5rem; border-radius: 8px; border: 1px solid #333;">
+        <h4 style="color: #4fc3f7; margin-bottom: 0.5rem;">🔄 Smooth Operation</h4>
+        <p style="color: #ccc; margin: 0;">Generates sinusoidal currents for reduced torque ripple and acoustic noise</p>
+      </div>
+      <div style="background: #1a1a1a; padding: 1.5rem; border-radius: 8px; border: 1px solid #333;">
+        <h4 style="color: #4fc3f7; margin-bottom: 0.5rem;">⚡ High Efficiency</h4>
+        <p style="color: #ccc; margin: 0;">Optimizes DC bus utilization up to 78.5% of available voltage</p>
+      </div>
+      <div style="background: #1a1a1a; padding: 1.5rem; border-radius: 8px; border: 1px solid #333;">
+        <h4 style="color: #4fc3f7; margin-bottom: 0.5rem;">🎛️ Simple Implementation</h4>
+        <p style="color: #ccc; margin: 0;">Easy to implement on standard microcontrollers with PWM peripherals</p>
+      </div>
     </div>
-    <p>In motor drives, SPWM enables:</p>
-    <ul>
-      <li><strong>Smooth torque:</strong> Sinusoidal phase currents reduce torque ripple</li>
-      <li><strong>Harmonic reduction:</strong> Lower noise and EMI compared to simpler switching schemes</li>
-      <li><strong>Efficiency:</strong> Optimized for different modulation indices and operating points</li>
-      <li><strong>Simplicity:</strong> Implementable on standard microcontrollers with PWM peripherals</li>
-    </ul>
   </div>
 
-  <!-- Theory Section -->
+  <!-- Interactive SPWM Visualization -->
+  <div class="spwm-visualization">
+    <h2>🔬 Interactive SPWM Visualization</h2>
+    <p>Explore how SPWM works by adjusting the parameters below:</p>
+
+    <div class="controls-panel">
+      <div class="control-group">
+        <label for="modulationIndex">Modulation Index (m)</label>
+        <input type="range" id="modulationIndex" min="0.1" max="1.0" step="0.1" value="0.8">
+        <div class="value-display">m = <span id="mValue">0.8</span></div>
+      </div>
+
+      <div class="control-group">
+        <label for="fundamentalFreq">Fundamental Frequency (Hz)</label>
+        <input type="range" id="fundamentalFreq" min="10" max="100" step="5" value="50">
+        <div class="value-display">f₁ = <span id="fValue">50</span> Hz</div>
+      </div>
+
+      <div class="control-group">
+        <label for="carrierFreq">Carrier Frequency (Hz)</label>
+        <input type="range" id="carrierFreq" min="1000" max="20000" step="500" value="5000">
+        <div class="value-display">fₓ = <span id="fcValue">5000</span> Hz</div>
+      </div>
+
+      <div class="control-group">
+        <label for="phaseAngle">Phase Angle (°)</label>
+        <input type="range" id="phaseAngle" min="0" max="360" step="15" value="0">
+        <div class="value-display">θ = <span id="phaseValue">0</span>°</div>
+      </div>
+    </div>
+
+    <button id="toggleAnimBtn" class="toggle-button" type="button">Pause Animation</button>
+
+    <div class="waveform-container" id="waveformContainer">
+      <canvas id="spwmCanvas" width="800" height="300"></canvas>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+      <div style="text-align: center; color: #4fc3f7;">🔵 Sine Reference</div>
+      <div style="text-align: center; color: #f87171;">🔴 Triangle Carrier</div>
+      <div style="text-align: center; color: #4ade80;">🟢 PWM Output</div>
+    </div>
+  </div>
+
+  <!-- Mathematical Foundation -->
   <div class="theory-section">
-    <h2>📚 Theory & Fundamentals</h2>
-    <p><strong>How SPWM Works:</strong></p>
-    <p>A sinusoidal reference waveform is compared against a high-frequency triangular carrier signal. When the sine wave is higher than the triangle, the inverter switch turns ON. When it's lower, the switch turns OFF. The result is a pulse-width modulated signal whose average value (envelope) follows the sinusoidal reference.</p>
-    
-    <p><strong>Key Parameters:</strong></p>
-    <ul>
-      <li><strong>Modulation Index (m):</strong> Ratio of sine amplitude to triangle amplitude. Higher m increases output voltage.</li>
-      <li><strong>Carrier Frequency:</strong> Switching frequency (typically 10–20 kHz). Higher frequency = less filtering needed, but more switching losses.</li>
-      <li><strong>Fundamental Frequency:</strong> Motor speed command (0–400 Hz for EVs)</li>
-    </ul>
+    <h2>📐 Mathematical Foundation</h2>
 
-    <p>🚧 <strong>Missing:</strong> Mathematical derivations, harmonic analysis, comparison with SVPWM, waveform diagrams</p>
+    <div class="math-card">
+      <p class="math-text"><strong>SPWM Generation Principle:</strong> The PWM signal is generated by comparing the sinusoidal reference v<sub>ref</sub>(t) = V<sub>m</sub> · sin(ωt) with the triangular carrier v<sub>carrier</sub>(t) = V<sub>Δ</sub> · (2 f<sub>c</sub> t - floor(2 f<sub>c</sub> t + 1)). The inverter output is ON when v<sub>ref</sub> is above v<sub>carrier</sub>, and OFF otherwise.</p>
+    </div>
+
+    <div class="math-card">
+      <p class="math-text"><strong>Modulation index</strong> m is the ratio of the sine amplitude to the carrier amplitude: m = V<sub>m</sub> / V<sub>Δ</sub>. The peak output voltage becomes V<sub>out,peak</sub> = m · (V<sub>DC</sub> / 2), and the RMS output is V<sub>out,RMS</sub> = (m · V<sub>DC</sub>) / √2. DC bus utilization is therefore η = (V<sub>out,peak</sub> / V<sub>DC</sub>) × 100% = m/2 × 100%.</p>
+    </div>
+
+    <div class="math-card">
+      <p class="math-text">For three-phase systems, the line voltages are differences between phase voltages: V<sub>AB</sub> = V<sub>AO</sub> - V<sub>BO</sub>, V<sub>BC</sub> = V<sub>BO</sub> - V<sub>CO</sub>, and V<sub>CA</sub> = V<sub>CO</sub> - V<sub>AO</sub>. Here V<sub>AO</sub>, V<sub>BO</sub>, V<sub>CO</sub> are the phase-to-neutral voltages.</p>
+    </div>
   </div>
 
-  <!-- Simulation / Implementation -->
+  <!-- SPWM Types -->
+  <div class="spwm-types-section">
+    <h2>🔄 Types of SPWM</h2>
+
+    <div class="spwm-types-grid">
+      <div class="spwm-type-card">
+        <h3>📊 Single-Phase SPWM</h3>
+        <p>Basic implementation for single-phase applications like UPS systems and small drives.</p>
+        <div class="advantages">
+          <strong style="color: #4fc3f7;">Advantages:</strong>
+          <ul>
+            <li>Simple implementation</li>
+            <li>Low computational requirements</li>
+            <li>Suitable for low-power applications</li>
+          </ul>
+        </div>
+        <div class="disadvantages">
+          <strong style="color: #4fc3f7;">Limitations:</strong>
+          <ul>
+            <li>No neutral point</li>
+            <li>Higher THD compared to three-phase</li>
+            <li>Limited to single-phase loads</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="spwm-type-card">
+        <h3>🔺 Three-Phase SPWM</h3>
+        <p>Standard for three-phase motor drives with 120° phase shift between references.</p>
+        <div class="advantages">
+          <strong style="color: #4fc3f7;">Advantages:</strong>
+          <ul>
+            <li>Balanced three-phase output</li>
+            <li>Lower THD than single-phase</li>
+            <li>Optimal for motor applications</li>
+          </ul>
+        </div>
+        <div class="disadvantages">
+          <strong style="color: #4fc3f7;">Limitations:</strong>
+          <ul>
+            <li>Requires three PWM channels</li>
+            <li>More complex synchronization</li>
+            <li>Higher component count</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="spwm-type-card">
+        <h3>🎯 Bipolar vs Unipolar SPWM</h3>
+        <p>Bipolar uses single reference, unipolar uses two complementary references.</p>
+        <div class="advantages">
+          <strong style="color: #4fc3f7;">Bipolar Advantages:</strong>
+          <ul>
+            <li>Simpler implementation</li>
+            <li>Lower switching losses</li>
+            <li>Better for high frequencies</li>
+          </ul>
+        </div>
+        <div class="disadvantages">
+          <strong style="color: #4fc3f7;">Unipolar Advantages:</strong>
+          <ul>
+            <li>Lower THD</li>
+            <li>Higher DC bus utilization</li>
+            <li>Better harmonic performance</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- THD Analysis -->
+  <div class="thd-analysis">
+    <h2>📈 Total Harmonic Distortion (THD)</h2>
+    <p>THD measures the harmonic distortion in the inverter output. SPWM keeps the desired fundamental clean while shifting high-frequency switching harmonics away from the motor band.</p>
+
+    <div class="math-card">
+      <p class="math-text"><strong>THD</strong> is the square root of the sum of the squared harmonic voltages divided by the squared fundamental voltage, expressed as a percentage: THD = √[(V<sub>2</sub>² + V<sub>3</sub>² + V<sub>4</sub>² + ...)/V<sub>1</sub>²] × 100%.</p>
+    </div>
+
+    <div class="harmonic-graph">
+      <div class="graph-title">Typical SPWM Harmonic Spectrum</div>
+      <div class="graph-bars">
+        <div class="graph-bar">
+          <div class="graph-bar-fill" style="height: 18%;"></div>
+          <div class="graph-bar-value">3rd</div>
+          <span>18%</span>
+        </div>
+        <div class="graph-bar">
+          <div class="graph-bar-fill" style="height: 12%;"></div>
+          <div class="graph-bar-value">5th</div>
+          <span>12%</span>
+        </div>
+        <div class="graph-bar">
+          <div class="graph-bar-fill" style="height: 8%;"></div>
+          <div class="graph-bar-value">7th</div>
+          <span>8%</span>
+        </div>
+        <div class="graph-bar">
+          <div class="graph-bar-fill" style="height: 6%;"></div>
+          <div class="graph-bar-value">9th</div>
+          <span>6%</span>
+        </div>
+        <div class="graph-bar">
+          <div class="graph-bar-fill" style="height: 4%;"></div>
+          <div class="graph-bar-value">11th</div>
+          <span>4%</span>
+        </div>
+        <div class="graph-bar">
+          <div class="graph-bar-fill" style="height: 3%;"></div>
+          <div class="graph-bar-value">13th</div>
+          <span>3%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="waveform-grid">
+      <div class="waveform-card">
+        <h4>V<sub>AO</sub> (Pole Voltage)</h4>
+        <p>Voltage from phase A pole to the inverter midpoint or reference point.</p>
+      </div>
+      <div class="waveform-card">
+        <h4>V<sub>AB</sub> (Line Voltage)</h4>
+        <p>Difference between phase A and phase B outputs, which is the actual terminal voltage seen by the motor.</p>
+      </div>
+      <div class="waveform-card">
+        <h4>V<sub>Phase</sub></h4>
+        <p>Phase-to-neutral waveform produced by SPWM. The fundamental envelope is sinusoidal while the switching waveform is pulse-modulated.</p>
+      </div>
+      <div class="waveform-card">
+        <h4>3-Phase Inverter</h4>
+        <div class="waveform-svg">
+          <svg viewBox="0 0 280 180" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="20" width="240" height="140" rx="16" ry="16" fill="#121212" stroke="#333" stroke-width="2"/>
+            <line x1="140" y1="20" x2="140" y2="160" stroke="#4fc3f7" stroke-width="2" stroke-dasharray="4 4"/>
+            <line x1="80" y1="20" x2="80" y2="160" stroke="#888" stroke-width="2"/>
+            <line x1="200" y1="20" x2="200" y2="160" stroke="#888" stroke-width="2"/>
+            <circle cx="80" cy="60" r="10" fill="#4fc3f7"/>
+            <circle cx="80" cy="120" r="10" fill="#f87171"/>
+            <circle cx="200" cy="60" r="10" fill="#4fc3f7"/>
+            <circle cx="200" cy="120" r="10" fill="#f87171"/>
+            <circle cx="140" cy="60" r="10" fill="#4fc3f7"/>
+            <circle cx="140" cy="120" r="10" fill="#f87171"/>
+            <line x1="140" y1="60" x2="260" y2="60" stroke="#ccc" stroke-width="2"/>
+            <line x1="140" y1="120" x2="260" y2="120" stroke="#ccc" stroke-width="2"/>
+            <text x="28" y="16" fill="#4fc3f7" font-size="10">+VDC</text>
+            <text x="28" y="178" fill="#f87171" font-size="10">-VDC</text>
+            <text x="104" y="98" fill="#ddd" font-size="10">Phase A</text>
+            <text x="224" y="98" fill="#ddd" font-size="10">Phase B</text>
+            <text x="152" y="98" fill="#ddd" font-size="10">Phase C</text>
+          </svg>
+        </div>
+        <p>Simple 3-phase bridge showing the DC rails and three pole outputs.</p>
+      </div>
+    </div>
+
+    <div class="performance-insight">
+      <h3>Key Insights</h3>
+      <ul>
+        <li>SPWM is the baseline for three-phase motor drives, with smooth phase voltage output.</li>
+        <li>Line voltage is the difference between phase poles, so line-to-line fundamentals are critical.</li>
+        <li>Pole voltages are directly generated by the switching legs and form the phase waveforms.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="comparison-panel">
+    <h2>⚡ DC Bus Utilization Comparison</h2>
+    <p>Different PWM techniques extract different maximum fundamental voltage from the same DC bus. This chart highlights the trade-off between utilization and harmonic quality.</p>
+    <div class="comparison-bars">
+      <div class="comparison-item">
+        <strong>SPWM</strong>
+        <div class="comparison-bar"><div class="comparison-bar-fill" style="width: 78.5%;"></div></div>
+        <div class="comparison-meta">78.5% utilization</div>
+      </div>
+      <div class="comparison-item">
+        <strong>SVPWM</strong>
+        <div class="comparison-bar"><div class="comparison-bar-fill" style="width: 90.7%;"></div></div>
+        <div class="comparison-meta">90.7% utilization</div>
+      </div>
+      <div class="comparison-item">
+        <strong>3rd Harmonic</strong>
+        <div class="comparison-bar"><div class="comparison-bar-fill" style="width: 86.6%;"></div></div>
+        <div class="comparison-meta">86.6% utilization</div>
+      </div>
+      <div class="comparison-item">
+        <strong>6-step</strong>
+        <div class="comparison-bar"><div class="comparison-bar-fill" style="width: 100%;"></div></div>
+        <div class="comparison-meta">100% utilization, poor THD</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Implementation Section -->
   <div class="implementation-section">
-    <h2>🔧 Implementation</h2>
-    <p><strong>Real-World SPWM Implementation:</strong></p>
-    <ul>
-      <li>Timer module generates the triangular carrier (PWM base frequency)</li>
-      <li>ADC samples the phase current and feedback signals</li>
-      <li>Microcontroller computes the sinusoidal reference and compares with carrier</li>
-      <li>PWM duty cycles are updated in real-time (typically every 100 µs)</li>
-    </ul>
+    <h2>🔧 Practical Implementation</h2>
 
-    <p>🚧 <strong>Missing:</strong> STM32 code snippets, MATLAB/Simulink models, timing diagrams</p>
-  </div>
+    <h3>Microcontroller Implementation</h3>
+    <div style="background: #2a2a2a; padding: 1.5rem; border-radius: 8px; margin: 1rem 0; font-family: 'Courier New', monospace; color: #4ade80;">
+      <pre style="margin: 0; overflow-x: auto;">
+// STM32 SPWM Implementation Example
+#define CARRIER_FREQ 5000
+#define FUNDAMENTAL_FREQ 50
+#define MODULATION_INDEX 0.8
 
-  <!-- Validation Section -->
-  <div class="validation-section">
-    <h2>✅ Validation & Testing</h2>
-    <p><strong>How to Validate SPWM Implementation:</strong></p>
-    <ul>
-      <li>Oscilloscope measurement of phase voltages and currents</li>
-      <li>FFT analysis to verify harmonic content</li>
-      <li>Motor torque ripple measurement under steady-state conditions</li>
-      <li>Thermal testing at rated speed and torque</li>
-    </ul>
+void SPWM_Init() {
+    // Configure Timer for carrier generation
+    TIM1->ARR = SystemCoreClock / (2 * CARRIER_FREQ);
+    TIM1->CCR1 = TIM1->ARR / 2;  // 50% duty for triangle
 
-    <p>🚧 <strong>Missing:</strong> Experimental results, photos/videos from test bench, data plots</p>
-  </div>
+    // Enable PWM outputs
+    TIM1->CCER |= TIM_CCER_CC1E | TIM_CCER_CC2E | TIM_CCER_CC3E;
+}
 
-  <!-- References -->
-  <div class="references-section">
-    <h2>📖 References & Further Reading</h2>
-    <p>🚧 <strong>Under Development:</strong> Will include academic papers, application notes from motor manufacturers, and industry standards.</p>
+void SPWM_Update(float m, float theta) {
+    // Calculate reference voltages for three phases
+    float v_ref_a = m * sin(theta);
+    float v_ref_b = m * sin(theta - 2*M_PI/3);
+    float v_ref_c = m * sin(theta + 2*M_PI/3);
+
+    // Update PWM duty cycles
+    TIM1->CCR1 = (uint16_t)((v_ref_a + 1) * TIM1->ARR / 2);
+    TIM1->CCR2 = (uint16_t)((v_ref_b + 1) * TIM1->ARR / 2);
+    TIM1->CCR3 = (uint16_t)((v_ref_c + 1) * TIM1->ARR / 2);
+}
+      </pre>
+    </div>
+
+    <h3>Key Implementation Considerations</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin: 1rem 0;">
+      <div style="background: #1a1a1a; padding: 1rem; border-radius: 8px; border: 1px solid #333;">
+        <h4 style="color: #4fc3f7;">⏱️ Timing Requirements</h4>
+        <ul style="color: #ddd; margin: 0.5rem 0; padding-left: 1rem;">
+          <li>PWM update rate: 10-20 kHz</li>
+          <li>ADC sampling: Synchronized with PWM</li>
+          <li>Phase shift: 120° for three-phase</li>
+          <li>Dead time: 1-2 μs for safety</li>
+        </ul>
+      </div>
+
+      <div style="background: #1a1a1a; padding: 1rem; border-radius: 8px; border: 1px solid #333;">
+        <h4 style="color: #4fc3f7;">🛡️ Safety Features</h4>
+        <ul style="color: #ddd; margin: 0.5rem 0; padding-left: 1rem;">
+          <li>Dead time insertion</li>
+          <li>Overcurrent protection</li>
+          <li>DC bus voltage monitoring</li>
+          <li>Thermal shutdown</li>
+        </ul>
+      </div>
+
+      <div style="background: #1a1a1a; padding: 1rem; border-radius: 8px; border: 1px solid #333;">
+        <h4 style="color: #4fc3f7;">🎛️ Control Parameters</h4>
+        <ul style="color: #ddd; margin: 0.5rem 0; padding-left: 1rem;">
+          <li>Modulation index: 0-1.27 (with overmod)</li>
+          <li>Carrier ratio: 20-100</li>
+          <li>Phase sequence: ABC or ACB</li>
+          <li>Voltage boost: For low speeds</li>
+        </ul>
+      </div>
+    </div>
   </div>
 
   <!-- Navigation Between Topics -->
   <section class="nav-grid" style="display:flex; justify-content:space-between; padding: 2rem 0; border-top: 1px solid #333; margin-top: 3rem;">
     <a href="pmsm-foc-guide.html" class="nav-button">← Previous: PMSM FOC Guide</a>
     <a href="#" class="nav-button" onclick="window.scrollTo({top:0, behavior:'smooth'}); return false;">↑ Back to Top</a>
-    <a href="topics.html" class="nav-button">Next: All Topics →</a>
+    <a href="overmodulation.html" class="nav-button">Next: Overmodulation →</a>
   </section>
 
   <!-- Last Updated -->
   <div class="last-updated">
-    <p>Last updated: January 2026 | Status: Under active development</p>
+    <p>Last updated: May 2026 | Status: Complete with interactive visualizations</p>
   </div>
 </section>
 
 </body>
+<script>
+// SPWM Interactive Visualization
+class SPWMVisualizer {
+  constructor(canvasId) {
+    this.canvas = document.getElementById(canvasId);
+    this.ctx = this.canvas.getContext('2d');
+    this.width = this.canvas.width;
+    this.height = this.canvas.height;
+
+    // Default parameters
+    this.m = 0.8;        // Modulation index
+    this.f1 = 50;        // Fundamental frequency
+    this.fc = 5000;      // Carrier frequency
+    this.theta = 0;      // Phase angle
+
+    this.animationId = null;
+    this.time = 0;
+    this.running = false;
+
+    this.initControls();
+    this.startAnimation();
+  }
+
+  initControls() {
+    // Connect sliders to parameters
+    document.getElementById('modulationIndex').addEventListener('input', (e) => {
+      this.m = parseFloat(e.target.value);
+      document.getElementById('mValue').textContent = this.m;
+    });
+
+    document.getElementById('fundamentalFreq').addEventListener('input', (e) => {
+      this.f1 = parseFloat(e.target.value);
+      document.getElementById('fValue').textContent = this.f1;
+    });
+
+    document.getElementById('carrierFreq').addEventListener('input', (e) => {
+      this.fc = parseFloat(e.target.value);
+      document.getElementById('fcValue').textContent = this.fc;
+    });
+
+    document.getElementById('phaseAngle').addEventListener('input', (e) => {
+      this.theta = parseFloat(e.target.value) * Math.PI / 180;
+      document.getElementById('phaseValue').textContent = parseFloat(e.target.value);
+    });
+  }
+
+  startAnimation() {
+    if (this.running) {
+      return;
+    }
+    this.running = true;
+    this.scheduleFrame();
+  }
+
+  stopAnimation() {
+    this.running = false;
+    if (this.animationId) {
+      cancelAnimationFrame(this.animationId);
+      this.animationId = null;
+    }
+  }
+
+  toggleAnimation() {
+    if (this.running) {
+      this.stopAnimation();
+    } else {
+      this.startAnimation();
+    }
+  }
+
+  scheduleFrame() {
+    if (!this.running) {
+      return;
+    }
+    this.animationId = requestAnimationFrame(() => this.animate());
+  }
+
+  animate() {
+    if (!this.running) {
+      return;
+    }
+    this.time += 0.01;
+    this.draw();
+    this.scheduleFrame();
+  }
+
+  draw() {
+    this.ctx.clearRect(0, 0, this.width, this.height);
+
+    // Draw grid
+    this.drawGrid();
+
+    // Calculate waveforms
+    const sineWave = this.generateSineWave();
+    const triangleWave = this.generateTriangleWave();
+    const pwmWave = this.generatePWMWave(sineWave, triangleWave);
+
+    // Draw waveforms
+    this.drawWaveform(sineWave, '#4fc3f7', 2);      // Blue sine
+    this.drawWaveform(triangleWave, '#f87171', 1);  // Red triangle
+    this.drawPWMWaveform(pwmWave, '#4ade80', 3);    // Green PWM
+  }
+
+  drawGrid() {
+    this.ctx.strokeStyle = '#333';
+    this.ctx.lineWidth = 1;
+
+    // Vertical lines
+    for (let x = 0; x < this.width; x += 50) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(x, 0);
+      this.ctx.lineTo(x, this.height);
+      this.ctx.stroke();
+    }
+
+    // Horizontal lines
+    for (let y = 0; y < this.height; y += 50) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(0, y);
+      this.ctx.lineTo(this.width, y);
+      this.ctx.stroke();
+    }
+
+    // Center line
+    this.ctx.strokeStyle = '#555';
+    this.ctx.lineWidth = 2;
+    this.ctx.beginPath();
+    this.ctx.moveTo(0, this.height/2);
+    this.ctx.lineTo(this.width, this.height/2);
+    this.ctx.stroke();
+  }
+
+  generateSineWave() {
+    const points = [];
+    for (let x = 0; x < this.width; x++) {
+      const t = (x / this.width) * 4 * Math.PI; // Show 2 full cycles
+      const y = this.m * Math.sin(2 * Math.PI * this.f1 * this.time / 100 + this.theta + t / 2);
+      points.push({x, y: this.height/2 - y * this.height/4});
+    }
+    return points;
+  }
+
+  generateTriangleWave() {
+    const points = [];
+    const carrierPeriod = 2 * Math.PI * this.fc / this.f1; // Carrier cycles per fundamental cycle
+
+    for (let x = 0; x < this.width; x++) {
+      const t = (x / this.width) * 4 * Math.PI;
+      const carrierPhase = t * (this.fc / this.f1) * 2;
+      const triangle = 2 * Math.abs((carrierPhase / (2 * Math.PI) % 1) - 0.5) - 0.5;
+      points.push({x, y: this.height/2 - triangle * this.height/4});
+    }
+    return points;
+  }
+
+  generatePWMWave(sineWave, triangleWave) {
+    const pwmPoints = [];
+    for (let i = 0; i < sineWave.length; i++) {
+      const sineY = (this.height/2 - sineWave[i].y) / (this.height/4); // Normalize to -1 to 1
+      const triangleY = (this.height/2 - triangleWave[i].y) / (this.height/4); // Normalize to -1 to 1
+
+      const pwm = sineY > triangleY ? 1 : -1;
+      pwmPoints.push({
+        x: sineWave[i].x,
+        y: this.height/2 - pwm * this.height/8
+      });
+    }
+    return pwmPoints;
+  }
+
+  drawWaveform(points, color, lineWidth) {
+    if (points.length === 0) return;
+
+    this.ctx.strokeStyle = color;
+    this.ctx.lineWidth = lineWidth;
+    this.ctx.beginPath();
+
+    this.ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+      this.ctx.lineTo(points[i].x, points[i].y);
+    }
+
+    this.ctx.stroke();
+  }
+
+  drawPWMWaveform(points, color, lineWidth) {
+    this.ctx.strokeStyle = color;
+    this.ctx.lineWidth = lineWidth;
+
+    // Draw as square wave
+    for (let i = 0; i < points.length - 1; i++) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(points[i].x, points[i].y);
+      this.ctx.lineTo(points[i + 1].x, points[i].y);
+      this.ctx.lineTo(points[i + 1].x, points[i + 1].y);
+      this.ctx.stroke();
+    }
+  }
+}
+
+// Initialize SPWM visualizer when page loads
+document.addEventListener('DOMContentLoaded', function() {
+  window.spwmVisualizer = new SPWMVisualizer('spwmCanvas');
+  const toggleBtn = document.getElementById('toggleAnimBtn');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', function() {
+      window.spwmVisualizer.toggleAnimation();
+      this.textContent = window.spwmVisualizer.running ? 'Pause Animation' : 'Play Animation';
+    });
+  }
+});
+
+// THD Chart Animation
+document.addEventListener('DOMContentLoaded', function() {
+  const thdBars = document.querySelectorAll('.thd-bar');
+
+  thdBars.forEach((bar, index) => {
+    setTimeout(() => {
+      bar.style.transition = 'height 1s ease';
+      bar.style.height = bar.getAttribute('data-value') * 2 + 'px';
+    }, index * 200);
+  });
+});
+</script>
 <script src="script.js"></script>
 </html>

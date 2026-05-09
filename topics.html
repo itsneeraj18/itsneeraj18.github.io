@@ -4,6 +4,200 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Topics</title>
 <link rel="stylesheet" href="style.css">
+<style>
+  /* Topic Map Styles */
+  .topic-path {
+    display: none;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.4s ease;
+    margin-bottom: 2rem;
+  }
+
+  .topic-path.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .topic-path-card {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  }
+
+  .topic-path h2 {
+    color: #4fc3f7;
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+  }
+
+  .topic-path p {
+    color: #ccc;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .topic-path-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+
+  .topic-path-grid h3 {
+    color: #4fc3f7;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+    border-bottom: 2px solid #4fc3f7;
+    padding-bottom: 0.5rem;
+  }
+
+  .topic-path-grid ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .topic-path-grid li {
+    margin-bottom: 0.75rem;
+  }
+
+  .topic-path-grid a {
+    color: #ddd;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    display: inline-block;
+  }
+
+  .topic-path-grid a:hover {
+    color: #4fc3f7;
+    transform: translateX(5px);
+  }
+
+  /* Learning Hub Styles */
+  .learning-hub {
+    padding: 2rem 0;
+  }
+
+  .domain-tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .domain-tile {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 2rem;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .domain-tile::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(79, 195, 247, 0.1), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .domain-tile:hover::before {
+    left: 100%;
+  }
+
+  .domain-tile:hover {
+    transform: translateY(-5px);
+    border-color: #4fc3f7;
+    box-shadow: 0 12px 40px rgba(79, 195, 247, 0.2);
+  }
+
+  .domain-tile.active {
+    border-color: #4fc3f7;
+    box-shadow: 0 0 20px rgba(79, 195, 247, 0.3);
+  }
+
+  .tile-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .domain-tile h2 {
+    color: #4fc3f7;
+    margin-bottom: 0.5rem;
+    font-size: 1.4rem;
+  }
+
+  .domain-tile p {
+    color: #ccc;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+    font-size: 0.95rem;
+  }
+
+  .tile-meta {
+    font-size: 0.8rem;
+    color: #888;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .tile-meta.active {
+    color: #4fc3f7;
+  }
+
+  /* Close button for topic map */
+  .topic-close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: #333;
+    border: none;
+    color: #ccc;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .topic-close-btn:hover {
+    background: #4fc3f7;
+    color: #000;
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .domain-tiles {
+      grid-template-columns: 1fr;
+    }
+
+    .topic-path-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .domain-tile {
+      padding: 1.5rem;
+    }
+  }
+</style>
 </head>
 
 <body>
@@ -19,51 +213,88 @@
   </nav>
 </header>
 
+<section class="topic-path" id="topicPath">
+  <div class="topic-path-card">
+    <button class="topic-close-btn" onclick="hideTopicMap()">×</button>
+    <h2>Topic Map</h2>
+    <p>Learn by domain or follow a guided track. Each path is designed to build understanding step by step.</p>
+    <div class="topic-path-grid">
+      <div>
+        <h3>Motor Controls</h3>
+        <ul>
+          <li><a href="motor-controls.html">Motor Controls overview</a></li>
+          <li><a href="vf-control.html">Open-loop V/f Control</a></li>
+          <li><a href="spwm.html">Sinusoidal PWM</a></li>
+          <li><a href="overmodulation.html">Overmodulation</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>EV Fundamentals</h3>
+        <ul>
+          <li><a href="ev-fundamentals.html">EV Systems basics</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Power Electronics</h3>
+        <ul>
+          <li><a href="power-electronics.html">Inverters and converters</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="learning-hub">
   <div class="domain-tiles">
 
-    <a href="ev-fundamentals.html" class="domain-tile">
+    <div class="domain-tile" data-topic="ev">
       <div class="tile-icon">🚗</div>
       <h2>EV Fundamentals</h2>
       <p>Understanding how EVs work — from first principles to system philosophy</p>
-      <div class="tile-meta">Active</div>
-    </a>
+      <div class="tile-meta active">Active</div>
+    </div>
 
-
-    <a href="battery-bms.html" class="domain-tile">
+    <div class="domain-tile" data-topic="battery">
       <div class="tile-icon">🔋</div>
       <h2>Battery & BMS</h2>
       <p>Cells, packs, BMS architecture, estimation, and safety standards</p>
       <div class="tile-meta">Coming soon</div>
-    </a>
+    </div>
 
-    <a href="motor-controls.html" class="domain-tile">
+    <div class="domain-tile" data-topic="motor">
       <div class="tile-icon">⚙️</div>
       <h2>Motor Controls</h2>
       <p>PMSM / BLDC control, open-loop startup, FOC, sensors, and validation</p>
-      <div class="tile-meta">Active</div>
-    </a>
+      <div class="tile-meta active">Active</div>
+    </div>
 
-    <a href="power-electronics.html" class="domain-tile">
+    <div class="domain-tile" data-topic="overmod">
+      <div class="tile-icon">📈</div>
+      <h2>Overmodulation</h2>
+      <p>Deep dive into PWM overmodulation and how it affects motor performance.</p>
+      <div class="tile-meta">Motor Controls</div>
+    </div>
+
+    <div class="domain-tile" data-topic="power">
       <div class="tile-icon">⚡</div>
       <h2>Power Electronics</h2>
       <p>Inverters, converters, switching devices, EMI/EMC, and testing</p>
       <div class="tile-meta">Coming soon</div>
-    </a>
+    </div>
 
-    <a href="embedded-systems.html" class="domain-tile">
+    <div class="domain-tile" data-topic="embedded">
       <div class="tile-icon">🖥️</div>
       <h2>Embedded Systems</h2>
       <p>Real-time firmware, PWM, sensing, control algorithms, and deployment</p>
       <div class="tile-meta">Coming soon</div>
-    </a>
+    </div>
 
-    <a href="renewable-energy.html" class="domain-tile">
+    <div class="domain-tile" data-topic="renewable">
       <div class="tile-icon">🌱</div>
       <h2>Renewable Energy</h2>
       <p>Solar PV, grid integration, microgrids, and EV infrastructure</p>
       <div class="tile-meta">Coming soon</div>
-    </a>
+    </div>
 
   </div>
 </section>
@@ -75,5 +306,90 @@
 </footer>
 
 </body>
+<script>
+  let currentActiveTile = null;
+
+  function showTopicMap(topicType) {
+    const topicPath = document.getElementById('topicPath');
+
+    // Remove active class from previous tile
+    if (currentActiveTile) {
+      currentActiveTile.classList.remove('active');
+    }
+
+    // Add active class to clicked tile
+    const clickedTile = document.querySelector(`[data-topic="${topicType}"]`);
+    clickedTile.classList.add('active');
+    currentActiveTile = clickedTile;
+
+    // Show topic map with animation
+    topicPath.classList.add('active');
+
+    // Scroll to topic map smoothly
+    setTimeout(() => {
+      topicPath.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }, 100);
+  }
+
+  function hideTopicMap() {
+    const topicPath = document.getElementById('topicPath');
+
+    // Hide topic map
+    topicPath.classList.remove('active');
+
+    // Remove active class from current tile
+    if (currentActiveTile) {
+      currentActiveTile.classList.remove('active');
+      currentActiveTile = null;
+    }
+  }
+
+  // Add click handlers for direct navigation (when clicking on active tiles)
+  document.addEventListener('DOMContentLoaded', function() {
+    const tiles = document.querySelectorAll('.domain-tile');
+
+    tiles.forEach(tile => {
+      tile.addEventListener('click', function(e) {
+        const topicType = this.getAttribute('data-topic');
+
+        // Define navigation URLs for each topic
+        const navigationUrls = {
+          'ev': 'ev-fundamentals.html',
+          'battery': 'battery-bms.html',
+          'motor': 'motor-controls.html',
+          'overmod': 'overmodulation.html',
+          'power': 'power-electronics.html',
+          'embedded': 'embedded-systems.html',
+          'renewable': 'renewable-energy.html'
+        };
+
+        // If tile is already active, navigate to the page
+        if (this.classList.contains('active')) {
+          const url = navigationUrls[topicType];
+          if (url) {
+            window.location.href = url;
+          }
+        } else {
+          // Otherwise, show the topic map
+          showTopicMap(topicType);
+        }
+      });
+    });
+
+    // Close topic map when clicking outside
+    document.addEventListener('click', function(e) {
+      const topicPath = document.getElementById('topicPath');
+      const tiles = document.querySelectorAll('.domain-tile');
+
+      if (!topicPath.contains(e.target) &&
+          !Array.from(tiles).some(tile => tile.contains(e.target))) {
+        hideTopicMap();
+      }
+    });
+  });
+</script>
 <script src="script.js"></script>
 </html>

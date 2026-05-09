@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Overmodulation in PWM Inverters</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- MathJax for rendering LaTeX expressions -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    mjx-container {
+      color: #fff !important;
+    }
+    .math-card {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid #4fc3f7;
+      box-shadow: inset 0 0 0 1px rgba(79, 195, 247, 0.05);
+    }
+
+    .formula {
+      font-family: inherit;
+      font-size: 1rem;
+      color: #e5f7ff;
+      margin: 1rem 0;
+      text-align: left;
+      background: rgba(79, 195, 247, 0.06);
+      padding: 1rem 1.25rem;
+      border-radius: 12px;
+      border: 1px solid rgba(79, 195, 247, 0.2);
+      white-space: pre-wrap;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+
+      .grid-2,
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Canvas animation layout */
+    .animation-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+      align-items: start;
+    }
+
+    .animation-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      flex: 1;
+      min-width: 280px;
+      max-width: 100%;
+      background: #111;
+      padding: 1.75rem;
+      border-radius: 14px;
+      border: 1px solid #333;
+    }
+
+    .animation-panel h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      color: #4fc3f7;
+      line-height: 1.3;
+    }
+
+    .panel-caption {
+      margin-top: 1rem;
+      margin-bottom: 0;
+      color: #999;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .motor-panel {
+      max-width: 420px;
+      margin: 0 auto;
+    }
+
+    .pwm-reference-section {
+      margin-top: 2.5rem;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 16px;
+      padding: 1.75rem;
+    }
+
+    .pwm-reference-section h2 {
+      margin-top: 0;
+      font-size: 2rem;
+      color: #4fc3f7;
+    }
+
+    .pwm-reference-section p {
+      color: #ccc;
+      max-width: 920px;
+      margin-bottom: 1.25rem;
+      line-height: 1.7;
+    }
+
+    .pwm-chart {
+      display: grid;
+      gap: 0.85rem;
+      margin: 1.5rem 0;
+      max-width: 480px;
+      background: #0a0a0a;
+      border: 1px solid #222;
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+
+    .chart-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .chart-box {
+      background: #0a0a0a;
+      border: 1px solid #222;
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+
+    .vertical-chart {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .vertical-bar-container {
+      display: flex;
+      align-items: end;
+      gap: 0.5rem;
+      height: 120px;
+      border-left: 1px solid rgba(255,255,255,0.1);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding: 0.5rem;
+    }
+
+    .vertical-bar {
+      flex: 1;
+      background: #333;
+      border-radius: 4px 4px 0 0;
+      min-height: 4px;
+      transition: all 0.3s ease;
+      position: relative;
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+      animation: barGrow 1.5s ease-out forwards;
+      transform-origin: bottom;
+    }
+
+    .vertical-bar:hover {
+      transform: scaleY(1.05);
+      filter: brightness(1.2);
+    }
+
+    @keyframes barGrow {
+      from {
+        transform: scaleY(0);
+        opacity: 0.7;
+      }
+      to {
+        transform: scaleY(1);
+        opacity: 1;
+      }
+    }
+
+    .vertical-bar.spwm { background: linear-gradient(to top, #4caf50, #66bb6a); }
+    .vertical-bar.svpwm { background: linear-gradient(to top, #8bc34a, #aed581); }
+    .vertical-bar.overmod { background: linear-gradient(to top, #ff9800, #ffb74d); }
+    .vertical-bar.sixstep { background: linear-gradient(to top, #f44336, #ef5350); }
+
+    .bar-label {
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #ccc;
+      font-size: 0.8rem;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    .bar-value {
+      position: absolute;
+      top: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .chart-row {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr) 90px;
+      gap: 0.75rem;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .chart-row:last-child {
+      border-bottom: none;
+    }
+
+    .chart-section-title {
+      color: #4fc3f7;
+      margin: 1rem 0 0.5rem;
+      font-size: 1.1rem;
+      letter-spacing: 0.01em;
+      text-transform: uppercase;
+      opacity: 0.9;
+      font-weight: 600;
+      border-bottom: 1px solid rgba(79, 195, 247, 0.3);
+      padding-bottom: 0.25rem;
+    }
+
+    .waveform-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .waveform-card {
+      background: #0e0e0e;
+      border: 1px solid #222;
+      border-radius: 16px;
+      padding: 1.35rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .waveform-card h4 {
+      margin: 0;
+      color: #4fc3f7;
+      font-size: 1.05rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .waveform-card p {
+      margin: 0;
+      color: #aaa;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .waveform-svg {
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      background: #050505;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+    }
+
+    canvas {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      background: #050505;
+      border-radius: 4px;
+      border: 1px solid #222;
+      margin-top: 1rem;
+      display: block;
+    }
+
+    #canvasMotor {
+      max-width: 420px;
+      min-height: 240px;
+      margin: 1rem auto 0;
+    }
+
+    /* Hero section */
+    .hero-section {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+      padding: 3rem 2rem;
+      border-radius: 12px;
+      border: 1px solid #333;
+      margin-bottom: 3rem;
+      text-align: center;
+    }
+
+    .hero-title {
+      font-size: 2.5rem;
+      color: #4fc3f7;
+      margin-bottom: 1rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.3rem;
+      color: #fff;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+    }
+
+    .hero-description {
+      font-size: 1.1rem;
+      color: #bbb;
+      max-width: 900px;
+      margin: 0 auto;
+      line-height: 1.8;
+    }
+
+    /* Info cards */
+    .info-card {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .info-card h3 {
+      color: #4fc3f7;
+      margin-top: 0;
+      border-bottom: 2px solid #333;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Comparison table */
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 1.5rem 0;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid #333;
+    }
+
+    .comparison-table th {
+      background: #1a1a1a;
+      color: #4fc3f7;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+
+    .comparison-table tr:nth-child(even) {
+      background: #0f0f0f;
+    }
+
+    .comparison-table tr:hover {
+      background: #1a1a1a;
+    }
+
+    /* Visual indicators for table cells */
+    .comparison-table .excellent {
+      background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(76, 175, 80, 0.05));
+      color: #4caf50;
+      border-left: 3px solid #4caf50;
+    }
+    .comparison-table .good {
+      background: linear-gradient(135deg, rgba(139, 195, 74, 0.15), rgba(139, 195, 74, 0.05));
+      color: #8bc34a;
+      border-left: 3px solid #8bc34a;
+    }
+    .comparison-table .fair {
+      background: linear-gradient(135deg, rgba(255, 152, 0, 0.15), rgba(255, 152, 0, 0.05));
+      color: #ff9800;
+      border-left: 3px solid #ff9800;
+    }
+    .comparison-table .poor {
+      background: linear-gradient(135deg, rgba(244, 67, 54, 0.15), rgba(244, 67, 54, 0.05));
+      color: #f44336;
+      border-left: 3px solid #f44336;
+    }
+
+    .comparison-table .high-util {
+      background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1));
+      font-weight: bold;
+      color: #4caf50;
+      border-left: 3px solid #4caf50;
+    }
+    .comparison-table .med-util {
+      background: linear-gradient(135deg, rgba(255, 152, 0, 0.2), rgba(255, 152, 0, 0.1));
+      font-weight: bold;
+      color: #ff9800;
+      border-left: 3px solid #ff9800;
+    }
+    .comparison-table .low-util {
+      background: linear-gradient(135deg, rgba(244, 67, 54, 0.2), rgba(244, 67, 54, 0.1));
+      font-weight: bold;
+      color: #f44336;
+      border-left: 3px solid #f44336;
+    }
+
+    .comparison-table td {
+      transition: all 0.2s ease;
+    }
+
+    .comparison-table td:hover {
+      transform: scale(1.02);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+
+    .performance-visual {
+      background: #111;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid #333;
+      margin: 1.5rem 0;
+    }
+
+    .impact-bar-container {
+      margin: 1rem 0;
+    }
+
+    .impact-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      color: #bbb;
+    }
+
+    .impact-bar {
+      height: 20px;
+      background: #222;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .impact-fill {
+      height: 100%;
+      transition: width 0.3s ease;
+    }
+
+    /* OEM showcase */
+    .oem-card {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 1.5rem;
+      text-align: center;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .oem-card:hover {
+      transform: translateY(-5px);
+      border-color: #4fc3f7;
+    }
+
+    .oem-logo {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #4fc3f7;
+      margin-bottom: 1rem;
+    }
+
+    .oem-card h4 {
+      color: #fff;
+      margin: 0.5rem 0;
+    }
+
+    .oem-card p {
+      color: #999;
+      font-size: 0.9rem;
+    }
+
+    /* Advanced control methods */
+    .control-method {
+      background: #111;
+      border-left: 4px solid #ff9800;
+      padding: 1.5rem;
+      margin: 1rem 0;
+      border-radius: 8px;
+    }
+
+    .control-method h4 {
+      color: #ff9800;
+      margin-top: 0;
+    }
+
+    /* Highlight box */
+    .highlight-box {
+      background: linear-gradient(135deg, #1a3a4a 0%, #2a1a3a 100%);
+      border: 2px solid #4fc3f7;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .highlight-box h3 {
+      color: #4fc3f7;
+      margin-top: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>Overmodulation</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="topics.html">Topics</a>
+      <a href="updates.html">Updates</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <section class="content-section">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a> / <a href="topics.html">Topics</a> / <a href="motor-controls.html">Motor
+        Controls</a> / <span class="current">Overmodulation</span>
+    </div>
+
+    <!-- Hero Section with One-Liner -->
+    <div class="hero-section">
+      <h1 class="hero-title">Overmodulation in PWM Inverters</h1>
+      <p class="hero-subtitle">Squeezing More Voltage from Limited DC Bus Resources</p>
+      <p class="hero-description">
+        <strong>In one sentence:</strong> Overmodulation is a controlled PWM technique that intentionally pushes the
+        modulation index beyond the linear region to extract up to 15% more fundamental AC voltage from the same DC bus,
+        enabling higher motor speeds at the cost of increased harmonic distortion and torque ripple.
+      </p>
+    </div>
+
+    <!-- What, Why, How Section -->
+    <div class="grid-2" style="margin-bottom: 3rem;">
+      <div class="info-card">
+        <h3>🔍 What is Overmodulation?</h3>
+        <p>Overmodulation occurs when the reference voltage signal in a PWM inverter exceeds the amplitude of the
+          triangular carrier wave. In this region, PWM pulses begin to drop out, the waveform starts to clip, and the
+          inverter gradually transitions from sinusoidal PWM toward square-wave (six-step) operation.</p>
+        <p>It's the operating zone between <strong>linear PWM</strong> (M ≤ 1.0) and <strong>six-step mode</strong> (M →
+          ∞).</p>
+      </div>
+
+      <div class="info-card">
+        <h3>⚡ Why is it Needed?</h3>
+        <p>At high motor speeds, the required stator voltage increases. Without overmodulation, the inverter would hit
+          its voltage limit prematurely, restricting top speed and torque capability.</p>
+        <p><strong>Key reasons:</strong></p>
+        <ul style="text-align: left; margin-left: 1.5rem;">
+          <li>Maximize voltage utilization from fixed DC bus</li>
+          <li>Extend motor speed range without increasing battery voltage</li>
+          <li>Maintain torque during field weakening</li>
+          <li>Reduce need for expensive high-voltage power electronics</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <h3>🎯 How is it Used in Practice?</h3>
+      <p>Modern motor drives don't operate in overmodulation continuously. Instead, they <strong>intelligently
+          transition</strong> between modes based on real-time operating conditions:</p>
+      <ul style="text-align: left; margin-left: 1.5rem; color: #ddd;">
+        <li><strong>Low to medium speed:</strong> Linear SVPWM for maximum efficiency and smooth control</li>
+        <li><strong>Approaching voltage limit:</strong> Enter mild overmodulation to extend voltage headroom</li>
+        <li><strong>High-speed operation:</strong> Deep overmodulation or six-step mode when voltage-saturated</li>
+        <li><strong>Dynamic switching:</strong> Controller continuously adjusts M based on speed, torque demand, and DC
+          bus voltage</li>
+      </ul>
+      <p>This adaptive strategy balances <strong>performance, efficiency, and waveform quality</strong> across the
+        entire operating envelope.</p>
+    </div>
+
+    <!-- Interactive Visualization -->
+    <div class="implementation-section" style="margin-top: 3rem;">
+      <h2 style="color: #4fc3f7;">🎮 Interactive Performance Visualizer</h2>
+      <p>Adjust the Modulation Index (M) below to observe the transition from linear operation to six-step mode. Watch
+        the current waveform degrade as harmonics increase.</p>
+
+      <div class="interactive-controls"
+        style="background:#1a1a1a; padding: 1.5rem; border-radius: 8px; margin: 1rem 0; text-align: center;">
+        <label for="modIndexSlider" style="font-size: 1.2rem; font-weight: bold; color: #4fc3f7;">Modulation Index (M):
+          <span id="mValueDisplay">0.70</span></label><br>
+        <input type="range" id="modIndexSlider" min="0.5" max="1.27" step="0.01" value="0.7"
+          style="width: 80%; max-width: 400px; margin: 1rem 0; cursor: pointer;">
+
+        <div id="statusBadge"
+          style="display: inline-block; padding: 0.5rem 1rem; border-radius: 20px; font-weight: bold; border: 2px solid #4caf50; color: #4caf50; margin-left: 1rem; vertical-align: middle;">
+          Linear Operation
+        </div>
+      </div>
+
+      <div class="metrics-grid"
+        style="display:flex; gap:1rem; justify-content:center; margin-bottom:2rem; flex-wrap:wrap;">
+        <div class="metric-card"
+          style="background:#111; padding:1.5rem; border-radius:8px; border:1px solid #333; min-width: 180px; text-align:center;">
+          <div style="font-size:1rem; color:#4fc3f7; font-weight:600;">Fundamental Voltage</div>
+          <div id="fundVal" style="font-size:2rem; font-weight:bold; color:#fff; margin-top:0.5rem;">70.0%</div>
+        </div>
+        <div class="metric-card"
+          style="background:#111; padding:1.5rem; border-radius:8px; border:1px solid #333; min-width: 180px; text-align:center;">
+          <div style="font-size:1rem; color:#4fc3f7; font-weight:600;">Harmonic Distortion (THD)</div>
+          <div id="thdVal" style="font-size:2rem; font-weight:bold; color:#fff; margin-top:0.5rem;">&lt; 5%</div>
+        </div>
+        <div class="metric-card"
+          style="background:#111; padding:1.5rem; border-radius:8px; border:1px solid #333; min-width: 180px; text-align:center;">
+          <div style="font-size:1rem; color:#4fc3f7; font-weight:600;">Torque Ripple Impact</div>
+          <div id="rippleVal" style="font-size:2rem; font-weight:bold; color:#fff; margin-top:0.5rem;">Minimal</div>
+        </div>
+      </div>
+
+      <div class="animation-container">
+        <div class="animation-panel">
+          <h3 style="color:#4fc3f7; margin-top:0;">Carrier vs Reference</h3>
+          <canvas id="canvasCarrier"></canvas>
+        </div>
+        <div class="animation-panel">
+          <h3 style="color:#4fc3f7; margin-top:0;">Phase Current & PWM</h3>
+          <canvas id="canvasOutput"></canvas>
+        </div>
+        <div class="animation-panel motor-panel">
+          <h3>Motor Rotor</h3>
+          <canvas id="canvasMotor"></canvas>
+           
+        </div>
+      </div>
+    </div>
+
+    <!-- Mathematical Foundation -->
+    <h2 style="margin-top: 3rem; color: #4fc3f7;">📐 Mathematical Foundation</h2>
+
+    <div class="grid-2">
+      <div class="math-card">
+        <h3>Modulation Index (M)</h3>
+        <p>The ratio of reference voltage amplitude to carrier wave peak.</p>
+        <div class="formula">
+          $$ M = \frac{V_{ref\_peak}}{V_{carrier\_peak}} $$
+        </div>
+        <div style="background: #0a0a0a; padding: 1rem; border-radius: 4px; margin-top: 1rem;">
+          <strong>Operating Regions:</strong><br>
+          • M ≤ 1.0: Linear SPWM<br>
+          • M ≤ 1.15: Linear SVPWM<br>
+          • 1.0 < M < 1.27: Overmodulation<br>
+          • M → ∞: Six-step mode
+        </div>
+      </div>
+
+      <div class="math-card">
+        <h3>DC Bus Utilization</h3>
+        <p>Ratio of achievable fundamental RMS voltage to theoretical maximum.</p>
+        <div class="formula">
+          $$ \eta_{DC} = \frac{V_{1,RMS}}{V_{DC} / \sqrt{2}} $$
+        </div>
+        <table style="width: 100%; margin-top: 1rem; color: #ddd;">
+          <tr>
+            <td>Linear SPWM:</td>
+            <td><span style="color: #4caf50;">78.5%</span></td>
+          </tr>
+          <tr>
+            <td>Linear SVPWM:</td>
+            <td><span style="color: #8bc34a;">90.7%</span></td>
+          </tr>
+          <tr>
+            <td>Overmodulation:</td>
+            <td><span style="color: #ff9800;">91-98%</span></td>
+          </tr>
+          <tr>
+            <td>Six-Step:</td>
+            <td><span style="color: #f44336;">100%</span></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- DC Bus Utilization Comparison -->
+    <h2 style="margin-top: 3rem; color: #4fc3f7;">📊 DC Bus Utilization Comparison</h2>
+    <div class="chart-container">
+      <div class="chart-box">
+        <div class="chart-section-title">DC Bus Utilization</div>
+        <div class="vertical-chart">
+          <div class="vertical-bar-container">
+            <div class="vertical-bar spwm" style="height: 78.5%">
+              <div class="bar-value">78.5%</div>
+              <div class="bar-label">SPWM</div>
+            </div>
+            <div class="vertical-bar svpwm" style="height: 90.7%">
+              <div class="bar-value">90.7%</div>
+              <div class="bar-label">SVPWM</div>
+            </div>
+            <div class="vertical-bar overmod" style="height: 96%">
+              <div class="bar-value">~96%</div>
+              <div class="bar-label">Overmod</div>
+            </div>
+            <div class="vertical-bar sixstep" style="height: 100%">
+              <div class="bar-value">100%</div>
+              <div class="bar-label">Six-Step</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-section-title">Estimated THD</div>
+        <div class="vertical-chart">
+          <div class="vertical-bar-container">
+            <div class="vertical-bar spwm" style="height: 10%">
+              <div class="bar-value">&lt;5%</div>
+              <div class="bar-label">SPWM</div>
+            </div>
+            <div class="vertical-bar svpwm" style="height: 6%">
+              <div class="bar-value">&lt;3%</div>
+              <div class="bar-label">SVPWM</div>
+            </div>
+            <div class="vertical-bar overmod" style="height: 35%">
+              <div class="bar-value">15-40%</div>
+              <div class="bar-label">Overmod</div>
+            </div>
+            <div class="vertical-bar sixstep" style="height: 80%">
+              <div class="bar-value">&gt;80%</div>
+              <div class="bar-label">Six-Step</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-box">
+        <div class="chart-section-title">Control Quality</div>
+        <div class="vertical-chart">
+          <div class="vertical-bar-container">
+            <div class="vertical-bar spwm" style="height: 95%">
+              <div class="bar-value">Excellent</div>
+              <div class="bar-label">SPWM</div>
+            </div>
+            <div class="vertical-bar svpwm" style="height: 95%">
+              <div class="bar-value">Excellent</div>
+              <div class="bar-label">SVPWM</div>
+            </div>
+            <div class="vertical-bar overmod" style="height: 70%">
+              <div class="bar-value">Good-Fair</div>
+              <div class="bar-label">Overmod</div>
+            </div>
+            <div class="vertical-bar sixstep" style="height: 30%">
+              <div class="bar-value">Poor</div>
+              <div class="bar-label">Six-Step</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-section-title">Switching Frequency</div>
+        <div class="vertical-chart">
+          <div class="vertical-bar-container">
+            <div class="vertical-bar spwm" style="height: 90%">
+              <div class="bar-value">High</div>
+              <div class="bar-label">SPWM</div>
+            </div>
+            <div class="vertical-bar svpwm" style="height: 90%">
+              <div class="bar-value">High</div>
+              <div class="bar-label">SVPWM</div>
+            </div>
+            <div class="vertical-bar overmod" style="height: 60%">
+              <div class="bar-value">Medium</div>
+              <div class="bar-label">Overmod</div>
+            </div>
+            <div class="vertical-bar sixstep" style="height: 20%">
+              <div class="bar-value">Low</div>
+              <div class="bar-label">Six-Step</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detailed Comparison Table -->
+    <h2 style="color: #4fc3f7;">🔬 Comprehensive Comparison: SPWM vs SVPWM vs Overmodulation vs Six-Step</h2>
+
+    <!-- Visual Legend -->
+    <div style="background: #0a0a0a; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #333;">
+      <h4 style="color: #4fc3f7; margin: 0 0 0.5rem 0; font-size: 1rem;">Visual Guide:</h4>
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.9rem;">
+        <span style="color: #4caf50;">🟢 Excellent/High Utilization</span>
+        <span style="color: #8bc34a;">🟡 Good</span>
+        <span style="color: #ff9800;">🟠 Fair/Medium Utilization</span>
+        <span style="color: #f44336;">🔴 Poor/Low Utilization</span>
+      </div>
+      <p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; color: #999;">Hover over cells for enhanced visibility. Color coding shows performance quality and utilization efficiency.</p>
+    </div>
+
+    <div style="overflow-x: auto;">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Linear SPWM</th>
+            <th>Linear SVPWM</th>
+            <th>Overmodulation</th>
+            <th>Six-Step</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>📏 Modulation Index (M)</strong></td>
+            <td class="high-util">0 to 1.0</td>
+            <td class="high-util">0 to 1.15</td>
+            <td class="med-util">1.0 to 1.27</td>
+            <td class="low-util">∞ (no PWM)</td>
+          </tr>
+          <tr>
+            <td><strong>⚡ DC Bus Utilization</strong></td>
+            <td class="high-util">78.5%</td>
+            <td class="high-util">90.7%</td>
+            <td class="med-util">91% to 98%</td>
+            <td class="low-util">100%</td>
+          </tr>
+          <tr>
+            <td><strong>📊 THD (Typical)</strong></td>
+            <td class="excellent">✅ &lt; 5%</td>
+            <td class="excellent">✅ &lt; 3%</td>
+            <td class="fair">⚠️ 15% to 40%</td>
+            <td class="poor">❌ &gt; 80%</td>
+          </tr>
+          <tr>
+            <td><strong>🔄 Torque Ripple</strong></td>
+            <td class="excellent">✅ Minimal</td>
+            <td class="excellent">✅ Minimal</td>
+            <td class="fair">⚠️ Medium</td>
+            <td class="poor">❌ High</td>
+          </tr>
+          <tr>
+            <td><strong>🎯 Current Control Quality</strong></td>
+            <td class="excellent">✅ Excellent</td>
+            <td class="excellent">✅ Excellent</td>
+            <td class="fair">⚠️ Good to Fair</td>
+            <td class="poor">❌ Poor</td>
+          </tr>
+          <tr>
+            <td><strong>🔥 Switching Losses</strong></td>
+            <td class="fair">⚖️ Moderate</td>
+            <td class="fair">⚖️ Moderate</td>
+            <td class="good">✅ Lower</td>
+            <td class="excellent">✅ Lowest</td>
+          </tr>
+          <tr>
+            <td><strong>🔊 Acoustic Noise</strong></td>
+            <td class="excellent">✅ Low</td>
+            <td class="excellent">✅ Very Low</td>
+            <td class="fair">⚠️ Medium</td>
+            <td class="poor">❌ High</td>
+          </tr>
+          <tr>
+            <td><strong>🧠 Control Complexity</strong></td>
+            <td class="excellent">✅ Simple</td>
+            <td class="fair">⚖️ Moderate</td>
+            <td class="fair">⚠️ High</td>
+            <td class="excellent">✅ Simple</td>
+          </tr>
+          <tr>
+            <td><strong>🏭 Typical Applications</strong></td>
+            <td>Legacy drives, low-cost systems</td>
+            <td>Modern VFDs, servo drives</td>
+            <td>EV traction, field weakening</td>
+            <td>Extreme high-speed, emergency mode</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Advanced Control Methods -->
+    <h2 style="margin-top: 3rem; color: #4fc3f7;">🧠 Advanced Control Methods Using Overmodulation</h2>
+    <p>Modern motor controllers don't just "turn on" overmodulation—they use sophisticated algorithms to optimize the
+      transition and minimize adverse effects:</p>
+
+    <div class="control-method">
+      <h4>1. Adaptive Overmodulation Control</h4>
+      <p><strong>Technique:</strong> Real-time adjustment of modulation index based on DC bus voltage fluctuations and
+        motor speed feedback.</p>
+      <p><strong>Benefits:</strong></p>
+      <ul>
+        <li>Smooth transition between linear and overmodulation regions</li>
+        <li>Prevents abrupt torque changes during mode switching</li>
+        <li>Maintains maximum torque-per-ampere (MTPA) efficiency</li>
+      </ul>
+      <p><strong>Implementation:</strong> Lookup tables or neural network models predict optimal M for given operating
+        conditions.</p>
+    </div>
+
+    <div class="control-method">
+      <h4>2. Field-Oriented Control (FOC) with Overmodulation Compensation</h4>
+      <p><strong>Technique:</strong> Vector control algorithms adjust d-q axis currents to compensate for voltage
+        saturation.</p>
+      <p><strong>Key Features:</strong></p>
+      <ul>
+        <li>Dynamic field weakening strategy</li>
+        <li>Voltage vector limiting within hexagon boundary</li>
+        <li>Feed-forward compensation for harmonic distortion</li>
+      </ul>
+      <p><strong>Challenge:</strong> Maintaining decoupled d-q control becomes difficult as PWM linearity degrades.</p>
+    </div>
+
+    <div class="control-method">
+      <h4>3. Model Predictive Control (MPC)</h4>
+      <p><strong>Technique:</strong> Predict future system states and optimize switching patterns over prediction
+        horizon.</p>
+      <p><strong>Advantages:</strong></p>
+      <ul>
+        <li>Multi-objective optimization (torque, efficiency, harmonics)</li>
+        <li>Constraint handling (voltage limits, current limits)</li>
+        <li>Seamless mode transitions</li>
+      </ul>
+      <p><strong>Computational Cost:</strong> Requires powerful microcontrollers or FPGAs.</p>
+    </div>
+
+    <!-- Commercial Implementations -->
+    <h2 style="margin-top: 3rem; color: #4fc3f7;">🏭 Commercial Implementations: Industry Leaders</h2>
+    <p>Overmodulation is not just a theoretical concept—it's a core technology in modern high-performance motor drives.
+      Here are examples of manufacturers and platforms utilizing advanced overmodulation strategies:</p>
+
+    <div class="grid-2" style="margin: 2rem 0;">
+      <div class="oem-card">
+        <div class="oem-logo">⚡ TESLA</div>
+        <h4>Model 3/Y Traction Inverter</h4>
+        <p><strong>Motor Type:</strong> Permanent Magnet Synchronous Motor (PMSM)</p>
+        <p><strong>Strategy:</strong> Advanced SVPWM with adaptive overmodulation for field weakening during highway
+          cruising. Enables 15,000+ RPM operation on 350V battery system.</p>
+        <p><strong>Key Innovation:</strong> Silicon carbide (SiC) MOSFETs allow higher switching frequencies, reducing
+          harmonic distortion even in overmodulation.</p>
+      </div>
+
+      <div class="oem-card">
+        <div class="oem-logo">🔋 LUCID MOTORS</div>
+        <h4>Lucid Air Drive Unit</h4>
+        <p><strong>Motor Type:</strong> High-speed PMSM (up to 20,000 RPM)</p>
+        <p><strong>Strategy:</strong> Proprietary "Wunderbox" inverter technology with extended overmodulation range.
+          Achieves industry-leading power density (300+ hp from compact motor).</p>
+        <p><strong>Implementation:</strong> Model predictive control optimizes voltage utilization across entire speed
+          range.</p>
+      </div>
+
+      <div class="oem-card">
+        <div class="oem-logo">⚙️ PORSCHE TAYCAN</div>
+        <h4>800V Traction System</h4>
+        <p><strong>Motor Type:</strong> Hairpin-wound PMSM</p>
+        <p><strong>Strategy:</strong> High-voltage architecture (800V) reduces need for aggressive overmodulation, but
+          still employs it during launch control and maximum performance modes.</p>
+        <p><strong>Benefit:</strong> Higher base voltage + moderate overmodulation = exceptional high-speed torque
+          retention.</p>
+      </div>
+
+      <div class="oem-card">
+        <div class="oem-logo">🔧 SIEMENS</div>
+        <h4>Industrial VFD Drives</h4>
+        <p><strong>Product Line:</strong> SINAMICS series</p>
+        <p><strong>Applications:</strong> CNC machine tools, conveyor systems, pumps, compressors</p>
+        <p><strong>Strategy:</strong> Configurable overmodulation threshold with automatic harmonic compensation.
+          Field-proven in harsh industrial environments.</p>
+        <p><strong>Scale:</strong> Millions of units deployed globally in manufacturing automation.</p>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <h3>🏆 Industry Trend: Silicon Carbide (SiC) Enabling Better Overmodulation</h3>
+      <p>The shift to SiC power semiconductors is revolutionizing overmodulation implementation:</p>
+      <ul style="text-align: left; color: #ddd;">
+        <li><strong>Higher switching frequencies (40-100 kHz):</strong> Allows finer PWM resolution even in
+          overmodulation, reducing harmonic distortion</li>
+        <li><strong>Lower switching losses:</strong> Makes high-frequency operation thermally feasible</li>
+        <li><strong>Better thermal performance:</strong> Enables more aggressive voltage extraction without overheating
+        </li>
+        <li><strong>Smaller passive components:</strong> Higher frequencies reduce filter inductor/capacitor size</li>
+      </ul>
+      <p><strong>Result:</strong> Next-generation EVs can push deeper into overmodulation while maintaining acceptable
+        waveform quality—extracting maximum performance from compact, efficient powertrains.</p>
+    </div>
+
+    <!-- Practical Design Considerations -->
+    <h2 style="margin-top: 3rem; color: #4fc3f7;">🛠️ Practical Design Considerations</h2>
+
+    <div class="grid-2">
+      <div class="info-card">
+        <h3>When to Use Overmodulation</h3>
+        <ul style="text-align: left;">
+          <li>✅ High-speed operation where voltage is limited</li>
+          <li>✅ Field weakening region of PMSM drives</li>
+          <li>✅ Temporary overload capability needed</li>
+          <li>✅ Cost-sensitive designs avoiding high-voltage DC bus</li>
+          <li>✅ Applications where some torque ripple is acceptable</li>
+        </ul>
+      </div>
+
+      <div class="info-card">
+        <h3>When to Avoid Overmodulation</h3>
+        <ul style="text-align: left;">
+          <li>❌ Precision servo applications requiring smooth torque</li>
+          <li>❌ Low-noise requirements (medical, HVAC)</li>
+          <li>❌ Systems with strict harmonic limits (grid-tied inverters)</li>
+          <li>❌ Motors with poor thermal management</li>
+          <li>❌ Safety-critical applications requiring deterministic control</li>
+        </ul>
+      </div>
+    </div>
+
+    <section class="nav-grid"
+      style="display:flex; justify-content:space-between; padding: 2rem 0; border-top: 1px solid #333; margin-top: 3rem;">
+      <a href="spwm.html" class="nav-button">&larr; Previous: SPWM</a>
+      <a href="#" class="nav-button" onclick="window.scrollTo({top:0, behavior:'smooth'}); return false;">&uarr; Back to
+        Top</a>
+      <a href="topics.html" class="nav-button">Next: All Topics &rarr;</a>
+    </section>
+
+  </section>
+
+  <script>
+    // Update performance impact bars based on modulation index
+    document.getElementById('modIndexSlider').addEventListener('input', function (e) {
+      const M = parseFloat(e.target.value);
+
+      // Speed impact (increases with M)
+      const speedPercent = Math.min(100, 60 + (M - 0.7) * 70);
+      document.getElementById('speedBar').style.width = speedPercent + '%';
+      document.getElementById('speedImpact').textContent = M < 1.0 ? 'Baseline' : M < 1.15 ? '+10-15%' : '+15-25%';
+
+      // Torque ripple (increases exponentially)
+      let ripplePercent = 15;
+      if (M > 1.0) ripplePercent = 15 + (M - 1.0) * 150;
+      if (M > 1.15) ripplePercent = 15 + (M - 1.0) * 250;
+      ripplePercent = Math.min(100, ripplePercent);
+      document.getElementById('rippleBar').style.width = ripplePercent + '%';
+      document.getElementById('rippleImpact').textContent =
+        M < 1.0 ? 'Low' : M < 1.1 ? 'Medium' : M < 1.2 ? 'High' : 'Very High';
+
+      // THD (increases with M)
+      let thdPercent = 8;
+      if (M > 1.0) thdPercent = 8 + (M - 1.0) * 120;
+      if (M > 1.15) thdPercent = 8 + (M - 1.0) * 300;
+      thdPercent = Math.min(100, thdPercent);
+      document.getElementById('thdBar').style.width = thdPercent + '%';
+      const thdValue = M < 1.0 ? '< 5%' : M < 1.1 ? '10-20%' : M < 1.2 ? '25-40%' : '> 60%';
+      document.getElementById('thdImpact').textContent = thdValue;
+
+      // Switching losses (decrease with M)
+      const lossPercent = Math.max(10, 50 - (M - 0.7) * 60);
+      document.getElementById('lossBar').style.width = lossPercent + '%';
+      document.getElementById('lossImpact').textContent =
+        M < 1.0 ? 'Moderate' : M < 1.15 ? 'Reduced' : 'Low';
+
+      // Control accuracy (decreases with M)
+      const controlPercent = Math.max(20, 95 - (M - 0.7) * 120);
+      document.getElementById('controlBar').style.width = controlPercent + '%';
+      document.getElementById('controlImpact').textContent =
+        M < 1.0 ? 'Excellent' : M < 1.1 ? 'Good' : M < 1.2 ? 'Fair' : 'Poor';
+    });
+  </script>
+
+</body>
+<script src="script.js"></script>
+<script src="overmodulation.js"></script>
+
+</html>

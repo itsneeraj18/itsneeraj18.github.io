@@ -4,11 +4,11 @@ document.addEventListener('DOMContentLoaded', function() {
         'index.html',
         'topics.html',
         'ev-fundamentals.html',
-        // 'hv-safety-components.html',
         'motor-controls.html',
         'vf-control.html',
         'pmsm-foc-guide.html',
         'spwm.html',
+        'overmodulation.html',
         'battery-bms.html',
         'power-electronics.html',
         'embedded-systems.html',
@@ -20,59 +20,83 @@ document.addEventListener('DOMContentLoaded', function() {
         'contact.html'
     ];
 
-    // Get current page filename
     const path = window.location.pathname;
-    const page = path.split("/").pop() || 'index.html';
+    const page = path.split('/').pop() || 'index.html';
     const currentIndex = pageOrder.indexOf(page);
 
-    // Create container for floating buttons
     const navContainer = document.createElement('div');
     navContainer.className = 'floating-nav-container';
 
-    // Helper function to create buttons
     function createButton(type, href, icon, text) {
         const btn = document.createElement(type === 'top' ? 'button' : 'a');
         btn.className = `floating-btn ${type}-btn`;
         if (type !== 'top') btn.href = href;
-        
+
         const iconSpan = document.createElement('span');
         iconSpan.className = 'icon';
         iconSpan.innerHTML = icon;
-        
+
         const textSpan = document.createElement('span');
         textSpan.className = 'text';
         textSpan.innerText = text;
-        
+
         btn.appendChild(iconSpan);
         btn.appendChild(textSpan);
-        
+
         if (type === 'top') {
             btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        
+
         return btn;
     }
 
-    // Add Previous Button
     if (currentIndex > 0) {
         const prevBtn = createButton('prev', pageOrder[currentIndex - 1], '←', 'Previous Topic');
         navContainer.appendChild(prevBtn);
     }
 
-    // Add Next Button
+    const homeBtn = createButton('home', 'index.html', '🏠', 'Home');
+    navContainer.appendChild(homeBtn);
+
     if (currentIndex !== -1 && currentIndex < pageOrder.length - 1) {
         const nextBtn = createButton('next', pageOrder[currentIndex + 1], '→', 'Next Topic');
         navContainer.appendChild(nextBtn);
     }
 
-    // Add Back to Top Button
     const topBtn = createButton('top', '#', '↑', 'Back to Top');
     navContainer.appendChild(topBtn);
 
-    // Append to body
     document.body.appendChild(navContainer);
 
-    // Show/Hide Back to Top button based on scroll position
+    function setHeaderVisibility(show) {
+        const header = document.querySelector('header');
+        if (!header) return;
+
+        if (show) {
+            header.classList.add('visible');
+            header.classList.remove('hidden-header');
+        } else {
+            header.classList.remove('visible');
+            header.classList.add('hidden-header');
+        }
+    }
+
+    function updateHeaderVisibility(clientY = null) {
+        const nearEdge = clientY !== null && (clientY <= 80 || clientY >= window.innerHeight - 80);
+        const atScrollEdge = window.scrollY <= 50 || window.scrollY + window.innerHeight >= document.body.scrollHeight - 50;
+
+        setHeaderVisibility(nearEdge || atScrollEdge);
+    }
+
+    const header = document.querySelector('header');
+    if (header) {
+        header.classList.add('hidden-header');
+    }
+
+    document.addEventListener('mousemove', (event) => updateHeaderVisibility(event.clientY));
+    window.addEventListener('scroll', () => updateHeaderVisibility());
+    window.addEventListener('touchstart', (event) => updateHeaderVisibility(event.touches[0]?.clientY || null));
+
     window.addEventListener('scroll', () => {
         if (window.scrollY > 300) {
             topBtn.style.display = 'flex';
@@ -80,9 +104,9 @@ document.addEventListener('DOMContentLoaded', function() {
             topBtn.style.display = 'none';
         }
     });
-    
-    // Initial check
+
     if (window.scrollY <= 300) {
         topBtn.style.display = 'none';
     }
+    updateHeaderVisibility();
 });

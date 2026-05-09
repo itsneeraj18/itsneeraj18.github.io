@@ -47,10 +47,32 @@ body {
 }
 
 header {
-  background: #111;
-  padding: 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(17, 17, 17, 0.92);
+  backdrop-filter: blur(12px);
+  padding: 18px 24px;
   text-align: center;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transform: translateY(0);
+  opacity: 1;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  z-index: 1000;
+  pointer-events: auto;
+}
+
+header.hidden-header {
+  transform: translateY(-120%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+header.visible {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
 }
 
 header h1 {
@@ -1764,6 +1786,99 @@ section {
   font-weight: var(--font-weight-regular);
 }
 
+.topic-path {
+  padding: 3rem 0 1rem;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.topic-path-card {
+  background: linear-gradient(135deg, #111, #181818);
+  border: 1px solid rgba(79, 195, 247, 0.12);
+  border-radius: 22px;
+  padding: 2rem;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.24);
+}
+
+.topic-path-card h2 {
+  color: #fff;
+  margin-bottom: 1rem;
+  font-size: var(--fs-h2);
+  letter-spacing: -0.02em;
+}
+
+.topic-path-card p {
+  color: #c9c9c9;
+  margin-bottom: 1.5rem;
+  line-height: 1.75;
+  font-size: 1rem;
+}
+
+.topic-path-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.topic-path-grid h3 {
+  color: #4fc3f7;
+  margin-bottom: 0.75rem;
+  font-size: 1.05rem;
+}
+
+.topic-path-grid ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  color: #c9c9c9;
+}
+
+.topic-path-grid li {
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+}
+
+.topic-path-grid a {
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+
+.topic-path-grid a:hover {
+  color: var(--color-primary);
+}
+
+.page-flow {
+  max-width: 1060px;
+  margin: 0 auto 1.5rem;
+  padding: 1.5rem 1.75rem;
+  background: #111;
+  border: 1px solid rgba(79, 195, 247, 0.12);
+  border-radius: 18px;
+  color: #ccc;
+}
+
+.page-flow h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #4fc3f7;
+}
+
+.page-flow p {
+  margin: 0.75rem 0 0;
+  color: #ccc;
+  line-height: 1.7;
+}
+
+.page-flow a {
+  color: #4fc3f7;
+  text-decoration: none;
+}
+
+.page-flow a:hover {
+  color: #87ceeb;
+}
+
 .theory-section,
 .implementation-section {
   margin-bottom: 3rem;
@@ -2733,14 +2848,15 @@ footer {
 }
 
 .math-formula {
-  background: var(--color-bg-secondary);
-  border: 2px solid var(--color-primary);
-  border-radius: 8px;
-  padding: 1rem 2rem;
+  background: rgba(79, 195, 247, 0.05);
+  border: 1px solid rgba(79, 195, 247, 0.3);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
   display: inline-block;
   margin: 1rem 0;
-  font-size: var(--fs-h4);
-  color: var(--color-primary);
+  font-size: var(--fs-body);
+  color: #e5f7ff;
+  font-family: inherit;
 }
 
 .analogy-box {
@@ -5691,4 +5807,33 @@ video {
     width: auto;
     opacity: 1;
     padding-right: 20px;
+}
+
+/* Hidden top banner behavior */
+body {
+  position: relative;
+}
+
+header nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+header a {
+  color: var(--color-primary);
+  margin: 0 0.5rem;
+  font-size: var(--fs-body-sm);
+}
+
+@media (max-width: 768px) {
+  header {
+    padding: 16px 16px;
+  }
+
+  .floating-nav-container {
+    bottom: 20px;
+    right: 16px;
+  }
 }
