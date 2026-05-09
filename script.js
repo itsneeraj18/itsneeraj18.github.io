@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded', function() {
         'index.html',
         'topics.html',
         'ev-fundamentals.html',
+        'hv-comp-intro.html',
+        'hv-safety-components.html',
         'motor-controls.html',
         'vf-control.html',
         'pmsm-foc-guide.html',
