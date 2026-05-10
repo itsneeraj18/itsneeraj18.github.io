@@ -80,6 +80,18 @@
     white-space: pre-wrap;
   }
 
+  .math-text {
+    color: #ddd;
+    font-size: 0.95rem;
+    line-height: 1.75;
+    margin: 0;
+  }
+
+  .math-text strong {
+    color: #e5f7ff;
+    font-weight: 600;
+  }
+
   .comparison-panel {
     background: #111;
     border: 1px solid #333;
@@ -370,17 +382,42 @@
     font-size: 0.7rem;
   }
 
+  .circuit-section {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .circuit-section h2 {
+    color: #4fc3f7;
+    margin-bottom: 0.75rem;
+  }
+
+  .circuit-section p {
+    color: #ccc;
+    margin-bottom: 1.5rem;
+  }
+
+  .mod-selector {
+    transition: all 0.3s ease;
+  }
+
+  .mod-selector:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(79, 195, 247, 0.3);
+  }
+
+  .mod-selector.active {
+    background: #4fc3f7 !important;
+    color: #000 !important;
+    border-color: #4fc3f7 !important;
+  }
+
   @media (max-width: 768px) {
-    .controls-panel {
-      grid-template-columns: 1fr;
-    }
-
-    .spwm-types-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .waveform-container {
-      height: 250px;
+    .circuit-section {
+      padding: 1.5rem;
     }
   }
 </style>
@@ -691,6 +728,187 @@
     </div>
   </div>
 
+  <!-- Three-Phase Inverter Circuit & Modulation Selector -->
+  <div class="circuit-section">
+    <h2>⚡ Three-Phase Inverter: Voltage Definitions & Modulation Comparison</h2>
+    <p>Select a modulation mode to see the <strong>Pole Voltage (V<sub>AO</sub>)</strong>, <strong>Line Voltage (V<sub>AB</sub>)</strong>, and <strong>Phase Voltage (V<sub>AN</sub>)</strong> for a star-connected PMSM.</p>
+
+    <!-- Modulation Mode Selector -->
+    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 1.5rem 0;">
+      <button class="mod-selector active" data-type="spwm" style="background: #4fc3f7; color: #000; padding: 0.7rem 1.5rem; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; font-size: 1rem;">SPWM</button>
+      <button class="mod-selector" data-type="svpwm" style="background: #333; color: #fff; padding: 0.7rem 1.5rem; border-radius: 8px; border: 1px solid #555; cursor: pointer; font-weight: 700; font-size: 1rem;">SVPWM</button>
+      <button class="mod-selector" data-type="sixstep" style="background: #333; color: #fff; padding: 0.7rem 1.5rem; border-radius: 8px; border: 1px solid #555; cursor: pointer; font-weight: 700; font-size: 1rem;">Six-Step</button>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 340px 1fr; gap: 1.5rem; margin: 1rem 0; align-items: start;">
+
+      <!-- Circuit Diagram (full width, textbook style) -->
+      <div style="background: #111; border: 1px solid #333; border-radius: 12px; padding: 1.5rem;">
+        <h4 style="color: #4fc3f7; margin: 0 0 0.75rem;">Three-Phase Voltage Source Inverter — Star-Connected PMSM</h4>
+        <svg id="inverterCircuit" viewBox="0 0 720 340" style="width: 100%; background: #050505; border-radius: 8px; border: 1px solid #222;" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arrO" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#ff9800"/></marker>
+            <marker id="arrP" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#e879f9"/></marker>
+            <marker id="arrC" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#22d3ee"/></marker>
+          </defs>
+
+          <!-- ===== DC INPUT ===== -->
+          <text x="30" y="20" fill="#aaa" font-size="11" font-weight="600">DC Supply</text>
+          <!-- DC+ rail -->
+          <line x1="60" y1="40" x2="560" y2="40" stroke="#f87171" stroke-width="2.5"/>
+          <text x="20" y="44" fill="#f87171" font-size="13" font-weight="700" text-anchor="end">+</text>
+          <text x="580" y="35" fill="#f87171" font-size="10">+Vdc/2</text>
+          <!-- DC- rail -->
+          <line x1="60" y1="200" x2="560" y2="200" stroke="#60a5fa" stroke-width="2.5"/>
+          <text x="20" y="204" fill="#60a5fa" font-size="13" font-weight="700" text-anchor="end">−</text>
+          <text x="580" y="195" fill="#60a5fa" font-size="10">−Vdc/2</text>
+
+          <!-- DC Link Capacitor -->
+          <line x1="60" y1="40" x2="60" y2="95" stroke="#ccc" stroke-width="2"/>
+          <line x1="48" y1="95" x2="72" y2="95" stroke="#fbbf24" stroke-width="3"/>
+          <line x1="48" y1="105" x2="72" y2="105" stroke="#fbbf24" stroke-width="3"/>
+          <line x1="60" y1="105" x2="60" y2="120" stroke="#ccc" stroke-width="2"/>
+          <circle cx="60" cy="120" r="4" fill="#888"/>
+          <text x="42" y="125" fill="#888" font-size="11" font-weight="600" text-anchor="end">O</text>
+          <line x1="60" y1="120" x2="60" y2="145" stroke="#ccc" stroke-width="2"/>
+          <line x1="48" y1="145" x2="72" y2="145" stroke="#fbbf24" stroke-width="3"/>
+          <line x1="48" y1="155" x2="72" y2="155" stroke="#fbbf24" stroke-width="3"/>
+          <line x1="60" y1="155" x2="60" y2="200" stroke="#ccc" stroke-width="2"/>
+          <text x="78" y="128" fill="#fbbf24" font-size="9">Cdc</text>
+
+          <!-- ===== LEG A (x=200) ===== -->
+          <line x1="200" y1="40" x2="200" y2="60" stroke="#ccc" stroke-width="2"/>
+          <!-- S1 IGBT -->
+          <rect x="182" y="60" width="36" height="28" rx="4" fill="#1a2e1a" stroke="#4ade80" stroke-width="2"/>
+          <text x="200" y="79" text-anchor="middle" fill="#4ade80" font-size="11" font-weight="700">S1</text>
+          <!-- Diode D1 -->
+          <polygon points="220,64 220,84 232,74" fill="none" stroke="#4ade80" stroke-width="1.5"/>
+          <line x1="232" y1="64" x2="232" y2="84" stroke="#4ade80" stroke-width="1.5"/>
+
+          <line x1="200" y1="88" x2="200" y2="120" stroke="#ccc" stroke-width="2"/>
+          <!-- Midpoint A -->
+          <circle cx="200" cy="120" r="6" fill="#4fc3f7" stroke="#fff" stroke-width="1"/>
+          <text x="200" y="112" text-anchor="middle" fill="#4fc3f7" font-size="13" font-weight="800">A</text>
+
+          <line x1="200" y1="120" x2="200" y2="152" stroke="#ccc" stroke-width="2"/>
+          <!-- S4 IGBT -->
+          <rect x="182" y="152" width="36" height="28" rx="4" fill="#2e1a1a" stroke="#f87171" stroke-width="2"/>
+          <text x="200" y="171" text-anchor="middle" fill="#f87171" font-size="11" font-weight="700">S4</text>
+          <!-- Diode D4 -->
+          <polygon points="220,156 220,176 232,166" fill="none" stroke="#f87171" stroke-width="1.5"/>
+          <line x1="232" y1="156" x2="232" y2="176" stroke="#f87171" stroke-width="1.5"/>
+          <line x1="200" y1="180" x2="200" y2="200" stroke="#ccc" stroke-width="2"/>
+
+          <!-- ===== LEG B (x=360) ===== -->
+          <line x1="360" y1="40" x2="360" y2="60" stroke="#ccc" stroke-width="2"/>
+          <rect x="342" y="60" width="36" height="28" rx="4" fill="#1a2e1a" stroke="#4ade80" stroke-width="2"/>
+          <text x="360" y="79" text-anchor="middle" fill="#4ade80" font-size="11" font-weight="700">S3</text>
+          <polygon points="380,64 380,84 392,74" fill="none" stroke="#4ade80" stroke-width="1.5"/>
+          <line x1="392" y1="64" x2="392" y2="84" stroke="#4ade80" stroke-width="1.5"/>
+          <line x1="360" y1="88" x2="360" y2="120" stroke="#ccc" stroke-width="2"/>
+          <circle cx="360" cy="120" r="6" fill="#4fc3f7" stroke="#fff" stroke-width="1"/>
+          <text x="360" y="112" text-anchor="middle" fill="#4fc3f7" font-size="13" font-weight="800">B</text>
+          <line x1="360" y1="120" x2="360" y2="152" stroke="#ccc" stroke-width="2"/>
+          <rect x="342" y="152" width="36" height="28" rx="4" fill="#2e1a1a" stroke="#f87171" stroke-width="2"/>
+          <text x="360" y="171" text-anchor="middle" fill="#f87171" font-size="11" font-weight="700">S6</text>
+          <polygon points="380,156 380,176 392,166" fill="none" stroke="#f87171" stroke-width="1.5"/>
+          <line x1="392" y1="156" x2="392" y2="176" stroke="#f87171" stroke-width="1.5"/>
+          <line x1="360" y1="180" x2="360" y2="200" stroke="#ccc" stroke-width="2"/>
+
+          <!-- ===== LEG C (x=520) ===== -->
+          <line x1="520" y1="40" x2="520" y2="60" stroke="#ccc" stroke-width="2"/>
+          <rect x="502" y="60" width="36" height="28" rx="4" fill="#1a2e1a" stroke="#4ade80" stroke-width="2"/>
+          <text x="520" y="79" text-anchor="middle" fill="#4ade80" font-size="11" font-weight="700">S5</text>
+          <polygon points="540,64 540,84 552,74" fill="none" stroke="#4ade80" stroke-width="1.5"/>
+          <line x1="552" y1="64" x2="552" y2="84" stroke="#4ade80" stroke-width="1.5"/>
+          <line x1="520" y1="88" x2="520" y2="120" stroke="#ccc" stroke-width="2"/>
+          <circle cx="520" cy="120" r="6" fill="#4fc3f7" stroke="#fff" stroke-width="1"/>
+          <text x="520" y="112" text-anchor="middle" fill="#4fc3f7" font-size="13" font-weight="800">C</text>
+          <line x1="520" y1="120" x2="520" y2="152" stroke="#ccc" stroke-width="2"/>
+          <rect x="502" y="152" width="36" height="28" rx="4" fill="#2e1a1a" stroke="#f87171" stroke-width="2"/>
+          <text x="520" y="171" text-anchor="middle" fill="#f87171" font-size="11" font-weight="700">S2</text>
+          <polygon points="540,156 540,176 552,166" fill="none" stroke="#f87171" stroke-width="1.5"/>
+          <line x1="552" y1="156" x2="552" y2="176" stroke="#f87171" stroke-width="1.5"/>
+          <line x1="520" y1="180" x2="520" y2="200" stroke="#ccc" stroke-width="2"/>
+
+          <!-- ===== LOAD CONNECTIONS ===== -->
+          <line x1="200" y1="120" x2="200" y2="240" stroke="#4fc3f7" stroke-width="1.5"/>
+          <line x1="360" y1="120" x2="360" y2="240" stroke="#4fc3f7" stroke-width="1.5"/>
+          <line x1="520" y1="120" x2="520" y2="240" stroke="#4fc3f7" stroke-width="1.5"/>
+
+          <!-- Phase impedance (zigzag) -->
+          <path d="M200,240 L200,248 L192,252 L208,260 L192,268 L208,276 L200,280 L200,288" fill="none" stroke="#ddd" stroke-width="1.8"/>
+          <path d="M360,240 L360,248 L352,252 L368,260 L352,268 L368,276 L360,280 L360,288" fill="none" stroke="#ddd" stroke-width="1.8"/>
+          <path d="M520,240 L520,248 L512,252 L528,260 L512,268 L528,276 L520,280 L520,288" fill="none" stroke="#ddd" stroke-width="1.8"/>
+
+          <!-- Neutral bus -->
+          <line x1="200" y1="288" x2="200" y2="300" stroke="#ccc" stroke-width="1.5"/>
+          <line x1="360" y1="288" x2="360" y2="300" stroke="#ccc" stroke-width="1.5"/>
+          <line x1="520" y1="288" x2="520" y2="300" stroke="#ccc" stroke-width="1.5"/>
+          <line x1="200" y1="300" x2="520" y2="300" stroke="#fbbf24" stroke-width="2.5"/>
+          <circle cx="360" cy="300" r="6" fill="#fbbf24" stroke="#fff" stroke-width="1"/>
+          <text x="360" y="320" text-anchor="middle" fill="#fbbf24" font-size="13" font-weight="700">N (Neutral)</text>
+
+          <!-- Motor symbol -->
+          <circle cx="360" y="260" r="18" fill="none" stroke="#888" stroke-width="1.5" stroke-dasharray="4,2" cy="260"/>
+          <text x="360" y="264" text-anchor="middle" fill="#888" font-size="10" font-weight="600">PMSM</text>
+
+          <!-- ===== VOLTAGE ANNOTATIONS ===== -->
+          <!-- V_AO: Pole Voltage -->
+          <line x1="168" y1="120" x2="168" y2="42" stroke="#ff9800" stroke-width="2" marker-end="url(#arrO)"/>
+          <line x1="168" y1="120" x2="168" y2="198" stroke="#ff9800" stroke-width="2" marker-end="url(#arrO)"/>
+          <rect x="140" y="105" width="50" height="18" rx="3" fill="#1a1200" stroke="#ff9800" stroke-width="1"/>
+          <text x="165" y="118" text-anchor="middle" fill="#ff9800" font-size="10" font-weight="700">VAO</text>
+
+          <!-- V_AB: Line Voltage -->
+          <line x1="210" y1="230" x2="350" y2="230" stroke="#e879f9" stroke-width="2" marker-end="url(#arrP)"/>
+          <rect x="255" y="218" width="50" height="16" rx="3" fill="#1a0020" stroke="#e879f9" stroke-width="1"/>
+          <text x="280" y="230" text-anchor="middle" fill="#e879f9" font-size="10" font-weight="700">VAB</text>
+
+          <!-- V_AN: Phase Voltage -->
+          <line x1="190" y1="248" x2="190" y2="298" stroke="#22d3ee" stroke-width="2" marker-end="url(#arrC)"/>
+          <rect x="148" y="262" width="38" height="16" rx="3" fill="#001a1f" stroke="#22d3ee" stroke-width="1"/>
+          <text x="167" y="274" text-anchor="middle" fill="#22d3ee" font-size="10" font-weight="700">VAN</text>
+
+          <!-- Legend bar -->
+          <rect x="10" y="330" width="700" height="8" rx="4" fill="#0f0f0f"/>
+          <text x="120" y="325" fill="#4ade80" font-size="9">■ Upper switches (S1,S3,S5)</text>
+          <text x="320" y="325" fill="#f87171" font-size="9">■ Lower switches (S4,S6,S2)</text>
+          <text x="520" y="325" fill="#fbbf24" font-size="9">■ DC link capacitor</text>
+        </svg>
+      </div>
+
+      <!-- Three Waveform Canvases -->
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <div style="background: #111; border: 1px solid #333; border-radius: 10px; padding: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <h4 style="color: #ff9800; margin: 0; font-size: 0.95rem;">V<sub>AO</sub> — Pole Voltage (A to DC midpoint O)</h4>
+            <span id="poleInfo" style="color: #888; font-size: 0.8rem;">Switches between +V<sub>DC</sub>/2 and −V<sub>DC</sub>/2</span>
+          </div>
+          <canvas id="canvasPole" width="600" height="120" style="width:100%; background:#050505; border-radius:6px; border:1px solid #222;"></canvas>
+        </div>
+        <div style="background: #111; border: 1px solid #333; border-radius: 10px; padding: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <h4 style="color: #e879f9; margin: 0; font-size: 0.95rem;">V<sub>AB</sub> — Line Voltage (A to B)</h4>
+            <span id="lineInfo" style="color: #888; font-size: 0.8rem;">V<sub>AO</sub> − V<sub>BO</sub></span>
+          </div>
+          <canvas id="canvasLine" width="600" height="120" style="width:100%; background:#050505; border-radius:6px; border:1px solid #222;"></canvas>
+        </div>
+        <div style="background: #111; border: 1px solid #333; border-radius: 10px; padding: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <h4 style="color: #22d3ee; margin: 0; font-size: 0.95rem;">V<sub>AN</sub> — Phase Voltage (A to Neutral N)</h4>
+            <span id="phaseInfo" style="color: #888; font-size: 0.8rem;">V<sub>AO</sub> − V<sub>NO</sub>, where V<sub>NO</sub> = (V<sub>AO</sub>+V<sub>BO</sub>+V<sub>CO</sub>)/3</span>
+          </div>
+          <canvas id="canvasPhase" width="600" height="120" style="width:100%; background:#050505; border-radius:6px; border:1px solid #222;"></canvas>
+        </div>
+        <p id="modDescription" style="color: #ccc; font-size: 0.9rem; line-height: 1.6; margin: 0.5rem 0 0; padding: 0.75rem; background: #0a0a0a; border-radius: 8px; border: 1px solid #222;">
+          <strong style="color:#4fc3f7;">SPWM:</strong> Sinusoidal reference compared with triangular carrier. Phase voltage is sinusoidal with PWM ripple. Line voltage amplitude = √3 × phase voltage.
+        </p>
+      </div>
+    </div>
+  </div>
+
+
   <!-- Implementation Section -->
   <div class="implementation-section">
     <h2>🔧 Practical Implementation</h2>
@@ -794,6 +1012,7 @@ class SPWMVisualizer {
     this.running = false;
 
     this.initControls();
+    this.draw();  // Draw initial static frame
     this.startAnimation();
   }
 
@@ -996,6 +1215,168 @@ document.addEventListener('DOMContentLoaded', function() {
       bar.style.height = bar.getAttribute('data-value') * 2 + 'px';
     }, index * 200);
   });
+});
+
+// Modulation Type Selector & 3-Canvas Waveform Display
+document.addEventListener('DOMContentLoaded', function() {
+  const modSelectors = document.querySelectorAll('.mod-selector');
+  const modDescription = document.getElementById('modDescription');
+  const cPole = document.getElementById('canvasPole');
+  const cLine = document.getElementById('canvasLine');
+  const cPhase = document.getElementById('canvasPhase');
+  if (!cPole || !cLine || !cPhase) return;
+
+  const ctxP = cPole.getContext('2d');
+  const ctxL = cLine.getContext('2d');
+  const ctxPh = cPhase.getContext('2d');
+
+  const modDescriptions = {
+    spwm: '<strong style="color:#4fc3f7;">SPWM:</strong> Sinusoidal reference vs triangular carrier. Pole voltage switches between ±V<sub>DC</sub>/2. Line voltage V<sub>AB</sub> = V<sub>AO</sub> − V<sub>BO</sub> has 3-level waveform. Phase voltage V<sub>AN</sub> follows a sinusoidal envelope with PWM ripple. DC utilization: <strong>78.5%</strong>.',
+    svpwm: '<strong style="color:#8bc34a;">SVPWM:</strong> Zero-sequence injection flattens the pole voltage peaks, extending the linear range. Line voltage has a wider fundamental. Phase voltage is a clean sinusoid with reduced harmonics. DC utilization: <strong>90.7%</strong> (15.5% more than SPWM).',
+    sixstep: '<strong style="color:#ff9800;">Six-Step:</strong> Each switch conducts for 180° — no PWM. Pole voltage is a square wave (±V<sub>DC</sub>/2). Line voltage is a quasi-square wave with ±V<sub>DC</sub> and 0V levels. Phase voltage is a stepped waveform. DC utilization: <strong>100%</strong>, but THD &gt; 80%.'
+  };
+
+  const N = 600; // number of sample points
+  const TWO_PI = 2 * Math.PI;
+
+  function generateWaveforms(type) {
+    const poleA = new Float32Array(N);
+    const poleB = new Float32Array(N);
+    const poleC = new Float32Array(N);
+    const lineAB = new Float32Array(N);
+    const phaseAN = new Float32Array(N);
+
+    for (let i = 0; i < N; i++) {
+      const theta = (i / N) * TWO_PI * 2; // Show 2 full electrical cycles
+      const thetaB = theta - TWO_PI / 3;
+      const thetaC = theta + TWO_PI / 3;
+
+      if (type === 'spwm') {
+        // SPWM: compare sine ref with triangle carrier
+        const m = 0.85;
+        const mf = 15; // carrier ratio (visible switching)
+        const carrier = (theta2tri(theta * mf));
+        const carrierB = (theta2tri(thetaB * mf));
+        const carrierC = (theta2tri(thetaC * mf));
+        const refA = m * Math.sin(theta);
+        const refB = m * Math.sin(thetaB);
+        const refC = m * Math.sin(thetaC);
+        poleA[i] = refA > carrier ? 0.5 : -0.5;
+        poleB[i] = refB > carrierB ? 0.5 : -0.5;
+        poleC[i] = refC > carrierC ? 0.5 : -0.5;
+      } else if (type === 'svpwm') {
+        // SVPWM: sine + third harmonic injection
+        const m = 0.98;
+        const mf = 15;
+        const carrier = theta2tri(theta * mf);
+        const carrierB = theta2tri(thetaB * mf);
+        const carrierC = theta2tri(thetaC * mf);
+        const thd3 = -(m / 6) * Math.sin(3 * theta);
+        const thd3B = -(m / 6) * Math.sin(3 * thetaB);
+        const thd3C = -(m / 6) * Math.sin(3 * thetaC);
+        const refA = m * Math.sin(theta) + thd3;
+        const refB = m * Math.sin(thetaB) + thd3B;
+        const refC = m * Math.sin(thetaC) + thd3C;
+        poleA[i] = refA > carrier ? 0.5 : -0.5;
+        poleB[i] = refB > carrierB ? 0.5 : -0.5;
+        poleC[i] = refC > carrierC ? 0.5 : -0.5;
+      } else { // sixstep
+        // 180° conduction: each switch ON for half cycle
+        const angA = ((theta % TWO_PI) + TWO_PI) % TWO_PI;
+        const angB = ((thetaB % TWO_PI) + TWO_PI) % TWO_PI;
+        const angC = ((thetaC % TWO_PI) + TWO_PI) % TWO_PI;
+        poleA[i] = angA < Math.PI ? 0.5 : -0.5;
+        poleB[i] = angB < Math.PI ? 0.5 : -0.5;
+        poleC[i] = angC < Math.PI ? 0.5 : -0.5;
+      }
+
+      // Line voltage: V_AB = V_AO - V_BO
+      lineAB[i] = poleA[i] - poleB[i];
+      // Phase voltage (Y-load): V_AN = V_AO - V_NO, V_NO = (V_AO + V_BO + V_CO) / 3
+      const vNO = (poleA[i] + poleB[i] + poleC[i]) / 3;
+      phaseAN[i] = poleA[i] - vNO;
+    }
+
+    return { poleA, lineAB, phaseAN };
+  }
+
+  // Triangle wave helper: returns -1 to +1 from any input angle
+  function theta2tri(x) {
+    const p = ((x / TWO_PI) % 1 + 1) % 1; // normalize to 0-1
+    return p < 0.5 ? (4 * p - 1) : (3 - 4 * p);
+  }
+
+  function drawOnCanvas(ctx, canvas, data, color, yRange) {
+    const w = canvas.width;
+    const h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    // Grid
+    ctx.strokeStyle = '#1a1a1a';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(0, h * 0.25); ctx.lineTo(w, h * 0.25);
+    ctx.moveTo(0, h * 0.75); ctx.lineTo(w, h * 0.75);
+    ctx.stroke();
+
+    // Zero line
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, h / 2); ctx.lineTo(w, h / 2);
+    ctx.stroke();
+
+    // ±V labels
+    ctx.fillStyle = '#555';
+    ctx.font = '10px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('+' + yRange, 4, 12);
+    ctx.fillText('−' + yRange, 4, h - 4);
+    ctx.fillText('0', 4, h / 2 - 4);
+
+    // Waveform
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    const scale = h * 0.42;
+    for (let i = 0; i < data.length; i++) {
+      const x = (i / data.length) * w;
+      const y = h / 2 - data[i] * scale * 2; // normalize: ±0.5 → full range for pole, ±1 for line
+      if (i === 0) ctx.moveTo(x, y);
+      else {
+        // For square-ish waveforms, draw step
+        ctx.lineTo(x, y);
+      }
+    }
+    ctx.stroke();
+  }
+
+  function redraw(type) {
+    const wf = generateWaveforms(type);
+    drawOnCanvas(ctxP, cPole, wf.poleA, '#ff9800', 'Vdc/2');
+    drawOnCanvas(ctxL, cLine, wf.lineAB, '#e879f9', 'Vdc');
+    drawOnCanvas(ctxPh, cPhase, wf.phaseAN, '#22d3ee', '2Vdc/3');
+    modDescription.innerHTML = modDescriptions[type];
+  }
+
+  modSelectors.forEach(btn => {
+    btn.addEventListener('click', function() {
+      modSelectors.forEach(b => {
+        b.classList.remove('active');
+        b.style.background = '#333';
+        b.style.color = '#fff';
+        b.style.border = '1px solid #555';
+      });
+      this.classList.add('active');
+      this.style.background = '#4fc3f7';
+      this.style.color = '#000';
+      this.style.border = 'none';
+      redraw(this.dataset.type);
+    });
+  });
+
+  // Initial draw
+  redraw('spwm');
 });
 </script>
 <script src="script.js"></script>
