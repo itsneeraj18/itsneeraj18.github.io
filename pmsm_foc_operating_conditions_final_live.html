@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<!-- FINAL_LIVE_VERSION_2026_05_30: no verification section, enlarged multi-axis graph, dynamics watch card -->
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Interactive PMSM FOC operating-condition visualization for EV four-quadrant operation, regenerative braking, hill hold, field weakening, and edge-case verification." />
+<meta name="theme-color" content="#07111f" />
+<meta name="color-scheme" content="dark" />
+<title>PMSM FOC Operating Conditions — EV Drive Modes</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  :root{
+    --bg:#07111f; --panel:#101827; --card:#172235; --card2:#1d2b42; --ink:#eef6ff; --muted:#a8bbcf;
+    --blue:#3db7ff; --green:#36d399; --orange:#ff9f43; --red:#ff6b6b; --gray:#9aa8b7;
+    --purple:#b79cff; --yellow:#ffd166; --grid:#314158; --road:#2b313b;
+    --slope:0deg; --roadRot:0deg; --skyShift:0px; --roadShift:0px;
+  }
+  *{box-sizing:border-box}
+  :focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#06101e,#0b1728 38%,#101827);color:var(--ink);line-height:1.55}
+  header{padding:32px 22px 26px;text-align:center;border-bottom:1px solid #26364d;background:radial-gradient(circle at 50% -25%,#2d78ff55,transparent 46%)}
+  h1{margin:0 0 8px;font-size:clamp(1.8rem,4vw,3rem);letter-spacing:-.03em}
+  h2{margin-top:34px;border-left:5px solid var(--blue);padding-left:12px;color:#f8fbff;letter-spacing:-.015em}
+  h3{color:#cae4ff;margin-top:18px;margin-bottom:8px}
+  p,li{color:#d8e8f8}.muted,.small{color:var(--muted)}
+  code{background:#07111f;color:#ffe69b;padding:2px 5px;border-radius:5px}
+  .wrap{max-width:1280px;margin:auto;padding:22px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px}
+  .card{background:linear-gradient(180deg,rgba(29,43,66,.94),rgba(20,31,49,.94));border:1px solid #30435d;border-radius:18px;padding:18px;box-shadow:0 18px 38px rgba(0,0,0,.22)}
+  .soft{background:rgba(12,22,37,.62);border:1px solid #2b3d56;border-radius:16px;padding:14px}
+  .tag{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:999px;font-size:.78rem;font-weight:800;margin:2px;color:#06101e;white-space:nowrap}
+  .motoring{background:var(--blue)} .regen{background:var(--green)} .coast{background:var(--gray)} .hold{background:var(--yellow)} .fault{background:var(--red)} .limit{background:var(--orange)} .fw{background:var(--purple)}
+  .hero-note{max-width:980px;margin:0 auto;color:#c7dcf4;font-size:1.05rem}
+
+  /* Preset buttons */
+  .preset-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:14px 0 8px}
+  .preset{cursor:pointer;border:1px solid #3b5372;background:#101b2d;color:#eaf5ff;border-radius:14px;padding:11px 12px;text-align:left;transition:.18s transform,.18s background,.18s border-color;min-height:74px}
+  .preset:hover{transform:translateY(-2px);background:#162742;border-color:#5f86b8}
+  .preset.active{outline:2px solid var(--yellow);background:#203452}
+  .preset b{display:block;font-size:.98rem}.preset span{display:block;color:#b6c7d9;font-size:.82rem;margin-top:2px}
+  .case-group{margin-top:14px}
+  .case-group-title{display:flex;align-items:center;gap:10px;margin:16px 0 8px;color:#f8fbff;font-weight:900;letter-spacing:.01em}
+  .case-group-title:after{content:"";height:1px;background:#344a66;flex:1}
+  .case-details{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:9px;margin-top:14px}
+  .case-kv{background:#07111f;border:1px solid #31465f;border-radius:12px;padding:9px 10px}
+  .case-kv b{display:block;color:#a8bbcf;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em}.case-kv span{font-size:1rem;font-weight:850;color:#fff}
+
+  /* Apple/Tesla-like studio layout */
+  .studio{padding:18px;background:linear-gradient(180deg,rgba(25,37,58,.96),rgba(10,18,31,.96));border-radius:28px}
+  .studio h2{margin-top:0}
+  .studio-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:14px}
+  .studio-head p{margin:.35rem 0 0;max-width:760px;color:#bfd4ea}
+  .studio-badge{white-space:nowrap;border:1px solid #426080;background:#07111f99;color:#eaf5ff;border-radius:999px;padding:9px 13px;font-weight:900;box-shadow:inset 0 1px 0 #ffffff18}
+  .studio-grid{display:grid;grid-template-columns:minmax(420px,1.35fr) minmax(340px,.72fr);gap:16px;align-items:stretch}
+  .studio .stage{height:min(68vh,620px);min-height:500px;border-radius:24px}
+  .control-dock{background:linear-gradient(180deg,#0c1625,#07111f);border:1px solid #36506d;border-radius:24px;padding:14px;box-shadow:inset 0 1px 0 #ffffff16,0 18px 35px #0005;max-height:min(68vh,620px);min-height:500px;overflow:auto;scrollbar-width:thin}
+  .selector-card{position:sticky;top:0;z-index:8;background:linear-gradient(180deg,#101d31,#0b1524);border:1px solid #3b5574;border-radius:18px;padding:12px;margin-bottom:12px;box-shadow:0 10px 24px #0005}
+  select{width:100%;appearance:none;background:#eaf5ff;color:#07111f;border:0;border-radius:14px;padding:13px 42px 13px 14px;font-weight:900;font-size:1rem;box-shadow:inset 0 -2px 0 #c2d7eb;cursor:pointer;background-image:linear-gradient(45deg,transparent 50%,#07111f 50%),linear-gradient(135deg,#07111f 50%,transparent 50%);background-position:calc(100% - 23px) 50%,calc(100% - 16px) 50%;background-size:7px 7px,7px 7px;background-repeat:no-repeat}
+  .dock-story{background:#0a1322;border:1px solid #2c4059;border-radius:18px;padding:13px;margin-bottom:12px;gap:8px}.dock-story .big{font-size:1.32rem}.dock-story p{margin:0}.dock-story .story-list{font-size:.9rem}
+  .compact-case{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:12px}.compact-case .case-kv{padding:8px 9px}.compact-case .case-kv span{font-size:.92rem}
+  .compact-readouts{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:12px}.compact-readouts .metric{padding:9px 10px}.compact-readouts .metric span{font-size:1rem}.compact-readouts .wide{grid-column:span 2}
+  .fine-tune{border:1px solid #31465f;border-radius:16px;padding:10px 12px;background:#0a1322;margin-bottom:12px}.fine-tune summary{cursor:pointer;font-weight:900;color:#eaf5ff}.micro-controls{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:10px}.micro-controls label{font-size:.82rem;margin-bottom:2px}
+  .studio-telemetry{display:grid;grid-template-columns:minmax(0,2.6fr) minmax(280px,.9fr);gap:16px;margin-top:16px;align-items:stretch}.telemetry-card{border:1px solid #31465f;border-radius:20px;background:radial-gradient(circle at top left,#15294a,#0a1322 55%);padding:14px;margin-bottom:12px;box-shadow:0 14px 28px #0005}.studio-telemetry .telemetry-card{margin-bottom:0}.telemetry-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.telemetry-title{font-weight:950;color:#eaf5ff;font-size:1.28rem;letter-spacing:-.015em}.telemetry-badge{background:#0f253a;border:1px solid #3b5574;color:#d8e8f8;border-radius:999px;padding:6px 10px;font-size:.82rem;font-weight:900;white-space:nowrap}.telemetry-card canvas{height:460px}.featured-telemetry{border-color:#4d7198}.event-card{border:1px solid #3b5574;border-radius:18px;background:linear-gradient(180deg,#101d31,#0a1322);padding:14px;margin-bottom:12px;box-shadow:inset 0 1px 0 #ffffff12}.studio-telemetry .event-card{margin-bottom:0}.event-card.alert{border-color:#ff9f43;background:linear-gradient(180deg,#2a1b0d,#0a1322)}.event-card.fault{border-color:#ff6b6b;background:linear-gradient(180deg,#2a1014,#0a1322)}.event-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}.event-title{font-weight:950;color:#eaf5ff}.event-pill{font-size:.72rem;border-radius:999px;padding:4px 8px;background:#0f253a;border:1px solid #3b5574;color:#d8e8f8;font-weight:900}.event-body{font-size:.9rem;color:#bfd4ea}
+  @media(max-width:1120px){.energy-flow{top:12px;left:12px;right:12px;transform:none;min-width:0;width:auto}.vehicle-hud{top:86px;left:16px}.studio-telemetry{grid-template-columns:1fr}.telemetry-card canvas{height:420px}}
+  @media(max-width:980px){.studio-grid{grid-template-columns:1fr}.control-dock{max-height:none}.studio .stage{height:430px}.studio-head{flex-direction:column}.studio-badge{white-space:normal}}
+  @media(max-width:700px){
+    .wrap{padding:14px}.studio{padding:12px;border-radius:22px}.studio .stage{height:470px;min-height:470px}
+    .energy-flow{top:12px;left:12px;right:12px;transform:none;min-width:0;width:auto}
+    .vehicle-hud{top:86px;left:12px;width:194px}.dynamics-popup{top:214px;left:12px;right:12px;width:auto}.motion-arrow{bottom:236px;font-size:.92rem}.motor-disc{right:14px;width:66px;height:66px}
+    .compact-case,.compact-readouts,.micro-controls{grid-template-columns:1fr}.compact-readouts .wide{grid-column:auto}.telemetry-card canvas{height:380px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition:none!important;scroll-behavior:auto!important}
+  }
+
+  /* Scenic EV stage */
+  .stage-wrap{display:grid;grid-template-columns:minmax(320px,1.45fr) minmax(260px,.75fr);gap:16px;align-items:stretch}
+  @media(max-width:900px){.stage-wrap{grid-template-columns:1fr}}
+  .stage{position:relative;height:430px;overflow:hidden;border-radius:22px;border:1px solid #38516d;background:linear-gradient(#7dd3fc 0%,#bdeafe 45%,#c6f6d5 45%,#78c878 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12),0 18px 38px rgba(0,0,0,.24)}
+  .sky-layer{position:absolute;inset:0 0 38%;background:
+      radial-gradient(circle at 78% 18%,#fff6b4 0 28px,transparent 29px),
+      radial-gradient(ellipse at calc(15% + var(--skyShift)) 22%,#ffffffcc 0 38px,transparent 40px),
+      radial-gradient(ellipse at calc(35% + var(--skyShift)) 16%,#ffffffb0 0 45px,transparent 47px),
+      linear-gradient(#75cff9,#c3ecff);}
+  .mountains{position:absolute;left:-12%;right:-12%;bottom:142px;height:120px;transform:translateX(calc(var(--skyShift) * .2));transition:transform .2s linear}
+  .mountains:before,.mountains:after{content:"";position:absolute;bottom:0;border-left:230px solid transparent;border-right:230px solid transparent;border-bottom:115px solid #7ba3b0;filter:drop-shadow(0 -14px 0 #d7f5ff55)}
+  .mountains:before{left:3%}.mountains:after{right:5%;border-bottom-color:#678b9d;transform:scale(.86)}
+  .tree-line{position:absolute;left:-120px;right:-120px;bottom:116px;height:85px;transform:translateX(calc(var(--skyShift) * .7));transition:transform .2s linear;background:repeating-linear-gradient(90deg,transparent 0 52px,#186a3b 52px 62px,transparent 62px 104px)}
+  .tree-line:after{content:"";position:absolute;left:0;right:0;bottom:30px;height:54px;background:repeating-radial-gradient(circle at 30px 45px,#1f8f4b 0 19px,transparent 20px 80px)}
+  .slope-deck{position:absolute;left:50%;bottom:70px;width:145%;height:120px;transform-origin:center;transform:translateX(-50%) rotate(var(--roadRot));transition:transform .45s ease}
+  .road{position:absolute;left:0;right:0;top:28px;height:84px;background:var(--road);border-top:6px solid #ece7d0;border-bottom:6px solid #ece7d0;box-shadow:0 12px 0 #567e46,0 -16px 0 #63a455;overflow:hidden}
+  .road:after{content:"";position:absolute;left:-80px;right:-80px;top:36px;height:8px;background:repeating-linear-gradient(90deg,#f9fafb 0 58px,transparent 58px 108px);transform:translateX(var(--roadShift))}
+  .grade-label{position:absolute;right:16px;bottom:18px;background:#07111fcc;border:1px solid #37516e;color:#ecf6ff;border-radius:999px;padding:7px 12px;font-weight:800;z-index:6}
+  .ev{position:absolute;left:50%;bottom:126px;width:210px;height:82px;transform:translateX(-50%) rotate(var(--roadRot));transform-origin:50% 90%;z-index:5;transition:transform .45s ease,bottom .45s ease}
+  .ev-body{position:absolute;left:0;right:0;bottom:18px;height:56px;background:linear-gradient(180deg,#3aa0ff,#1469c9);border-radius:34px 46px 16px 16px;box-shadow:inset 0 0 0 3px #bde2ff,0 9px 18px #0005}
+  .ev-body:before{content:"front";position:absolute;right:15px;top:14px;font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:#dff3ff;background:#0b4f91aa;border-radius:8px;padding:2px 5px}
+  .ev-body:after{content:"";position:absolute;left:54px;top:-24px;width:92px;height:38px;background:linear-gradient(180deg,#bae6fd,#60a5fa);border-radius:40px 42px 0 0;box-shadow:inset 0 -4px 0 #0e5fa8}
+  .wheel{position:absolute;bottom:2px;width:38px;height:38px;border:6px solid #0b1220;background:radial-gradient(circle,#aab4c0 0 7px,#566170 8px 100%);border-radius:50%;animation:spin 1.1s linear infinite;animation-play-state:var(--wheelState,running)}
+  .w1{left:34px}.w2{right:34px}@keyframes spin{to{transform:rotate(360deg)}}
+  .motion-arrow{position:absolute;left:50%;bottom:220px;transform:translateX(-50%);z-index:6;font-size:1.05rem;font-weight:900;color:#06101e;background:#ffffffd9;border:1px solid #fff;border-radius:999px;padding:8px 13px;box-shadow:0 8px 20px #0003}
+  .energy-flow{position:absolute;left:50%;top:24px;transform:translateX(-50%);z-index:6;background:#07111fd9;border:1px solid #38516d;border-radius:16px;padding:10px 14px;min-width:260px;text-align:center;box-shadow:0 12px 28px #0004}
+  .energy-flow b{display:block;color:#fff}.energy-flow span{font-size:.9rem;color:#bcd0e4}
+  .vehicle-hud{position:absolute;left:18px;top:18px;z-index:7;width:205px;background:linear-gradient(180deg,#07111fe8,#0b1524d8);border:1px solid #ffffff33;border-radius:18px;padding:11px 12px;box-shadow:0 14px 32px #0006, inset 0 1px 0 #ffffff18;backdrop-filter:blur(8px)}
+  .hud-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.hud-title{font-size:.72rem;color:#bcd0e4;text-transform:uppercase;letter-spacing:.08em;font-weight:900}.hud-mode{font-size:.72rem;color:#07111f;background:var(--blue);border-radius:999px;padding:4px 8px;font-weight:950;white-space:nowrap}
+  .battery-row{display:flex;align-items:center;gap:10px}.battery-shell{position:relative;width:78px;height:34px;border:3px solid #eaf5ff;border-radius:8px;padding:3px;background:#07111f}.battery-shell:after{content:"";position:absolute;right:-9px;top:9px;width:6px;height:12px;border-radius:0 4px 4px 0;background:#eaf5ff}.battery-fill{height:100%;width:60%;border-radius:4px;background:linear-gradient(90deg,#34d399,#86efac);transition:width .45s ease,background .25s ease;box-shadow:0 0 12px #34d39988}.battery-meta{line-height:1.15}.battery-meta b{display:block;font-size:1.08rem;color:#fff}.battery-meta span{font-size:.78rem;color:#bcd0e4}
+  .flow-line{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:9px;font-size:.78rem;color:#d8e8f8}.flow-pill{display:inline-flex;align-items:center;gap:5px;border:1px solid #3a526e;border-radius:999px;padding:4px 8px;background:#0b1524;color:#eaf5ff;font-weight:850}.flow-arrow-mini{font-size:1.1rem;color:var(--blue);animation:pulseFlow 1s infinite alternate}.regen-flow .flow-arrow-mini{color:var(--green)}.limit-flow .flow-arrow-mini{color:var(--orange)}@keyframes pulseFlow{from{opacity:.45;transform:translateX(-2px)}to{opacity:1;transform:translateX(2px)}}
+  .dynamics-popup{position:absolute;right:18px;top:104px;z-index:8;width:min(330px,calc(100% - 36px));background:linear-gradient(180deg,#fffaf0,#ffe7bd);color:#1b2430;border:1px solid #ffffffcc;border-radius:18px;padding:12px 14px;box-shadow:0 18px 38px #0006;transform:translateY(-8px);opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease}.dynamics-popup.show{opacity:1;transform:translateY(0)}.popup-kicker{font-size:.7rem;font-weight:950;text-transform:uppercase;letter-spacing:.08em;color:#8a4b00;margin-bottom:2px}.dynamics-popup b{display:block;font-size:1rem}.dynamics-popup span{display:block;font-size:.86rem;color:#334155;margin-top:2px}
+  .motor-disc{position:absolute;right:22px;bottom:128px;width:78px;height:78px;border-radius:50%;border:8px solid #d8e8f8;background:conic-gradient(from 0deg,#3db7ff,#b79cff,#36d399,#3db7ff);box-shadow:0 9px 20px #0005;animation:spin 1.4s linear infinite;z-index:5}
+  .motor-disc:after{content:"motor";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:.72rem;font-weight:900;color:#07111f;background:#ffffffcc;border-radius:999px;padding:3px 5px}
+  .mode-story{display:grid;gap:12px}.mode-story .big{font-size:1.6rem;font-weight:900;letter-spacing:-.02em}.mode-story .status-row{display:flex;gap:8px;flex-wrap:wrap}.story-list{margin:8px 0 0;padding-left:18px}
+
+  /* Controls */
+  .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:14px;align-items:end;margin-top:16px}
+  label{display:block;color:#cae4ff;font-weight:800;margin-bottom:6px}
+  input[type=range]{width:100%;accent-color:#3db7ff}input[type=number]{width:100%;padding:9px;background:#07111f;color:var(--ink);border:1px solid #49617e;border-radius:8px}
+  .readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin-top:16px}.metric{background:#07111f;border:1px solid #31465f;border-radius:13px;padding:12px}.metric b{display:block;color:#bdafff;font-size:.78rem;text-transform:uppercase;letter-spacing:.045em}.metric span{font-size:1.14rem;color:#fff;font-weight:800}
+  canvas{width:100%;height:300px;background:#07111f;border:1px solid #31465f;border-radius:14px}
+  .svgbox{width:100%;height:auto;border-radius:14px;background:#07111f;border:1px solid #31465f}
+
+  /* Table */
+  .table-wrap{overflow:auto;border:1px solid #31465f;border-radius:14px;max-height:600px;background:#0b1220}table{width:100%;border-collapse:collapse;min-width:1260px;font-size:.88rem}th,td{padding:10px 12px;border-bottom:1px solid #31465f;vertical-align:top}th{position:sticky;top:0;background:#132b4a;color:#f8fbff;z-index:2;text-align:left}tr:nth-child(even){background:#111b2b}tr:hover{background:#1d2b42}
+  footer{margin-top:38px;padding:22px;text-align:center;color:var(--muted);border-top:1px solid #26364d}
+</style>
+</head>
+<body>
+<noscript><div style="margin:12px auto;max-width:960px;padding:12px 16px;border:1px solid #ff9f43;border-radius:12px;background:#2b1d0f;color:#fff;font-family:Segoe UI,Arial,sans-serif">This interactive PMSM FOC demo needs JavaScript enabled for the animation, dropdown modes, HUD and signal plots.</div></noscript>
+<header>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="topics.html">Topics</a>
+    <a href="updates.html">Updates</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
+
+<main class="wrap">
+  <section class="page-header">
+    <h1>PMSM FOC Operating Conditions for Commercial EVs</h1>
+    <p>A polished drive-mode studio: select a case from the dropdown and watch the EV, road grade, power flow, quadrant and FOC signals update in one view.</p>
+  </section>
+  <section class="breadcrumb">
+    <a href="index.html">Home</a> /
+    <a href="topics.html">Topics</a> /
+    <a href="motor-controls.html">Motor Controls</a> /
+    <span class="current">PMSM FOC Operating Conditions</span>
+  </section>
+
+<section class="studio card">
+  <div class="studio-head">
+    <div>
+      <h2>1. Drive Mode Studio</h2>
+      <p>Choose a ready-made PMSM FOC case from the dropdown. The vehicle animation, road grade, power flow, quadrant, and key FOC values update in the same view.</p>
+    </div>
+    <div class="studio-badge">Interactive EV FOC demo</div>
+  </div>
+
+  <div class="studio-grid">
+    <div class="stage" id="stage">
+      <div class="sky-layer"></div><div class="mountains"></div><div class="tree-line"></div>
+      <div class="energy-flow"><b id="energyTitle">Battery → inverter → motor → wheels</b><span id="energySub">Positive torque and positive speed: motoring power flow.</span></div>
+      <div class="vehicle-hud" id="vehicleHud" aria-label="Vehicle battery and motor mode HUD">
+        <div class="hud-top"><span class="hud-title">Vehicle HUD</span><span class="hud-mode" id="hudMode">DRIVE</span></div>
+        <div class="battery-row">
+          <div class="battery-shell"><div class="battery-fill" id="batteryFill"></div></div>
+          <div class="battery-meta"><b id="batteryPct">60%</b><span id="batteryState">Discharging</span></div>
+        </div>
+        <div class="flow-line" id="hudFlowLine"><span class="flow-pill">Battery</span><span class="flow-arrow-mini" id="hudFlowArrow">→</span><span class="flow-pill">Motor</span></div>
+      </div>
+      <div class="dynamics-popup" id="dynamicsPopup" role="status" aria-live="polite">
+        <div class="popup-kicker">Dynamics watch</div>
+        <b id="popupTitle">Nominal operation</b>
+        <span id="popupBody">No major transient detected.</span>
+      </div>
+      <div class="motion-arrow" id="motionArrow">Vehicle + forward →</div>
+      <div class="slope-deck"><div class="road"></div></div>
+      <div class="ev" id="ev"><div class="ev-body"></div><div class="wheel w1"></div><div class="wheel w2"></div></div>
+      <div class="motor-disc" id="motorDisc"></div>
+      <div class="grade-label" id="gradeBadge">Grade 0%</div>
+    </div>
+
+    <aside class="control-dock" aria-label="Mode selection and FOC telemetry">
+      <div class="selector-card">
+        <label for="modeSelect">Simulation mode</label>
+        <select id="modeSelect">
+          <optgroup label="Four-quadrant operation">
+            <option value="q1FwdMotoring">Q1 — Forward motoring</option>
+            <option value="q2FwdRegen">Q2 — Forward braking / regen</option>
+            <option value="q3RevMotoring">Q3 — Reverse motoring</option>
+            <option value="q4RevRegen">Q4 — Reverse braking / regen</option>
+          </optgroup>
+          <optgroup label="Zero-speed and maneuvering">
+            <option value="coast">Forward coasting</option>
+            <option value="zeroCross">Zero-speed crossing</option>
+            <option value="hillHold">Hill hold on slope</option>
+            <option value="gradeLaunch">Steep grade launch</option>
+            <option value="parkingCreep">Low-speed parking creep</option>
+          </optgroup>
+          <optgroup label="Edge cases and faults">
+            <option value="fieldWeakening">High-speed field weakening</option>
+            <option value="slip">Low-μ acceleration slip</option>
+            <option value="regenSkid">Low-μ regen skid</option>
+            <option value="regenLimit">High-SOC regen limit</option>
+            <option value="loadStep">Sudden load step</option>
+            <option value="thermalDerate">Thermal derate</option>
+            <option value="currentSensorFault">Current sensor offset fault</option>
+            <option value="resolverFault">Resolver / encoder angle error</option>
+            <option value="emergencyShutdown">Emergency torque shutdown</option>
+          </optgroup>
+          <option value="manual">Manual slider mode</option>
+        </select>
+      </div>
+
+      <div class="mode-story dock-story">
+        <div><span class="tag motoring" id="modeTag">Motoring</span></div>
+        <div class="big" id="storyTitle">Forward motoring</div>
+        <p id="storyText">The vehicle moves forward while the motor produces positive torque. The inverter draws energy from the battery and commands positive q-axis current.</p>
+        <div class="status-row"><span class="tag" id="vehicleTag">Vehicle +</span><span class="tag" id="motorTag">Motor +</span><span class="tag" id="powerTag">Pmech +</span></div>
+        <ul class="story-list" id="storyBullets"><li><code>Iq</code> is positive for forward torque.</li><li><code>Id</code> is near zero below base speed.</li></ul>
+      </div>
+
+      <div class="case-details compact-case" aria-label="Selected case values">
+        <div class="case-kv"><b>Case</b><span id="caseName">Q1 Forward motoring</span></div>
+        <div class="case-kv"><b>T_cmd</b><span id="caseTorque">+160 Nm</span></div>
+        <div class="case-kv"><b>ω_motor</b><span id="caseSpeed">+1800 rpm</span></div>
+        <div class="case-kv"><b>Load</b><span id="caseLoad">+35 Nm</span></div>
+        <div class="case-kv"><b>Grade</b><span id="caseGrade">+3%</span></div>
+        <div class="case-kv"><b>SOC / μ</b><span id="caseSocMu">60% / 0.90</span></div>
+      </div>
+
+      <div class="readouts compact-readouts">
+        <div class="metric"><b>Quadrant</b><span id="quadrantOut">Q1</span></div>
+        <div class="metric"><b>Mode</b><span id="modeOut">Motoring</span></div>
+        <div class="metric"><b>Iq</b><span id="iqOut">80 A</span></div>
+        <div class="metric"><b>Id</b><span id="idOut">0 A</span></div>
+        <div class="metric wide"><b>DC bus</b><span id="vdcOut">Nominal</span></div>
+        <div class="metric wide"><b>Limit flags</b><span id="limitOut">None</span></div>
+      </div>
+
+      <details class="fine-tune">
+        <summary>Fine tune values</summary>
+        <div class="controls micro-controls">
+          <div><label for="tcmd">T_cmd: <span id="tcmdVal">120</span> Nm</label><input id="tcmd" type="range" min="-350" max="350" value="120" step="5"></div>
+          <div><label for="omega0">ω: <span id="omegaVal">1800</span> rpm</label><input id="omega0" type="range" min="-7000" max="12000" value="1800" step="50"></div>
+          <div><label for="load">T_load: <span id="loadVal">40</span> Nm</label><input id="load" type="range" min="-250" max="250" value="40" step="5"></div>
+          <div><label for="grade">Grade: <span id="gradeVal">0</span>%</label><input id="grade" type="range" min="-20" max="20" value="0" step="1"></div>
+          <div><label for="soc">SOC: <span id="socVal">60</span>%</label><input id="soc" type="range" min="0" max="100" value="60" step="1"></div>
+          <div><label for="mu">μ: <span id="muVal">0.90</span></label><input id="mu" type="range" min="0.1" max="1.0" value="0.9" step="0.05"></div>
+        </div>
+      </details>
+
+    </aside>
+  </div>
+
+  <div class="studio-telemetry">
+    <div class="telemetry-card featured-telemetry">
+      <div class="telemetry-head">
+        <div class="telemetry-title">Live motor dynamics</div>
+        <span class="telemetry-badge" id="telemetryBadge">Nominal</span>
+      </div>
+      <canvas id="plot" width="1500" height="640" aria-label="Live multi-axis signal plot showing torque, d-q currents and speed with clear zero lines"></canvas>
+    </div>
+    <div class="event-card" id="eventCard" aria-live="polite">
+      <div class="event-head"><span class="event-title" id="eventTitle">Dynamics Watch</span><span class="event-pill" id="eventPill">Nominal</span></div>
+      <div class="event-body" id="eventBody">Select a drive mode or adjust sliders. Major torque, load, grade, speed and limit events will be explained here.</div>
+    </div>
+  </div>
+</section>
+<section class="grid">
+  <div class="card">
+    <h2>2. Torque-Speed Quadrants</h2>
+    <svg id="quadrantSvg" class="svgbox" viewBox="0 0 760 460" role="img" aria-label="Torque speed quadrant diagram">
+      <defs><marker id="arrowHead" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#eef6ff"/></marker></defs>
+      <rect width="760" height="460" fill="#07111f"/>
+      <rect x="380" y="30" width="340" height="190" fill="#3db7ff" opacity="0.14"/><rect x="40" y="30" width="340" height="190" fill="#36d399" opacity="0.14"/><rect x="40" y="220" width="340" height="190" fill="#3db7ff" opacity="0.14"/><rect x="380" y="220" width="340" height="190" fill="#36d399" opacity="0.14"/>
+      <line x1="40" y1="220" x2="720" y2="220" stroke="#eef6ff" stroke-width="2" marker-end="url(#arrowHead)"/><line x1="380" y1="410" x2="380" y2="30" stroke="#eef6ff" stroke-width="2" marker-end="url(#arrowHead)"/>
+      <text x="690" y="246" fill="#eef6ff">+ω</text><text x="54" y="246" fill="#eef6ff">−ω</text><text x="394" y="45" fill="#eef6ff">+T</text><text x="394" y="405" fill="#eef6ff">−T</text>
+      <text x="505" y="92" fill="#3db7ff" font-size="20" font-weight="800">Q1 Forward Motoring</text><text x="90" y="92" fill="#36d399" font-size="20" font-weight="800">Q2 Forward Regen</text><text x="88" y="352" fill="#3db7ff" font-size="20" font-weight="800">Q3 Reverse Motoring</text><text x="498" y="352" fill="#36d399" font-size="20" font-weight="800">Q4 Reverse Regen</text>
+      <circle id="qMarker" cx="380" cy="220" r="11" fill="#ffd166" stroke="#fff" stroke-width="2"/><text id="qLabel" x="395" y="210" fill="#ffd166" font-size="14" font-weight="800">Current point</text>
+    </svg>
+  </div>
+  <div class="card">
+    <h2>2b. How to Read the Demo</h2>
+    <p>The top studio uses an intentionally simplified educational model so the mode changes are easy to see.</p>
+    <ul>
+      <li><code>Iq≈T_cmd/Kt</code>, so torque sign directly changes q-axis current sign.</li>
+      <li><code>Id</code> stays near zero below base speed and becomes negative in field weakening.</li>
+      <li><code>ωdot=(T_cmd−T_load−grade torque)/J</code>, so road grade and load change acceleration.</li>
+      <li>Limit flags are illustrative: traction, regen clipping, field weakening, thermal/fault cases.</li>
+    </ul>
+    <p class="small">Production validation must use calibrated PMSM, inverter, battery, tire, brake-blending and thermal models.</p>
+  </div>
+</section>
+
+<section class="card">
+<h2>3. Engineering Notes</h2>
+<div class="grid">
+  <div class="soft"><h3>Sign convention</h3><p>Positive vehicle direction is forward. Positive motor speed corresponds to forward travel through the fixed gear. Positive torque accelerates positive rotation. <code>P_mech = T_e · ω_m</code>: positive means motoring, negative means regeneration.</p></div>
+  <div class="soft"><h3>What to monitor</h3><p>Log <code>Id/Iq</code>, phase currents, rotor angle, estimated torque, speed, DC bus voltage/current, battery charge limit, modulation index, temperature derates, wheel slip, and mode/fault flags.</p></div>
+  <div class="soft"><h3>Common misses</h3><p>Reverse regeneration, zero-speed torque, grade hold heating, resolver sign errors, current sensor offset, DC bus overvoltage in regen, and integrator windup during torque clipping.</p></div>
+</div>
+</section>
+
+<section>
+<h2>4. Scenario and Test-Condition Table</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Scenario</th><th>Direction</th><th>Quadrant/Mode</th><th>T_cmd</th><th>ω_cmd</th><th>Load/Road</th><th>Key FOC Signals</th><th>Expected Behavior</th><th>Abort/Safety</th></tr></thead>
+<tbody>
+<tr><td>Forward launch</td><td>Vehicle +, Motor +</td><td><span class="tag motoring">Q1</span></td><td>Positive ramp to peak</td><td>0 → low +</td><td>Flat or mild grade</td><td>Id/Iq, phase current, torque, wheel speed</td><td>Smooth torque buildup, no rollback or oscillation</td><td>Overcurrent, slip, wrong direction</td></tr>
+<tr><td>Forward cruise</td><td>+</td><td><span class="tag motoring">Q1</span></td><td>Small positive</td><td>Constant +</td><td>Aero/rolling drag</td><td>Iq, speed error, efficiency</td><td>Low ripple, stable speed, high efficiency</td><td>Thermal limit, speed deviation</td></tr>
+<tr><td>Forward regenerative braking</td><td>+</td><td><span class="tag regen">Q2</span></td><td>Negative ramp</td><td>Positive decel</td><td>Battery accepts charge</td><td>Iq negative, Vdc, battery current</td><td>Stable decel, Vdc controlled, brake blend OK</td><td>Vdc overvoltage, wheel lock</td></tr>
+<tr><td>Forward coasting</td><td>+</td><td><span class="tag coast">Coast</span></td><td>Zero</td><td>Positive</td><td>Road load</td><td>Id/Iq near zero, torque estimate</td><td>Minimal unintended torque</td><td>Uncommanded acceleration/braking</td></tr>
+<tr><td>Reverse launch</td><td>Vehicle −, Motor −</td><td><span class="tag motoring">Q3</span></td><td>Negative ramp</td><td>0 → low −</td><td>Reverse maneuver</td><td>Angle sign, Iq, speed</td><td>Controlled reverse acceleration</td><td>Reverse speed cap exceeded</td></tr>
+<tr><td>Reverse regenerative braking</td><td>−</td><td><span class="tag regen">Q4</span></td><td>Positive</td><td>Negative decel</td><td>Reverse downhill</td><td>Iq positive, Vdc, brake flags</td><td>Torque opposes reverse motion</td><td>Rollback/overspeed</td></tr>
+<tr><td>Uphill hill hold</td><td>0</td><td><span class="tag hold">Hold</span></td><td>Positive holding torque</td><td>0</td><td>+10–20% grade</td><td>Iq, rotor angle, temp, brake state</td><td>No rollback, brake-to-motor handoff smooth</td><td>Thermal rise, rollback threshold</td></tr>
+<tr><td>Downhill hold</td><td>0</td><td><span class="tag hold">Hold</span></td><td>Torque sign as required</td><td>0</td><td>−10–20% grade</td><td>Iq sign, speed near zero</td><td>Stationary without sign error</td><td>Roll direction error</td></tr>
+<tr><td>Low-speed parking</td><td>±</td><td><span class="tag motoring">Creep</span></td><td>Small ±</td><td>Low ±</td><td>High steering load, lash</td><td>Torque ripple, angle quality</td><td>Smooth creep, no jerk</td><td>Unexpected lurch</td></tr>
+<tr><td>Torque reversal at speed</td><td>+</td><td><span class="tag regen">Q1→Q2</span></td><td>Positive to negative</td><td>Positive</td><td>Moderate speed</td><td>Iq crossing, anti-windup, Vdc</td><td>Smooth zero-torque crossing</td><td>Overvoltage/current oscillation</td></tr>
+<tr><td>Zero-speed transition</td><td>+ to −</td><td><span class="tag hold">Zero-cross</span></td><td>Sign-changing</td><td>Ramp + to −</td><td>Parking/rocking</td><td>Angle, speed estimate, Iq sign</td><td>No chatter or sign flip bug</td><td>Wrong torque direction</td></tr>
+<tr><td>High-speed field weakening</td><td>+</td><td><span class="tag fw">FW</span></td><td>Positive limited</td><td>Base → max</td><td>Aero load</td><td>Id negative, Vd/Vq, modulation index</td><td>Voltage-limited torque rolloff</td><td>Overspeed, voltage saturation</td></tr>
+<tr><td>Acceleration wheel slip</td><td>+</td><td><span class="tag limit">Traction</span></td><td>Positive peak</td><td>Low/medium +</td><td>Low μ</td><td>Slip ratio, wheel speeds, torque limit</td><td>Torque reduced and reapplied smoothly</td><td>Excess slip/yaw</td></tr>
+<tr><td>Regen wheel skid</td><td>+</td><td><span class="tag limit">ABS/Regen</span></td><td>Negative</td><td>Positive</td><td>Low μ/split μ</td><td>Slip, brake pressure, Iq</td><td>Regen reduced, ABS/ESC priority</td><td>Wheel lock/yaw rate limit</td></tr>
+<tr><td>DC bus overvoltage regen limit</td><td>+</td><td><span class="tag limit">Regen limit</span></td><td>Negative</td><td>High +</td><td>High SOC/cold pack</td><td>Vdc, charge limit, regen request</td><td>Regen clipped, friction brake blended</td><td>Vdc threshold exceeded</td></tr>
+<tr><td>Motor/inverter overtemperature</td><td>±</td><td><span class="tag limit">Thermal</span></td><td>High continuous</td><td>Various</td><td>Repeated launch/hill hold</td><td>Winding, rotor, inverter temp</td><td>Gradual derating, no jerk</td><td>Temp exceeds safe max</td></tr>
+<tr><td>Current sensor offset</td><td>±</td><td><span class="tag fault">Sensor fault</span></td><td>Any</td><td>Any</td><td>Injected offset</td><td>Ia/Ib/Ic sum, Id/Iq bias, fault flag</td><td>Detect, compensate or limp mode</td><td>Torque error exceeds limit</td></tr>
+<tr><td>Resolver/encoder angle error</td><td>±</td><td><span class="tag fault">Position fault</span></td><td>Any</td><td>Any</td><td>Injected offset/dropout</td><td>Angle residual, torque ripple</td><td>Fault detected, torque limited safely</td><td>Uncontrolled torque</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section class="nav-grid" style="display:flex; justify-content:space-between; gap: 16px; padding: 2rem 0; border-top: 1px solid #31465f; margin-top: 3rem;">
+  <a href="pmsm-foc-guide.html" class="nav-button">← Previous: PMSM FOC Guide</a>
+  <a href="motor-controls.html" class="nav-button">Back to Motor Controls</a>
+  <a href="spwm.html" class="nav-button">Next: SPWM →</a>
+</section>
+
+<footer>
+  <p style="text-align:center; margin:2rem 0; color:var(--muted);">&copy; 2026 EV & Electronics Lab</p>
+</footer>
+
+</main>
+
+
+<script>
+// ============================================================
+// Human-friendly PMSM FOC demo
+// Presets choose realistic drive stories; sliders allow exploration.
+// ============================================================
+const $ = id => document.getElementById(id);
+const els = {
+  stage:$('stage'), ev:$('ev'), motorDisc:$('motorDisc'), motionArrow:$('motionArrow'), energyTitle:$('energyTitle'), energySub:$('energySub'), gradeBadge:$('gradeBadge'),
+  vehicleHud:$('vehicleHud'), hudMode:$('hudMode'), batteryFill:$('batteryFill'), batteryPct:$('batteryPct'), batteryState:$('batteryState'), hudFlowLine:$('hudFlowLine'), hudFlowArrow:$('hudFlowArrow'),
+  dynamicsPopup:$('dynamicsPopup'), popupTitle:$('popupTitle'), popupBody:$('popupBody'), telemetryBadge:$('telemetryBadge'),
+  eventCard:$('eventCard'), eventTitle:$('eventTitle'), eventPill:$('eventPill'), eventBody:$('eventBody'),
+  modeTag:$('modeTag'), storyTitle:$('storyTitle'), storyText:$('storyText'), storyBullets:$('storyBullets'), vehicleTag:$('vehicleTag'), motorTag:$('motorTag'), powerTag:$('powerTag'),
+  tcmd:$('tcmd'), omega0:$('omega0'), load:$('load'), grade:$('grade'), soc:$('soc'), mu:$('mu'),
+  tcmdVal:$('tcmdVal'), omegaVal:$('omegaVal'), loadVal:$('loadVal'), gradeVal:$('gradeVal'), socVal:$('socVal'), muVal:$('muVal'),
+  quadrantOut:$('quadrantOut'), modeOut:$('modeOut'), iqOut:$('iqOut'), idOut:$('idOut'), vdcOut:$('vdcOut'), limitOut:$('limitOut'),
+  qMarker:$('qMarker'), qLabel:$('qLabel'), plot:$('plot'), presetBar:$('presetBar'), modeSelect:$('modeSelect'),
+  caseName:$('caseName'), caseTorque:$('caseTorque'), caseSpeed:$('caseSpeed'), caseLoad:$('caseLoad'), caseGrade:$('caseGrade'), caseSocMu:$('caseSocMu')
+};
+const ctx = els.plot.getContext('2d');
+let history = [], skyShift = 0, roadShift = 0, activePreset='q1FwdMotoring';
+let lastSnapshot = null, lastAlertKey = '', alertTimer = null;
+const presets = {
+  q1FwdMotoring:{T:160,w:1800,L:35,g:3,soc:60,mu:.9,title:'Q1 Forward motoring',tag:'Motoring',tagClass:'motoring',text:'Positive speed and positive torque. This is the normal forward launch, acceleration or hill-climb case.',bullets:['Quadrant check: ω > 0 and T_cmd > 0.','Expected FOC: Iq positive; Id near zero below base speed.','Watch traction limit, current limit and torque rise smoothness.']},
+  q2FwdRegen:{T:-130,w:2600,L:20,g:-4,soc:55,mu:.85,title:'Q2 Forward regenerative braking',tag:'Regeneration',tagClass:'regen',text:'The vehicle is moving forward but commanded torque is negative, so the motor brakes the vehicle and sends energy back to the DC bus/battery.',bullets:['Quadrant check: ω > 0 and T_cmd < 0.','Expected FOC: Iq negative; torque opposes forward motion.','Watch DC bus voltage, battery charge current, brake blending and wheel slip.']},
+  q3RevMotoring:{T:-90,w:-900,L:-15,g:0,soc:58,mu:.9,title:'Q3 Reverse motoring',tag:'Motoring',tagClass:'motoring',text:'The vehicle backs up under power. Speed and torque are both negative, so mechanical power is still motoring.',bullets:['Quadrant check: ω < 0 and T_cmd < 0.','Reverse torque and speed are normally software limited.','This case is good for finding speed-sign or resolver-direction mistakes.']},
+  q4RevRegen:{T:80,w:-950,L:-20,g:-6,soc:55,mu:.85,title:'Q4 Reverse regenerative braking',tag:'Regeneration',tagClass:'regen',text:'The vehicle is reversing but positive torque opposes reverse motion. This is reverse braking / reverse regen.',bullets:['Quadrant check: ω < 0 and T_cmd > 0.','Torque should slow the reverse motion without sign chatter near zero speed.','Watch DC bus voltage and smooth transition into hold.']},
+
+  // Backward-compatible aliases used by earlier buttons/links, if any.
+  fwdMotoring:{T:160,w:1800,L:35,g:3,soc:60,mu:.9,title:'Forward motoring',tag:'Motoring',tagClass:'motoring',text:'The vehicle moves forward while the motor produces positive torque. The battery supplies the inverter, and positive q-axis current creates forward wheel torque.',bullets:['Positive speed and positive torque place the drive in Q1.','Iq is positive; Id is usually near zero below base speed.','On a grade, the load torque rises and torque margin matters.']},
+  fwdRegen:{T:-130,w:2600,L:20,g:-4,soc:55,mu:.85,title:'Forward regenerative braking',tag:'Regeneration',tagClass:'regen',text:'The EV is still moving forward, but torque is negative. Mechanical energy flows from the wheels back through the motor and inverter toward the battery.',bullets:['Positive speed with negative torque is Q2.','Iq is negative; DC bus voltage and battery charge limits must be watched.','ABS/ESC may request torque reduction on low-friction surfaces.']},
+  revMotoring:{T:-90,w:-900,L:-15,g:0,soc:58,mu:.9,title:'Reverse motoring',tag:'Motoring',tagClass:'motoring',text:'The vehicle backs up under power. Motor speed and torque are both negative, so mechanical power remains positive.',bullets:['Negative speed and negative torque place the drive in Q3.','Reverse torque and speed are typically capped by software.','Angle sign conventions must be verified carefully.']},
+  revRegen:{T:80,w:-950,L:-20,g:-6,soc:55,mu:.85,title:'Reverse regenerative braking',tag:'Regeneration',tagClass:'regen',text:'The vehicle is reversing, but positive torque opposes the reverse motion. This is a quadrant that often gets less test coverage.',bullets:['Negative speed with positive torque is Q4.','Torque must smoothly pass through zero speed if the vehicle stops.','Regen availability still depends on DC bus and battery limits.']},
+
+  coast:{T:0,w:2200,L:30,g:0,soc:62,mu:.9,title:'Forward coasting',tag:'Coasting',tagClass:'coast',text:'Torque request is zero while the vehicle is moving forward. This catches residual torque, deadband and sign-convention issues.',bullets:['Expected Id/Iq should be close to zero.','Vehicle slows only due to road load and losses.','Compare coastdown against vehicle-road-load model.']},
+  zeroCross:{T:-35,w:120,L:5,g:0,soc:60,mu:.9,title:'Transition through zero speed',tag:'Zero-crossing',tagClass:'hold',text:'A low-speed maneuver where torque and speed can change sign. This is where sign bugs, estimator chatter and backlash are easiest to see.',bullets:['Run slowly from +ω to 0 to −ω and back.','Torque should not jump when the speed sign changes.','Check rotor angle continuity and speed estimator filtering.']},
+  hillHold:{T:115,w:0,L:0,g:12,soc:65,mu:.9,title:'Uphill hill hold',tag:'Holding',tagClass:'hold',text:'The vehicle is stopped on a +12% grade. Motor torque and/or mechanical brakes hold the vehicle without rollback.',bullets:['Speed is zero but torque can be nonzero.','Thermal stress is high because cooling airflow is low.','Brake-to-motor handoff must be smooth and rollback-free.']},
+  gradeLaunch:{T:260,w:80,L:55,g:16,soc:63,mu:.8,title:'Steep grade launch',tag:'Launch edge case',tagClass:'limit',text:'Launch from near-zero speed on a steep uphill grade. This stresses current limit, anti-rollback logic and torque ramp calibration.',bullets:['Expected: no rollback before torque builds.','Monitor Iq saturation, speed error and wheel slip.','Abort if current limit or thermal limit is exceeded.']},
+  parkingCreep:{T:35,w:180,L:15,g:1,soc:70,mu:.9,title:'Low-speed parking creep',tag:'Creep',tagClass:'motoring',text:'Small torque at very low speed for parking, tight turns and garage maneuvers.',bullets:['Torque should feel smooth, not notchy.','Watch encoder quantization, cogging compensation and driveline lash.','Speed loop must not hunt around zero.']},
+
+  fieldWeakening:{T:105,w:7600,L:90,g:0,soc:50,mu:.9,title:'High-speed field weakening',tag:'Field weakening',tagClass:'fw',text:'Above base speed, voltage headroom becomes limited. The controller injects negative d-axis current and torque capability rolls off.',bullets:['Expected: Id becomes negative to weaken flux.','Watch modulation index, Vd/Vq saturation and torque limiting.','Overspeed protection should be calm and predictable.']},
+  slip:{T:310,w:1200,L:25,g:2,soc:60,mu:.35,title:'Low-μ acceleration slip',tag:'Traction limit',tagClass:'limit',text:'The driver asks for more torque than the road can support. Traction control should clip and reapply torque smoothly.',bullets:['Expected: torque limit flag active due to low μ.','Wheel-speed slip ratio should return to target band.','No oscillatory torque hunting or harsh reapplication.']},
+  regenSkid:{T:-210,w:2400,L:20,g:-3,soc:55,mu:.28,title:'Low-μ regenerative skid',tag:'ABS / regen limit',tagClass:'limit',text:'Forward regenerative braking on a slippery road. The control system should reduce regen if wheels approach lock.',bullets:['Expected: regen torque reduction and ABS/ESC priority.','Monitor slip ratio, brake pressure, Iq and Vdc.','Driver deceleration should remain consistent after brake blending.'],forceFlags:['ABS/regen limit']},
+  regenLimit:{T:-220,w:4100,L:20,g:-8,soc:94,mu:.8,title:'Regen limited by battery/DC bus',tag:'Regen limited',tagClass:'limit',text:'Downhill or high-speed braking with high SOC. Battery charge acceptance is low, so regen torque must be clipped.',bullets:['Expected: DC bus trend rises and regen is limited.','Friction brakes should blend in to preserve decel.','Never allow Vdc to exceed inverter/battery safety limits.']},
+  loadStep:{T:180,w:1800,L:190,g:8,soc:62,mu:.85,title:'Sudden load step',tag:'Load transient',tagClass:'limit',text:'A sudden dynamometer load or grade change is applied while the driver torque request stays roughly constant.',bullets:['Expected: speed dips, then recovers without oscillation.','Monitor Iq saturation, speed-loop overshoot and anti-windup.','Pass criteria: settling time and torque error within target.'],forceFlags:['Load step']},
+  thermalDerate:{T:285,w:900,L:65,g:10,soc:55,mu:.75,title:'Thermal derating case',tag:'Thermal limit',tagClass:'limit',text:'Repeated launch or prolonged hill operation heats the motor/inverter. Torque should derate gradually, not abruptly.',bullets:['Expected: torque limit reduces with temperature model.','Monitor winding, rotor magnet, inverter and coolant temperatures.','No sudden torque drop unless a safety threshold is crossed.'],forceFlags:['Thermal derate']},
+  currentSensorFault:{T:90,w:1500,L:35,g:0,soc:60,mu:.9,title:'Current sensor offset fault',tag:'Sensor fault',tagClass:'fault',text:'One phase-current sensor has offset or gain error. This case checks diagnostics and limp-home behavior.',bullets:['Expected: phase-current sum/residual diagnostic catches error.','Torque may be limited or drive may enter limp mode.','Monitor Id/Iq bias, torque ripple and fault timestamp.'],forceFlags:['Current sensor offset']},
+  resolverFault:{T:75,w:900,L:25,g:0,soc:60,mu:.9,title:'Resolver / encoder angle error',tag:'Position fault',tagClass:'fault',text:'Rotor angle is biased or noisy. FOC can produce torque ripple or even wrong torque if this is not detected.',bullets:['Expected: angle residual or plausibility monitor triggers.','Torque must be safely limited if angle confidence is poor.','Monitor torque ripple, Id/Iq coupling and estimator status.'],forceFlags:['Resolver angle error']},
+  emergencyShutdown:{T:0,w:1800,L:45,g:0,soc:60,mu:.9,title:'Emergency torque shutdown',tag:'Torque off',tagClass:'fault',text:'A safety request forces torque to zero while the motor is spinning. The current should decay predictably and gates should enter the commanded safe state.',bullets:['Expected: T_cmd forced to zero and current decays cleanly.','No DC bus spike, no torque reversal, no delayed shutdown.','Monitor gate enable, phase currents, contactor state and fault latch.'],forceFlags:['Torque shutdown']}
+};
+function clamp(x,a,b){return Math.max(a,Math.min(b,x));}
+function setPreset(name){
+  if(name === 'manual'){
+    activePreset='manual';
+    update();
+    return;
+  }
+  const p=presets[name];
+  if(!p) return;
+  activePreset=name;
+  if(els.modeSelect && els.modeSelect.value !== name) els.modeSelect.value = name;
+  els.tcmd.value=p.T; els.omega0.value=p.w; els.load.value=p.L; els.grade.value=p.g; els.soc.value=p.soc; els.mu.value=p.mu;
+  document.querySelectorAll('.preset').forEach(b=>b.classList.toggle('active',b.dataset.mode===name));
+  history=[]; for(let i=0;i<40;i++) pushHistory(false);
+  update();
+}
+function quadrant(t,w){
+  if(Math.abs(t)<3 && Math.abs(w)<30) return ['Zero','Holding/Stopped'];
+  if(Math.abs(t)<3) return ['Zero torque','Coasting'];
+  if(w>=0 && t>0) return ['Q1','Forward motoring'];
+  if(w>=0 && t<0) return ['Q2','Forward regen'];
+  if(w<0 && t<0) return ['Q3','Reverse motoring'];
+  if(w<0 && t>0) return ['Q4','Reverse regen'];
+  return ['Transition','Zero crossing'];
+}
+function tagClassForMode(mode, flags){
+  const flagText = flags.join(' ');
+  if(/field/i.test(flagText)) return 'fw';
+  if(/fault|sensor|resolver|shutdown/i.test(flagText)) return 'fault';
+  if(/limit|clipped|overspeed|derate|abs|traction|load step/i.test(flagText)) return 'limit';
+  if(mode.includes('regen')) return 'regen';
+  if(mode.includes('Coasting')) return 'coast';
+  if(mode.includes('Holding')||mode.includes('Stopped')) return 'hold';
+  return 'motoring';
+}
+function pushHistory(draw=true){
+  const T=+els.tcmd.value,w=+els.omega0.value,L=+els.load.value,g=+els.grade.value;
+  const gradeTorque=g*6, netT=T-L-gradeTorque;
+  const prev=history.at(-1)||{actual:0,w};
+  const actual=prev.actual + (T-prev.actual)*0.14;
+  const wNext=w + (netT/4.0)*0.8;
+  const Iq=T/1.5; const Id=Math.abs(w)>4500?clamp(-0.018*(Math.abs(w)-4500),-120,0):0;
+  history.push({T,actual,w:wNext,Iq,Id}); if(history.length>170) history.shift(); if(draw) drawPlot();
+}
+function updateStory(mode,q,flags,power){
+  const T=+els.tcmd.value,w=+els.omega0.value,g=+els.grade.value;
+  let preset=presets[activePreset];
+  // If the user has moved sliders away from a preset, use a dynamic story.
+  if(!preset || Math.abs(T-preset.T)>70 || Math.abs(w-preset.w)>1600 || Math.abs(g-preset.g)>7){
+    preset={title:mode,text:'Manual command mode. The scene uses the current torque, speed, grade, SOC and friction values to show vehicle direction, power flow and likely limits.',bullets:['Use the quadrant marker to confirm sign convention.','Check Id/Iq and limit flags after each command change.','For real validation, replay the same case in simulation and on a controlled dyno or test track.']};
+  }
+  const cls=tagClassForMode(mode,flags);
+  els.modeTag.className='tag '+cls; els.modeTag.textContent=(flags[0]&&flags[0]!=='None')?flags[0]:mode;
+  els.storyTitle.textContent=preset.title; els.storyText.textContent=preset.text;
+  els.storyBullets.innerHTML=preset.bullets.map(b=>`<li>${b}</li>`).join('');
+  els.vehicleTag.className='tag '+(w>=0?'motoring':'regen'); els.vehicleTag.textContent=w>=0?'Vehicle + forward':'Vehicle − reverse';
+  els.motorTag.className='tag '+(w>=0?'motoring':'regen'); els.motorTag.textContent=w>=0?'Motor +':'Motor −';
+  els.powerTag.className='tag '+(power>0?'motoring':power<0?'regen':'coast'); els.powerTag.textContent=power>0?'Pmech +':power<0?'Pmech −':'Pmech 0';
+}
+function updateScene(mode,flags){
+  const T=+els.tcmd.value,w=+els.omega0.value,g=+els.grade.value,soc=+els.soc.value;
+  const slopeDeg=clamp(g*.55,-11,11);
+  document.documentElement.style.setProperty('--slope',slopeDeg+'deg');
+  document.documentElement.style.setProperty('--roadRot',(-slopeDeg)+'deg');
+  els.gradeBadge.textContent='Grade '+g+'%';
+  const moving=Math.abs(w)>60; document.documentElement.style.setProperty('--wheelState',moving?'running':'paused');
+  const speedAbs=Math.abs(w);
+  els.ev.style.bottom = speedAbs>6000?'132px':'126px';
+  els.motorDisc.style.animationDirection = w>=0?'normal':'reverse';
+  els.motorDisc.style.animationDuration = clamp(7000/(speedAbs+500),.42,2.2)+'s';
+  const isRegen=T*w< -100;
+  if(Math.abs(T)<3){
+    els.energyTitle.textContent='Coasting / near-zero torque'; els.energySub.textContent='No deliberate battery-to-wheel or wheel-to-battery torque command.';
+  } else if(isRegen){
+    els.energyTitle.textContent='Wheels → motor → inverter → battery'; els.energySub.textContent=soc>85?'Regen requested, but charge acceptance/DC bus may limit it.':'Negative mechanical power: regenerative braking.';
+  } else {
+    els.energyTitle.textContent='Battery → inverter → motor → wheels'; els.energySub.textContent='Positive mechanical power: motoring operation.';
+  }
+  els.motionArrow.textContent = w>60?'Vehicle + forward →':w<-60?'← Vehicle − reverse':'Vehicle stopped / holding';
+  let color = isRegen?'#36d399':Math.abs(T)<3?'#9aa8b7':'#3db7ff';
+  if(flags[0] && flags[0]!=='None') color='#ff9f43';
+  els.motionArrow.style.background=color; els.motionArrow.style.color='#06101e';
+
+  // Small in-vehicle style HUD: battery charge/discharge and motor operating mode.
+  const socClamped = clamp(soc,0,100);
+  els.batteryFill.style.width = socClamped + '%';
+  els.batteryPct.textContent = Math.round(socClamped) + '%';
+  let hudMode = 'DRIVE', batteryState = 'Discharging', flowArrow = '→', fillColor = 'linear-gradient(90deg,#3db7ff,#93c5fd)', flowClass = '';
+  if(Math.abs(w) < 60 && Math.abs(T) > 5){
+    hudMode = 'HOLD'; batteryState = 'Holding torque'; flowArrow = '→'; fillColor = 'linear-gradient(90deg,#ffd166,#fde68a)';
+  } else if(Math.abs(T) < 3){
+    hudMode = 'COAST'; batteryState = 'Neutral'; flowArrow = '·'; fillColor = 'linear-gradient(90deg,#9aa8b7,#cbd5e1)';
+  } else if(isRegen){
+    hudMode = 'REGEN'; batteryState = 'Charging'; flowArrow = '←'; fillColor = 'linear-gradient(90deg,#34d399,#86efac)'; flowClass = 'regen-flow';
+  }
+  if(flags[0] && flags[0] !== 'None'){
+    const flagText = flags.join(' ');
+    if(/fault|sensor|resolver|shutdown/i.test(flagText)) hudMode = 'FAULT';
+    else if(/limit|clipped|overspeed|derate|abs|traction|load step/i.test(flagText)) hudMode = isRegen ? 'REGEN' : 'LIMIT';
+    if(hudMode !== 'REGEN') fillColor = 'linear-gradient(90deg,#ff9f43,#ffd166)';
+    flowClass = 'limit-flow';
+  }
+  if(socClamped < 20) fillColor = 'linear-gradient(90deg,#ff6b6b,#ff9f43)';
+  els.batteryFill.style.background = fillColor;
+  els.hudMode.textContent = hudMode;
+  els.hudMode.style.background = color;
+  els.batteryState.textContent = batteryState;
+  els.hudFlowArrow.textContent = flowArrow;
+  els.hudFlowLine.className = 'flow-line ' + flowClass;
+}
+function setTelemetryBadge(flags, Id, T, w){
+  let label = 'Nominal', bg = '#0f253a', border = '#3b5574';
+  const flagText = flags.join(' ');
+  if(/fault|sensor|resolver|shutdown/i.test(flagText)){ label='Fault watch'; bg='#3a1116'; border='#ff6b6b'; }
+  else if(/limit|clipped|overspeed|derate|abs|traction|load step/i.test(flagText)){ label='Limit active'; bg='#3b230b'; border='#ff9f43'; }
+  else if(Math.abs(Id)>40){ label='Field weakening'; bg='#221a3c'; border='#b79cff'; }
+  else if(T*w < -100){ label='Regen'; bg='#0f2d24'; border='#34d399'; }
+  els.telemetryBadge.textContent = label;
+  els.telemetryBadge.style.background = bg;
+  els.telemetryBadge.style.borderColor = border;
+}
+function showDynamicsPopup(title, body, key, severity='alert'){
+  // Persistent card is always updated so the reader never misses the message.
+  els.eventTitle.textContent = title;
+  els.eventBody.textContent = body;
+  els.eventPill.textContent = severity === 'fault' ? 'Fault' : severity === 'limit' ? 'Limit' : 'Event';
+  els.eventCard.className = 'event-card ' + (severity === 'fault' ? 'fault' : severity === 'nominal' ? '' : 'alert');
+  if(key && key === lastAlertKey) return;
+  lastAlertKey = key || title;
+  els.popupTitle.textContent = title;
+  els.popupBody.textContent = body;
+  els.dynamicsPopup.classList.add('show');
+  clearTimeout(alertTimer);
+  alertTimer = setTimeout(()=>els.dynamicsPopup.classList.remove('show'), 7000);
+}
+function setNominalDynamicsMessage(mode){
+  if(lastAlertKey && els.dynamicsPopup.classList.contains('show')) return;
+  els.eventTitle.textContent = 'Dynamics Watch';
+  els.eventBody.textContent = mode ? `Current state: ${mode}. No abrupt transient is active; monitor the zero lines in each plot band for sign changes.` : 'No major transient detected.';
+  els.eventPill.textContent = 'Nominal';
+  els.eventCard.className = 'event-card';
+}
+function updateDynamicsAlert(T,w,L,g,soc,mu,flags,Id,Iq,mode){
+  const snap = {T,w,L,g,soc,mu};
+  const flagText = flags.filter(f=>f!=='None').join(', ');
+  let title='', body='', key='', severity='alert';
+  if(lastSnapshot){
+    const dT = T-lastSnapshot.T, dL = L-lastSnapshot.L, dg = g-lastSnapshot.g, dw = w-lastSnapshot.w;
+    if(Math.abs(dT) >= 90){ title='Abrupt torque command'; body=`T_cmd changed by ${dT>0?'+':''}${dT.toFixed(0)} Nm. Expect a visible Iq step; check current-loop tracking, saturation and driveline jerk.`; key='dT'+Math.sign(dT)+Math.round(T/10); }
+    else if(Math.abs(dL) >= 80){ title='Sudden load disturbance'; body=`Load torque shifted by ${dL>0?'+':''}${dL.toFixed(0)} Nm. Speed-loop recovery and anti-windup dominate the response.`; key='dL'+Math.sign(dL)+Math.round(L/10); }
+    else if(Math.abs(dg) >= 5){ title='Road grade step'; body=`Grade changed by ${dg>0?'+':''}${dg.toFixed(0)}%. Launch torque, rollback margin and thermal stress can change quickly.`; key='dg'+Math.sign(dg)+g; }
+    else if(Math.abs(dw) >= 1800){ title='Speed operating point jump'; body=`Motor speed moved by ${dw>0?'+':''}${dw.toFixed(0)} rpm. Check voltage headroom, estimator behavior and field-weakening entry.`; key='dw'+Math.sign(dw)+Math.round(w/500); }
+  }
+  if(!title && flagText){
+    severity = /fault|sensor|resolver|shutdown/i.test(flagText) ? 'fault' : 'limit';
+    title='Performance limiter active'; body=`${flagText}. This can reshape available torque, regen, stability or diagnostic state.`; key='flag:'+flagText;
+  }
+  if(!title && Math.abs(Id)>60){ title='Field-weakening current active'; body=`Id is ${Id.toFixed(1)} A. Negative d-axis current is reducing flux to stay within voltage limits.`; key='fw'+Math.round(Id/10); severity='limit'; }
+  if(!title && Math.abs(Iq)>190){ title='High torque-producing current'; body=`Iq is ${Iq.toFixed(1)} A. Current-loop saturation, inverter heating and tire grip should be checked.`; key='iq'+Math.round(Iq/20); severity='limit'; }
+  if(title) showDynamicsPopup(title, body, key, severity);
+  else setNominalDynamicsMessage(mode);
+  lastSnapshot = snap;
+}
+function update(){
+  const T=+els.tcmd.value,w=+els.omega0.value,L=+els.load.value,g=+els.grade.value,soc=+els.soc.value,mu=+els.mu.value;
+  els.tcmdVal.textContent=T; els.omegaVal.textContent=w; els.loadVal.textContent=L; els.gradeVal.textContent=g; els.socVal.textContent=soc; els.muVal.textContent=mu.toFixed(2);
+  const Iq=T/1.5; const Id=Math.abs(w)>4500?clamp(-0.018*(Math.abs(w)-4500),-120,0):0;
+  const [q,mode]=quadrant(T,w); const power=T*w;
+  const regen=power< -100;
+  let vdc='Nominal'; if(regen && soc>85) vdc='Rising: regen limited'; else if(regen) vdc='Charging trend'; else if(Math.abs(T)>285) vdc='Sag risk';
+  let flags=[]; if(Math.abs(w)>10500) flags.push('Overspeed'); if(Math.abs(T)>mu*360) flags.push('Traction limit'); if(regen && soc>85) flags.push('Regen clipped'); if(Math.abs(Id)>80) flags.push('Field weakening');
+  const activeCase = presets[activePreset];
+  if(activeCase && activeCase.forceFlags) flags.push(...activeCase.forceFlags);
+  if(flags.length===0) flags.push('None');
+  els.quadrantOut.textContent=q; els.modeOut.textContent=mode; els.iqOut.textContent=Iq.toFixed(1)+' A'; els.idOut.textContent=Id.toFixed(1)+' A'; els.vdcOut.textContent=vdc; els.limitOut.textContent=flags.join(', ');
+  const caseTitle = activeCase ? activeCase.title : mode;
+  els.caseName.textContent = caseTitle;
+  els.caseTorque.textContent = (T>=0?'+':'') + T + ' Nm';
+  els.caseSpeed.textContent = (w>=0?'+':'') + w + ' rpm';
+  els.caseLoad.textContent = (L>=0?'+':'') + L + ' Nm';
+  els.caseGrade.textContent = (g>=0?'+':'') + g + '%';
+  els.caseSocMu.textContent = soc + '% / ' + mu.toFixed(2);
+  setTelemetryBadge(flags, Id, T, w);
+  updateDynamicsAlert(T,w,L,g,soc,mu,flags,Id,Iq,mode);
+  const cx=clamp(380+(w/12000)*340,45,715), cy=clamp(220-(T/400)*190,35,405);
+  els.qMarker.setAttribute('cx',cx); els.qMarker.setAttribute('cy',cy); els.qLabel.setAttribute('x',cx+14); els.qLabel.setAttribute('y',cy-10); els.qLabel.textContent=q+' '+mode;
+  updateScene(mode,flags); updateStory(mode,q,flags,power); pushHistory();
+}
+function animateWorld(){
+  const w=+els.omega0.value;
+  // Positive speed: scenery moves left, making the car appear to travel right.
+  const dx=clamp(w/650,-12,18);
+  skyShift-=dx*.38; roadShift-=dx*1.9;
+  document.documentElement.style.setProperty('--skyShift',skyShift+'px');
+  document.documentElement.style.setProperty('--roadShift',roadShift+'px');
+  requestAnimationFrame(animateWorld);
+}
+function drawPlot(){
+  const W=els.plot.width,H=els.plot.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#07111f'; ctx.fillRect(0,0,W,H);
+
+  const left=106, right=170, top=44, gap=30;
+  const laneH=(H-top-52-2*gap)/3;
+  const lanes=[
+    {name:'Torque', unit:'Nm', min:-400, max:400, y:top, series:[['T_cmd','#3db7ff',p=>p.T],['T_actual','#34d399',p=>p.actual]]},
+    {name:'d-q current', unit:'A', min:-260, max:260, y:top+laneH+gap, series:[['Iq','#b79cff',p=>p.Iq],['Id','#ff9f43',p=>p.Id]]},
+    {name:'Speed', unit:'rpm', min:-7000, max:12000, y:top+2*(laneH+gap), series:[['ω','#ffd166',p=>p.w]]}
+  ];
+  const x0=left, x1=W-right;
+  ctx.font='16px Segoe UI';
+
+  lanes.forEach(lane=>{
+    const y0=lane.y, y1=lane.y+laneH;
+    const yFor=v=> y1 - ((v-lane.min)/(lane.max-lane.min))*laneH;
+    ctx.fillStyle='#0a1322'; ctx.fillRect(x0,y0,x1-x0,laneH);
+    ctx.strokeStyle='#31465f'; ctx.lineWidth=1.5; ctx.strokeRect(x0,y0,x1-x0,laneH);
+
+    const ticks=[lane.min,0,lane.max];
+    ticks.forEach(t=>{
+      const y=yFor(t);
+      ctx.beginPath(); ctx.moveTo(x0,y); ctx.lineTo(x1,y);
+      ctx.strokeStyle = Math.abs(t) < 1e-9 ? '#ffffff' : '#26384f';
+      ctx.lineWidth = Math.abs(t) < 1e-9 ? 4.2 : 1.2;
+      ctx.setLineDash(Math.abs(t) < 1e-9 ? [] : [5,7]); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = Math.abs(t) < 1e-9 ? '#ffffff' : '#a9bed3';
+      ctx.textAlign='right'; ctx.font=Math.abs(t)<1e-9?'bold 16px Segoe UI':'15px Segoe UI';
+      const label = t===0 ? '0  ZERO' : (t>0?'+':'')+t;
+      ctx.fillText(label, x0-14, y+5);
+    });
+
+    ctx.strokeStyle='#1f3046'; ctx.lineWidth=1;
+    for(let i=0;i<=6;i++){const x=x0+i*(x1-x0)/6; ctx.beginPath(); ctx.moveTo(x,y0); ctx.lineTo(x,y1); ctx.stroke();}
+
+    ctx.fillStyle='#eaf5ff'; ctx.textAlign='left'; ctx.font='bold 18px Segoe UI'; ctx.fillText(`${lane.name} (${lane.unit})`, x0, y0-12);
+    ctx.font='16px Segoe UI';
+
+    lane.series.forEach((s,idx)=>{
+      ctx.strokeStyle=s[1]; ctx.lineWidth=3.4; ctx.beginPath();
+      history.forEach((p,i)=>{const x=x0+i*(x1-x0)/Math.max(1,history.length-1); const y=yFor(s[2](p)); if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y);});
+      ctx.stroke();
+      const latest=history.at(-1);
+      if(latest){
+        const val=s[2](latest); const y= Math.max(y0+18+idx*20, Math.min(y1-10, yFor(val)+idx*3));
+        ctx.fillStyle=s[1]; ctx.textAlign='left'; ctx.font='bold 16px Segoe UI';
+        ctx.fillText(`${s[0]} ${(val>=0?'+':'')}${val.toFixed(0)}`, x1+14, y+5);
+      }
+    });
+  });
+
+  const legend=[['T_cmd','#3db7ff'],['T_actual','#34d399'],['Iq','#b79cff'],['Id','#ff9f43'],['ω','#ffd166'],['ZERO line','#ffffff']];
+  let lx=left, ly=H-18; ctx.textAlign='left'; ctx.font='bold 15px Segoe UI';
+  legend.forEach(([name,color])=>{ctx.fillStyle=color; ctx.fillRect(lx,ly-10,22,5); ctx.fillStyle='#d9ecff'; ctx.fillText(name,lx+30,ly-5); lx+=name.length*9+82;});
+}
+document.addEventListener('click',e=>{const btn=e.target.closest('.preset'); if(btn && btn.dataset.mode) setPreset(btn.dataset.mode);});
+els.modeSelect.addEventListener('change',e=>setPreset(e.target.value));
+['tcmd','omega0','load','grade','soc','mu'].forEach(id=>els[id].addEventListener('input',()=>{activePreset='manual'; if(els.modeSelect) els.modeSelect.value='manual'; document.querySelectorAll('.preset').forEach(b=>b.classList.remove('active'));update();}));
+setPreset('q1FwdMotoring'); animateWorld(); setInterval(update,550);
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a03c74b71f872e35',t:'MTc4MDEzMDY1NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

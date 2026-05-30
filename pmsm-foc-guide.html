@@ -163,14 +163,16 @@
       <button class="widget-btn" id="btn-ipmsm" onclick="setMode('IPMSM')">IPMSM</button>
     </div>
 
+    <p style="color:var(--color-text-secondary); margin-bottom:1.5rem;">This calculator is scaled for heavy-duty EV truck motors, using high torque current values and motor constants reflective of present e-truck powertrains.</p>
+
     <div class="slider-group">
-      <label>\(i_q\) (Torque Current): <span id="iq-val" style="color:var(--color-primary); font-weight:bold;">5.0</span> A</label>
-      <input type="range" id="iq-slider" min="-10" max="10" step="0.1" value="5" oninput="updateTorque()">
+      <label>\(i_q\) (Torque Current): <span id="iq-val" style="color:var(--color-primary); font-weight:bold;">500</span> A</label>
+      <input type="range" id="iq-slider" min="-1500" max="1500" step="10" value="500" oninput="updateTorque()">
     </div>
     
     <div class="slider-group">
-      <label>\(i_d\) (Flux Current): <span id="id-val" style="color:var(--color-primary); font-weight:bold;">0.0</span> A</label>
-      <input type="range" id="id-slider" min="-10" max="10" step="0.1" value="0" oninput="updateTorque()">
+      <label>\(i_d\) (Flux Current): <span id="id-val" style="color:var(--color-primary); font-weight:bold;">0</span> A</label>
+      <input type="range" id="id-slider" min="-800" max="800" step="10" value="0" oninput="updateTorque()">
     </div>
 
     <div class="result-box">
@@ -564,7 +566,7 @@
   <section class="nav-grid" style="display:flex; justify-content:space-between; padding: 2rem 0; border-top: 1px solid #333; margin-top: 3rem;">
     <a href="vf-control.html" class="nav-button">← Previous: V/f Control</a>
     <a href="#" class="nav-button" onclick="window.scrollTo({top:0, behavior:'smooth'}); return false;">↑ Back to Top</a>
-    <a href="spwm.html" class="nav-button">Next: SPWM →</a>
+    <a href="pmsm_foc_operating_conditions_final_live.html" class="nav-button">Next: FOC Conditions Studio →</a>
   </section>
 
 </main>
@@ -604,13 +606,13 @@
 </footer>
 
 <script>
-  // Initial parameters based on the React reference
+  // Initial parameters scaled for an EV truck-grade PMSM
   let state = {
-    iq: 5,
+    iq: 500,
     id: 0,
-    phi: 0.08,
-    Ld: 0.001,
-    Lq: 0.0015,
+    phi: 0.5,
+    Ld: 0.002,
+    Lq: 0.003,
     poles: 4,
     mode: 'SPMSM'
   };
