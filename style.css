@@ -3961,18 +3961,38 @@ body > div:first-of-type,
 /* ========== VISITOR COUNTER & COMMENTS ========== */
 
 .visitor-counter {
-  position: fixed;
-  top: 120px;
-  right: 20px;
-  background: rgba(13, 13, 13, 0.9);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(79, 195, 247, 0.3);
+  width: min(100% - 2rem, 520px);
+  margin: 1.5rem auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background: rgba(13, 13, 13, 0.72);
+  border: 1px solid rgba(79, 195, 247, 0.24);
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 0.8rem 1rem;
   font-size: var(--fs-small);
-  color: var(--color-primary);
-  z-index: 100;
+  color: var(--color-text);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.visitor-counter__label {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.visitor-counter__stat strong {
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.visitor-counter--offline {
+  border-color: rgba(229, 57, 53, 0.35);
+}
+
+.visitor-counter--offline .visitor-counter__stat strong {
+  color: #e57373;
 }
 
 .comment-section {
