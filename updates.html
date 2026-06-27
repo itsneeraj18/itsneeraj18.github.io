@@ -85,31 +85,7 @@
     </div>
 
   </div>
-
-  <!-- Visitor Counter -->
-  <div class="visitor-counter" id="visitor-counter">
-    👁️ Your visits: <span id="visitor-count">0</span>
-  </div>
 </section>
-
-<script>
-// Visitor Counter
-function initVisitorCounter() {
-    const counterElement = document.getElementById('visitor-count');
-    const pageId = window.location.pathname;
-    const storageKey = `visitor_count_${pageId}`;
-
-    let count = parseInt(localStorage.getItem(storageKey)) || 0;
-    count++;
-    localStorage.setItem(storageKey, count);
-    counterElement.textContent = count;
-}
-
-// Initialize features
-document.addEventListener('DOMContentLoaded', function() {
-    initVisitorCounter();
-});
-</script>
 
 <footer>
   <div class="footer-content">
@@ -128,8 +104,8 @@ document.addEventListener('DOMContentLoaded', function() {
       <ul>
         <li><a href="motor-controls.html">Motor Controls</a></li>
         <li><a href="topics.html">Battery & BMS</a></li>
-        <li><a href="topics.html">Power Electronics</a></li>
-        <li><a href="topics.html">Embedded Systems</a></li>
+        <li><a href="power-electronics.html">Power Electronics</a></li>
+        <li><a href="embedded-systems.html">Embedded Systems</a></li>
       </ul>
     </div>
 
@@ -149,5 +125,6 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
 </footer>
 
-<script src="script.js"></script>`n</body>
+<script src="script.js"></script>
+</body>
 </html>
